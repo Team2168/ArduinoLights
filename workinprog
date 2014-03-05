@@ -36,8 +36,6 @@ void EnabledRobot();
 void ShotReady();
 void TuskPosition(int pos);
 void HotGoal(int HotTarget);
-int GetLEDStatus();
-void InitPins();
 
 int retValue = 0;
 
@@ -45,124 +43,107 @@ void setup() {
 
   strip.begin();
   for(int q = 0; q < strip.numPixels(); q++) {
-  strip.setPixelColor(q, strip.Color(0,0,0));
+  strip.setPixelColor(q, strip.Color(127,100,50));
   }
   strip.show();
   
-//Set digital pins as inputs
-pinMode(4, INPUT);
-pinMode(5, INPUT);
-pinMode(6, INPUT);
-pinMode(7, INPUT);
-pinMode(8, OUTPUT); // set pin 8 as input
-digitalWrite(8, HIGH); //turn on pullup resistor  
-
-Serial.begin(9600);  // Serial Monitor
+  //Set digital pins as inputs
+  pinMode(4, INPUT);
+  pinMode(5, INPUT);
+  pinMode(6, INPUT);
+  pinMode(7, INPUT);
+  pinMode(8, OUTPUT); // set pin8 as Output
+  digitalWrite(8, HIGH); // write 5V to pin 8 
+  
+  Serial.begin(9600);  // Serial Monitor
 } 
 
 void loop() 
 {
-  
   //Read signals for cRIO
-  if (digitalRead(4) == LOW) {
+  if(digitalRead(4) == LOW) {
      retValue = 1;   
   }
- 
-  if(digitalRead(4) == HIGH) {
+  else if(digitalRead(4) == HIGH) {
      retValue = 2; 
   }
-  
-  if(digitalRead(5) == LOW) {
-    retValue = 3;
+  else if(digitalRead(5) == LOW) {
+     retValue = 3;
   }  
-  
-  if(digitalRead(5) == HIGH) {
-    retValue = 4;
+  else if(digitalRead(5) == HIGH) {
+     retValue = 4;
   }  
-  
-  if(digitalRead(6) == LOW) {
-    retValue = 5;
+  else if(digitalRead(6) == LOW) {
+     retValue = 5;
   }  
-  
-  if(digitalRead(6) == HIGH) {
-    retValue = 6;
+  else if(digitalRead(6) == HIGH) {
+     retValue = 6;
   }  
-  
-  if(digitalRead(7) == LOW) {
-    retValue = 7;
+  else if(digitalRead(7) == LOW) {
+     retValue = 7;
   }  
-  
-  if(digitalRead(7) == HIGH) {
-    retValue = 8;
-  }  
-  
-    if(retValue = 1)
-    {
+  else if(digitalRead(7) == HIGH) {
+     retValue = 8;  
+  }
+    Serial.println(retValue);
+    
+  if(retValue == 1) {
       DisabledRobot();
     }  
-    
-    if(retValue = 2)
-    {
-      EnabledRobot(); 
+  else if(retValue == 2) {
+      EnabledRobot();
+     Serial.println("EnabledRobot");
     }
-    
-    if(retValue == 3)
-    {
+  else if(retValue == 3) {
       ShotReady(); 
     }
-    
-    if(retValue == 4)
-    {
-      TuskPosition(GetLEDStatus()); 
-    }
-    
-    if(retValue == 5)
-    {
-      TuskPosition(GetLEDStatus()); 
-    }
-    
-    if(retValue == 6)
-    {
-      TuskPosition(GetLEDStatus()); 
-    }
-    
-    if(retValue == 7)
-    {
-      HotGoal(GetLEDStatus());
-    }
-    
-    if(retValue == 8)
-    {
-      HotGoal(GetLEDStatus());
-    }
-    
-   // Serial.println("GetLEDStatus Loop");
 
-if(EnabledRobot) {
+   /* else if(retValue == 4)
+    {
+      TuskPosition(GetLEDStatus()); 
+    }
+    else if(retValue == 5)
+    {
+      TuskPosition(GetLEDStatus()); 
+    }
+    else if(retValue == 6)
+    {
+      TuskPosition(GetLEDStatus()); 
+    }
+    else if(retValue == 7)
+    {
+      HotGoal(GetLEDStatus());
+    }
+    else if(retValue == 8)
+    {
+      HotGoal(GetLEDStatus());
+    }
+   
+   */
+   
+   // Serial.println("GetLEDStatus Loop");
+}
+
+void EnabledRobot() {
   for(int q = 0; q < strip.numPixels(); q++){
     strip.setPixelColor(q, strip.Color(0,256,0)); //Green
   }
+ Serial.println("here");
   strip.show();
-  delay(1000);
 }
 
-void DisabledRobot()
-{
-
+void DisabledRobot() {
   for(int q = 0; q < strip.numPixels(); q++){
     strip.setPixelColor(q, strip.Color(256,0,0)); //Red
   }  
   strip.show();
-  delay(1000);
 }
 
-void ShotReady()
-{
-  
+void ShotReady() {
   for(int q = 0; q < strip.numPixels(); q++){
     strip.setPixelColor(q, strip.Color(0,127,127)); //Cyan 
   }
-  
+  strip.show();
 }
 
 void TuskPosition(int pos)
@@ -213,5 +194,8 @@ void HotGoal(int HotTarget)
        strip.setPixelColor(q, strip.Color(0,256,0));
      }
   }
-  
 }
+
+//  int GetLEDStatus()
+ //{
+ //}
