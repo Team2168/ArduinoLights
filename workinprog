@@ -12,7 +12,7 @@
 #include "SPI.h"
 
 //Hardware Pins
-int clockPin = 3;
+int clockPin = 2;
 int dataPin1 = 11;
 
 //Strip Length Data
@@ -27,102 +27,162 @@ int IntakeSideRightPxZero = 24;
 int IntakeSideRightLength = 8;
 
 int i = 0,
-    j = 0;
-       
+    j = 0;   
+    
 LPD8806 strip(IntakeStripLength, dataPin1, clockPin);
 
 void DisabledRobot();
 void EnabledRobot();
 void ShotReady();
-void TuskPosition(int pos);
-void HotGoal(int HotTarget);
+void TuskRetractPosition();
+void TuskIntermediatePosition();
+void TuskExtendedPosition();
+void HotGoalLeft();
+void HotGoalRight();
 
 int retValue = 0;
+int lastretValue = 0;
 
 void setup() {
 
   strip.begin();
   for(int q = 0; q < strip.numPixels(); q++) {
-  strip.setPixelColor(q, strip.Color(0,127,0));
+  strip.setPixelColor(q, strip.Color(0,127,0)); // green
   }
   strip.show();
+  delay(200);
   
-  //Set digital pins as inputs
+  //Set digital pins 3-9 as inputs
+  //Note, pins 10 - 13 are in use by the SPI library. 
+  pinMode(3, INPUT);
   pinMode(4, INPUT);
   pinMode(5, INPUT);
   pinMode(6, INPUT);
   pinMode(7, INPUT);
-  pinMode(8, OUTPUT); // set pin8 as Output
-  digitalWrite(8, HIGH); // write 5V to pin 8 
+  pinMode(8, INPUT);
+  pinMode(9, INPUT);
+
+  pinMode(13, OUTPUT); // set pin8 as Output
+  digitalWrite(13, HIGH); // write 5V to pin 8 
   
   Serial.begin(9600);  // Serial Monitor
 } 
 
-void loop() 
-{
-  retValue=0;
+void loop() {
+  lastretValue = retValue; 
+  retValue = 0;
   //Read signals for cRIO
-   if(digitalRead(4) == HIGH) {
+  Serial.println(retValue); // 0
+  delay(200);
+  
+   if(digitalRead(3) == HIGH) {  
      retValue = retValue + 1; 
   }  
-   if(digitalRead(5) == HIGH) {
+    Serial.println(retValue);    // 0
+    delay(200);
+  
+   if(digitalRead(4) == HIGH) {
      retValue = retValue + 2;
   }  
-
-   if(digitalRead(6) == HIGH) {
-     retValue = retValue + 4;
-  }  
-
-   if(digitalRead(7) == HIGH) {
-     retValue = retValue + 8;  
-  }
-    Serial.println(retValue);
+    Serial.println(retValue);    // 2
+    delay(200);
     
+   if(digitalRead(5) == HIGH) {
+     retValue = retValue + 3;
+  }  
+    Serial.println(retValue);    // 2
+    delay(200);
+  
+   if(digitalRead(6) == HIGH) {
+     retValue = retValue + 4;  
+  }
+   Serial.println(retValue);     // 2
+   delay(200);
+  
+   if(digitalRead(7) == HIGH) {
+     retValue = retValue + 5;  
+  }
+    Serial.println(retValue);    // 2
+    delay(200);
+  
+   if(digitalRead(8) == HIGH) {
+     retValue = retValue + 6;  
+  }
+    Serial.println(retValue);    // 2
+    delay(200);
+ 
+   if(digitalRead(9) == HIGH) {
+     retValue = retValue + 7;  
+  }
+    Serial.println(retValue);    // 2
+    delay(200);
+      
+      i = 0;
+      
   if(retValue & 0x0001) {
       EnabledRobot();
-    }  
-  else {
-      DisabledRobot();
-     
+   } 
+  Serial.println("EnabledRobot");
+ delay(1000);
+ 
+  if(retValue & 0x0002) {
+      DisabledRobot(); 
     }
-   if(retValue & 0x0002) {
+  Serial.println("DisabledRobot");
+  delay(1000); 
+ 
+  if(retValue & 0x0003) {
       ShotReady(); 
     }
-
-   /* else if(retValue == 4)
+  Serial.println("ShotReady");
+  delay(1000);  
+  
+  if(retValue & 0x0004)
     {
-      TuskPosition(GetLEDStatus()); 
+      TuskRetractPosition();       // Problem
     }
-    else if(retValue == 5)
+  Serial.println("TuskRetractPosition");
+  delay(1000); 
+  
+  if(retValue & 0x0005)
     {
-      TuskPosition(GetLEDStatus()); 
+      TuskIntermediatePosition();  // Problem
     }
-    else if(retValue == 6)
+  Serial.println("TuskIntermediatePosition");
+  delay(1000); 
+  
+  if(retValue & 0x0006)
     {
-      TuskPosition(GetLEDStatus()); 
+      TuskExtendedPosition(); 
     }
-    else if(retValue == 7)
+  Serial.println("TuskExtendedPosition");
+  delay(1000);   
+  
+  if(retValue & 0x0007)
     {
-      HotGoal(GetLEDStatus());
+      HotGoalLeft();
     }
-    else if(retValue == 8)
+  Serial.println("HotGoalLeft");
+  delay(1000);  
+  
+  if(retValue & 0x0008)
     {
-      HotGoal(GetLEDStatus());
+      HotGoalRight();
     }
-   
-   */
-   
+  Serial.println("HotGoalRight");
+  delay(1000);   
    // Serial.println("GetLEDStatus Loop");
 }
 
+// Enabled Robot
 void EnabledRobot() {
   for(int q = 0; q < strip.numPixels(); q++){
     strip.setPixelColor(q, strip.Color(0,127,0)); //Green
   }
- Serial.println("here");
   strip.show();
 }
 
+// Disabled Robot
 void DisabledRobot() {
   for(int q = 0; q < strip.numPixels(); q++){
     strip.setPixelColor(q, strip.Color(127,0,0)); //Red
@@ -130,6 +190,7 @@ void DisabledRobot() {
   strip.show();
 }
 
+// Shot Ready
 void ShotReady() {
   for(int q = 0; q < strip.numPixels(); q++){
     strip.setPixelColor(q, strip.Color(0,127,127)); //Cyan 
@@ -137,56 +198,43 @@ void ShotReady() {
   strip.show();
 }
 
-void TuskPosition(int pos)
-{
- 
-  //Tusks Retracted
-  if(pos == 4)
-  {
-     for(int q = 0; q < strip.numPixels(); q++){
-        strip.setPixelColor(q, strip.Color(127,127,0)); //Ugly Green
-     }      
-  }
-  
-  //Tusks Intermediate 
-  if(pos == 5)
-  {
-    for(int q = 0; q < strip.numPixels(); q++){
-      strip.setPixelColor(q, strip.Color(0,0,127)); //Blue
-    } 
-  }
-  
-  //Tusks Extended
-  if(pos == 6)
-  {
-    for(int q = 0; q < strip.numPixels(); q++){
-      strip.setPixelColor(q, strip.Color(255,165,0)); //Orange
-    }   
-  }
-  
+// Tusks Retracted
+void TuskRetractPosition() {
+  for(int q = 0; q < strip.numPixels(); q++){
+    strip.setPixelColor(q, strip.Color(127,0,0)); //Dark Red  // PROBLEM
+  } 
+  strip.show();
 }
 
-//Auto Mode
-void HotGoal(int HotTarget)
-{
-  //Hot Goal Left
-  if(HotTarget == 7)
-  {
- 
-    for(int q = 0; q < strip.numPixels(); q++){
-      strip.setPixelColor(q, strip.Color(256,0,0));
-    }
+// Tusks Intermediate
+void TuskIntermediatePosition() {  
+  for(int q = 0; q < strip.numPixels(); q++){
+    strip.setPixelColor(q, strip.Color(0,0,127)); //Blue      // PROBLEM
   }
+  strip.show(); 
+} 
+
+// Tusks Extended
+void TuskExtendedPosition() {
+  for(int q = 0; q < strip.numPixels(); q++){
+    strip.setPixelColor(q, strip.Color(0,127,0)); //green
+  }
+  strip.show();
+}
   
-  //Hot Goal Right
-  if(HotTarget == 8)
-  {
-     for(int q = 0; q < strip.numPixels(); q++){
-       strip.setPixelColor(q, strip.Color(0,256,0));
-     }
+// Auto Mode - Hot Goal Left
+void HotGoalLeft() {
+  for(int q = 0; q < strip.numPixels(); q++){
+    strip.setPixelColor(q, strip.Color(127,0,0)); //Red
   }
+  strip.show();
 }
 
-//  int GetLEDStatus()
- //{
- //}
+// Auto Mode - Hot Goal Right
+void HotGoalRight() {
+  for(int q = 0; q < strip.numPixels(); q++){
+    strip.setPixelColor(q, strip.Color(0,127,0)); //Green
+  }
+  strip.show();
+}
+    
