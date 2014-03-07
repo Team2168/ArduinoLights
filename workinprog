@@ -73,44 +73,51 @@ void loop() {
   retValue = 0;
   //Read signals for cRIO
   Serial.println(retValue); // 0
-  delay(200);
+  //delay(200);
   
    if(digitalRead(3) == HIGH) {  
-     retValue = retValue + 1; 
-  }  
+     retValue = 1;
+    Serial.println("DIGITAL PIN 3 HIGH"); 
+    }
+    
     Serial.println(retValue);    // 0
-    delay(200);
+    //delay(200);
   
    if(digitalRead(4) == HIGH) {
-     retValue = retValue + 2;
-  }  
+     retValue = 2;
+     Serial.println("DIGITAL PIN 4 HIGH");
+    }  
     Serial.println(retValue);    // 2
-    delay(200);
+    //delay(200);
     
    if(digitalRead(5) == HIGH) {
-     retValue = retValue + 3;
-  }  
+     retValue = 3;
+     Serial.println("DIGITAL PIN 5 HIGH");
+   }  
     Serial.println(retValue);    // 2
-    delay(200);
+    //delay(200);
   
    if(digitalRead(6) == HIGH) {
-     retValue = retValue + 4;  
-  }
+     retValue = 4;  
+     Serial.println("DIGITAL PIN 6 HIGH");
+    }
    Serial.println(retValue);     // 2
-   delay(200);
+   //delay(200);
   
    if(digitalRead(7) == HIGH) {
-     retValue = retValue + 5;  
+     retValue = 5;  
+     Serial.println("DIGITAL PIN 7 HIGH");
   }
     Serial.println(retValue);    // 2
-    delay(200);
+    //delay(200);
   
    if(digitalRead(8) == HIGH) {
-     retValue = retValue + 6;  
+     retValue = 6;  
+     Serial.println("DIGITAL PIN 8 HIGH");
   }
     Serial.println(retValue);    // 2
-    delay(200);
- 
+    //delay(200);
+  
    if(digitalRead(9) == HIGH) {
      retValue = retValue + 7;  
   }
@@ -119,58 +126,52 @@ void loop() {
       
       i = 0;
       
-  if(retValue & 0x0001) {
+  if(retValue == 1) {
       EnabledRobot();
-   } 
-  Serial.println("EnabledRobot");
- delay(1000);
+      Serial.println("EnabledRobot");
+  }
+  //delay(200);
+  if(retValue == 2) {
+      DisabledRobot();
+      Serial.println("DisabledRobot");
+  }
+  //delay(200); 
  
-  if(retValue & 0x0002) {
-      DisabledRobot(); 
-    }
-  Serial.println("DisabledRobot");
-  delay(1000); 
- 
-  if(retValue & 0x0003) {
+  if(retValue == 3) {
       ShotReady(); 
-    }
-  Serial.println("ShotReady");
-  delay(1000);  
+      Serial.println("ShotReady");
+  }
+  //delay(200);  
   
-  if(retValue & 0x0004)
-    {
+  if(retValue == 4) {
       TuskRetractPosition();       // Problem
+      Serial.println("TuskRetractPosition");
     }
-  Serial.println("TuskRetractPosition");
-  delay(1000); 
+  //delay(200); 
   
-  if(retValue & 0x0005)
-    {
+  if(retValue == 5) {
       TuskIntermediatePosition();  // Problem
+      Serial.println("TuskIntermediatePosition");
     }
-  Serial.println("TuskIntermediatePosition");
-  delay(1000); 
+  //delay(200); 
   
-  if(retValue & 0x0006)
-    {
+  if(retValue == 6) {
       TuskExtendedPosition(); 
+      Serial.println("TuskExtendedPosition");
     }
-  Serial.println("TuskExtendedPosition");
-  delay(1000);   
+  //delay(200);   
   
-  if(retValue & 0x0007)
-    {
+  if(retValue == 7) {
       HotGoalLeft();
+      Serial.println("HotGoalLeft");
     }
-  Serial.println("HotGoalLeft");
-  delay(1000);  
+  //delay(200);  
   
-  if(retValue & 0x0008)
-    {
+  if(retValue == 8) {
       HotGoalRight();
+      Serial.println("HotGoalRight");
     }
-  Serial.println("HotGoalRight");
-  delay(1000);   
+  //delay(200);   
    // Serial.println("GetLEDStatus Loop");
 }
 
