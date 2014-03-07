@@ -1,13 +1,6 @@
-//Intake Strip Length 32 LEDS
 
-//Intake Side Left Length 0-7
 
-//Intake Front Left Length 8-15
-
-//Intake Front Right Length 16-23
-
-//Intake Side Right Length 24-32
-
+   
 #include "LPD8806.h"
 #include "SPI.h"
 
@@ -27,8 +20,8 @@ int IntakeSideRightPxZero = 24;
 int IntakeSideRightLength = 8;
 
 int i = 0,
-    j = 0;   
-    
+    j = 0;
+       
 LPD8806 strip(IntakeStripLength, dataPin1, clockPin);
 
 void DisabledRobot();
@@ -50,9 +43,9 @@ void setup() {
   strip.setPixelColor(q, strip.Color(0,127,0)); // green
   }
   strip.show();
-  delay(200);
-  
-  //Set digital pins 3-9 as inputs
+  delay(1000);
+   
+     //Set digital pins 3-9 as inputs
   //Note, pins 10 - 13 are in use by the SPI library. 
   pinMode(3, INPUT);
   pinMode(4, INPUT);
@@ -61,120 +54,133 @@ void setup() {
   pinMode(7, INPUT);
   pinMode(8, INPUT);
   pinMode(9, INPUT);
-
-  pinMode(13, OUTPUT); // set pin8 as Output
-  digitalWrite(13, HIGH); // write 5V to pin 8 
   
-  Serial.begin(9600);  // Serial Monitor
-} 
-
-void loop() {
-  lastretValue = retValue; 
-  retValue = 0;
-  //Read signals for cRIO
-  Serial.println(retValue); // 0
-  //delay(200);
+  pinMode(13, OUTPUT); // set pin8 as OUTPUT for testing purpose
+  digitalWrite(13, HIGH); // write 5V to PIN 8
   
-   if(digitalRead(3) == HIGH) {  
-     retValue = 1;
-    Serial.println("DIGITAL PIN 3 HIGH"); 
-    }
-    
-    Serial.println(retValue);    // 0
-    //delay(200);
-  
-   if(digitalRead(4) == HIGH) {
-     retValue = 2;
-     Serial.println("DIGITAL PIN 4 HIGH");
-    }  
-    Serial.println(retValue);    // 2
-    //delay(200);
-    
-   if(digitalRead(5) == HIGH) {
-     retValue = 3;
-     Serial.println("DIGITAL PIN 5 HIGH");
-   }  
-    Serial.println(retValue);    // 2
-    //delay(200);
-  
-   if(digitalRead(6) == HIGH) {
-     retValue = 4;  
-     Serial.println("DIGITAL PIN 6 HIGH");
-    }
-   Serial.println(retValue);     // 2
-   //delay(200);
-  
-   if(digitalRead(7) == HIGH) {
-     retValue = 5;  
-     Serial.println("DIGITAL PIN 7 HIGH");
-  }
-    Serial.println(retValue);    // 2
-    //delay(200);
-  
-   if(digitalRead(8) == HIGH) {
-     retValue = 6;  
-     Serial.println("DIGITAL PIN 8 HIGH");
-  }
-    Serial.println(retValue);    // 2
-    //delay(200);
-  
-   if(digitalRead(9) == HIGH) {
-     retValue = retValue + 7;  
-  }
-    Serial.println(retValue);    // 2
-    delay(200);
-      
-      i = 0;
-      
-  if(retValue == 1) {
-      EnabledRobot();
-      Serial.println("EnabledRobot");
-  }
-  //delay(200);
-  if(retValue == 2) {
-      DisabledRobot();
-      Serial.println("DisabledRobot");
-  }
-  //delay(200); 
- 
-  if(retValue == 3) {
-      ShotReady(); 
-      Serial.println("ShotReady");
-  }
-  //delay(200);  
-  
-  if(retValue == 4) {
-      TuskRetractPosition();       // Problem
-      Serial.println("TuskRetractPosition");
-    }
-  //delay(200); 
-  
-  if(retValue == 5) {
-      TuskIntermediatePosition();  // Problem
-      Serial.println("TuskIntermediatePosition");
-    }
-  //delay(200); 
-  
-  if(retValue == 6) {
-      TuskExtendedPosition(); 
-      Serial.println("TuskExtendedPosition");
-    }
-  //delay(200);   
-  
-  if(retValue == 7) {
-      HotGoalLeft();
-      Serial.println("HotGoalLeft");
-    }
-  //delay(200);  
-  
-  if(retValue == 8) {
-      HotGoalRight();
-      Serial.println("HotGoalRight");
-    }
-  //delay(200);   
-   // Serial.println("GetLEDStatus Loop");
+  Serial.begin(9600); // Serial Monitor
 }
 
+void loop() {
+  // COMMUNICATION PROTOCOL - BITMAP
+  // BIT(S)     Meaning
+  // ------------------------------
+  //   1        Enabled Robot 
+  //   2        Disabled Robot
+  //   4        Shot Ready
+  //   8        TuskRetractPosition
+  //   16        TuskIntermediatePosition
+  //   32       TuskExtendedPosition
+  //   64       HotGoalLeft
+  //   128       HotGoalRight
+  
+  lastretValue = retValue;
+  retValue = 0;
+  //Read signals for cRIO
+   if(digitalRead(3) == HIGH) {
+     retValue = 1;
+  }
+  //delay(200);
+    Serial.println(retValue);
+   if(digitalRead(4) == HIGH) {
+     retValue = 2;
+  }
+  //delay(200);
+    Serial.println(retValue);
+   if(digitalRead(5) == HIGH) {
+     retValue = 4;
+  }
+  //delay(200);
+    Serial.println(retValue);
+   if(digitalRead(6) == HIGH) {
+     retValue = 8;
+  }
+  //delay(200);
+    Serial.println(retValue); 
+   if(digitalRead(7) == HIGH) {
+     retValue = 16;
+  }
+  //delay(200);
+    Serial.println(retValue);
+   if(digitalRead(8) == HIGH) {
+     retValue = 32;
+  }
+  //delay(200);
+    Serial.println(retValue);
+   if(digitalRead(9) == HIGH) {
+     retValue = 64;
+  }
+  //delay(200);
+    Serial.println(retValue);
+   
+   if(digitalRead(10) == HIGH) {
+     retValue = 128;
+  }
+  //delay(200);
+    Serial.println(retValue);
+  
+  if(retValue != lastretValue) {
+   i = 0; //If new data, restart the loop
+  
+   // Check the status of the bits in from the message:
+   //EnabledRobot             = retValue & 0x0001;
+   //ShotReady                = retValue & 0x0002;
+   //TuskRetractPosition      = retValue & 0x0004;
+   //TuskIntermediatePosition = retValue & 0x0008;
+   //TuskExtendedPosition     = retValue & 0x0010;
+   //HotGoalLeft              = retValue & 0x0020;
+   //HotGoalRight             = retValue & 0x0040;
+   //===================================================
+   if(retValue & 0x0001) {
+      EnabledRobot();
+   }
+   Serial.println("EnabledRobot");              // green
+   //delay(100);
+   //===================================================
+   if(retValue & 0x0002) {
+      DisabledRobot();
+   }
+   Serial.println("DisabledRobot");               // red
+   //delay(100);
+   //===================================================
+   if(retValue & 0x0004) {   
+      ShotReady();  
+     }
+   Serial.println("ShotReady");                  // blue
+   //delay(100);
+   //===================================================
+   if(retValue & 0x0008) {   
+     TuskRetractPosition();
+     }
+   Serial.println("TuskRetractPosition");         // red
+   //delay(100);
+   //===================================================
+   if(retValue & 0x0010) {   
+     TuskIntermediatePosition();
+     }
+   Serial.println("TuskIntermediatePosition");   // blue
+   //delay(100); 
+   //===================================================
+    if(retValue & 0x0020) {   
+     TuskExtendedPosition();
+     }
+   Serial.println("TuskExtendedPosition");      // green
+   //delay(100);
+   //===================================================
+    if(retValue & 0x0040) {  
+     HotGoalLeft();
+     }
+   Serial.println("HotGoalLeft");                 // red
+   //delay(100);
+   //===================================================
+    if(retValue & 0x0080) {  
+     HotGoalRight();
+     }
+   Serial.println("HotGoalRight");              // green
+   //delay(100);
+   //===================================================
+   }
+}
 // Enabled Robot
 void EnabledRobot() {
   for(int q = 0; q < strip.numPixels(); q++){
@@ -194,7 +200,7 @@ void DisabledRobot() {
 // Shot Ready
 void ShotReady() {
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(0,127,127)); //Cyan 
+    strip.setPixelColor(q, strip.Color(0,0,127)); //Blue 
   }
   strip.show();
 }
@@ -202,7 +208,7 @@ void ShotReady() {
 // Tusks Retracted
 void TuskRetractPosition() {
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(127,0,0)); //Dark Red  // PROBLEM
+    strip.setPixelColor(q, strip.Color(127,0,0)); // Red  
   } 
   strip.show();
 }
@@ -210,7 +216,7 @@ void TuskRetractPosition() {
 // Tusks Intermediate
 void TuskIntermediatePosition() {  
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(0,0,127)); //Blue      // PROBLEM
+    strip.setPixelColor(q, strip.Color(0,0,127)); //Blue      
   }
   strip.show(); 
 } 
@@ -238,4 +244,5 @@ void HotGoalRight() {
   }
   strip.show();
 }
-    
+
+
