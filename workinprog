@@ -243,7 +243,7 @@ void ShotReady() {
  
 // LED pulsation in Red for LEDs 3 through 6 
  for (int cycle1 = 0; cycle1 < 1; cycle1++) {
-   uniformBreathe1((LED_Breathe_Table ), BREATHE_TABLE_SIZE, BREATHE_UPDATE, 256, 2, 2);
+   uniformBreathe1((LED_Breathe_Table ), BREATHE_TABLE_SIZE, BREATHE_UPDATE, 127, 2, 2);
  }
 }
 
@@ -258,16 +258,16 @@ void uniformBreathe1(uint8_t* breatheTable, uint8_t breatheTableSize, uint16_t u
      
    for (breatheIndex = 0; breatheIndex < breatheTableSize; breatheIndex++) {
      for (i=0; i < IntakeFrontRightLength; i++) {
-       breatheRed = (r * breatheTable[breatheIndex]) / 256;
-       breatheGrn = (g * breatheTable[breatheIndex]) / 256;
-       breatheBlu = (b * breatheTable[breatheIndex]) / 256;
+       breatheRed = (r * breatheTable[breatheIndex]) / 127;
+       breatheGrn = (g * breatheTable[breatheIndex]) / 127;
+       breatheBlu = (b * breatheTable[breatheIndex]) / 127;
        strip.setPixelColor(i + IntakeFrontRightPxZero, breatheRed, breatheGrn, breatheBlu);
      }
     
      for (i=0;  i < IntakeFrontLeftLength; i++) {
-       breatheRed = (r * breatheTable[breatheIndex]) / 256;
-       breatheGrn = (g * breatheTable[breatheIndex]) / 256;
-       breatheBlu = (b * breatheTable[breatheIndex]) / 256;
+       breatheRed = (r * breatheTable[breatheIndex]) / 127;
+       breatheGrn = (g * breatheTable[breatheIndex]) / 127;
+       breatheBlu = (b * breatheTable[breatheIndex]) / 127;
        strip.setPixelColor(i + IntakeFrontLeftPxZero, breatheRed, breatheGrn, breatheBlu);
      }
      strip.show();   // write all the pixels out
@@ -279,16 +279,16 @@ void uniformBreathe1(uint8_t* breatheTable, uint8_t breatheTableSize, uint16_t u
 //======================================================//
 void TuskRetractPosition() {
  for(int x = 0; x < IntakeSideLeftLength; x++) {
-   strip.setPixelColor(x + IntakeSideLeftPxZero, strip.Color(255,255,0));  
+   strip.setPixelColor(x + IntakeSideLeftPxZero, strip.Color(126,126,0));  
  }
 // Right Side of Intake Arm in 
  for(int x = 0; x < IntakeSideRightLength; x++) {
-   strip.setPixelColor(x + IntakeSideRightPxZero, strip.Color(255,255,0)); 
+   strip.setPixelColor(x + IntakeSideRightPxZero, strip.Color(126,126,0)); 
  }
  
 // LED pulsation in Red for LEDs 3 through 6 
  for (int cycle1 = 0; cycle1 < 1; cycle1++) {
-   uniformBreathe2((LED_Breathe_Table ), BREATHE_TABLE_SIZE, BREATHE_UPDATE, 0, 76, 153);
+   uniformBreathe2((LED_Breathe_Table ), BREATHE_TABLE_SIZE, BREATHE_UPDATE, 0, 38,76 );
  }
 }
 
@@ -303,16 +303,16 @@ void uniformBreathe2(uint8_t* breatheTable, uint8_t breatheTableSize, uint16_t u
      
    for (breatheIndex = 0; breatheIndex < breatheTableSize; breatheIndex++) {
      for (i=0; i < IntakeFrontRightLength; i++) {
-       breatheRed = (r * breatheTable[breatheIndex]) / 256;
-       breatheGrn = (g * breatheTable[breatheIndex]) / 256;
-       breatheBlu = (b * breatheTable[breatheIndex]) / 256;
+       breatheRed = (r * breatheTable[breatheIndex]) / 127;
+       breatheGrn = (g * breatheTable[breatheIndex]) / 127;
+       breatheBlu = (b * breatheTable[breatheIndex]) / 127;
        strip.setPixelColor(i + IntakeFrontRightPxZero, breatheRed, breatheGrn, breatheBlu);
      }
     
      for (i=0;  i < IntakeFrontLeftLength; i++) {
-       breatheRed = (r * breatheTable[breatheIndex]) / 256;
-       breatheGrn = (g * breatheTable[breatheIndex]) / 256;
-       breatheBlu = (b * breatheTable[breatheIndex]) / 256;
+       breatheRed = (r * breatheTable[breatheIndex]) / 127;
+       breatheGrn = (g * breatheTable[breatheIndex]) / 127;
+       breatheBlu = (b * breatheTable[breatheIndex]) / 127;
        strip.setPixelColor(i + IntakeFrontLeftPxZero, breatheRed, breatheGrn, breatheBlu);
      }
      strip.show();   // write all the pixels out
@@ -323,11 +323,11 @@ void uniformBreathe2(uint8_t* breatheTable, uint8_t breatheTableSize, uint16_t u
 /*
 void TuskRetractPosition() {
   for(int q = 0; q < strip.numPixels(); q++){
-   strip.setPixelColor(q, strip.Color(229,255,255)); 
+   strip.setPixelColor(q, strip.Color(120,126,126)); 
    }
  
   for(int q = 0; q < IntakeFrontLength; q++) {
-   strip.setPixelColor(q + IntakeSideLeftPxZero, strip.Color(229,255,255));
+   strip.setPixelColor(q + IntakeSideLeftPxZero, strip.Color(120,126,126));
    }
  */ 
  int cycle1;
@@ -380,18 +380,18 @@ void HotGoalRight() {
    for (breatheIndex = 0; breatheIndex < breatheTableSize; breatheIndex++) {
      for (i=0; i < IntakeSideLeftLength; i++) {
        sequenceIndex = (breatheIndex + (i*4)) % breatheTableSize;
-       breatheRed = (r * breatheTable[sequenceIndex]) / 256;
-       breatheGrn = (g * breatheTable[sequenceIndex]) / 256;
-       breatheBlu = (b * breatheTable[sequenceIndex]) / 256;
+       breatheRed = (r * breatheTable[sequenceIndex]) / 127;
+       breatheGrn = (g * breatheTable[sequenceIndex]) / 127;
+       breatheBlu = (b * breatheTable[sequenceIndex]) / 127;
        strip.setPixelColor(i + IntakeSideLeftPxZero, breatheRed, breatheGrn, breatheBlu);
      }
      strip.show(); 
 
      for (i=0; i < IntakeSideLeftLength; i++) {
        sequenceIndex = (breatheIndex + (i*4)) % breatheTableSize;
-       breatheRed = (r * breatheTable[sequenceIndex]) / 256;
-       breatheGrn = (g * breatheTable[sequenceIndex]) / 256;
-       breatheBlu = (b * breatheTable[sequenceIndex]) / 256;
+       breatheRed = (r * breatheTable[sequenceIndex]) / 127;
+       breatheGrn = (g * breatheTable[sequenceIndex]) / 127;
+       breatheBlu = (b * breatheTable[sequenceIndex]) / 127;
        strip.setPixelColor(i + IntakeSideLeftPxZero, breatheRed, breatheGrn, breatheBlu);
      }
      strip.show();
