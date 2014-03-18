@@ -157,8 +157,8 @@ void loop() {
    //TuskRetractPosition      = retValue & 0x0004;
    //TuskIntermediatePosition = retValue & 0x0008;
    //TuskExtendedPosition     = retValue & 0x0010;
-   //HotGoalLeft              = retValue & 0x0020;
-   //HotGoalRight             = retValue & 0x0040;
+   //HotGoalLeft              = retValue & 0x0040;
+   //HotGoalRight             = retValue & 0x0080;
    //===================================================
    if(retValue & 0x0001) { 
       EnabledRobot();
@@ -344,7 +344,7 @@ void TuskExtendedPosition() {
 //======================================================// 
 void HotGoalLeft() {
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(127,0,0)); //Red
+    strip.setPixelColor(q, strip.Color(0,0,127)); //blue
   }
 }
 
