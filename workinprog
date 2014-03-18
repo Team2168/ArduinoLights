@@ -42,7 +42,7 @@ int lastretValue = 0;
     {  101, 105, 110, 114, 118, 121, 123, 125, 127, 127, 127, 127, 125, 123,121 , 118,
        114, 110, 105, 101,96 , 91, 86, 80, 75, 70, 65, 60, 56, 51, 47 ,43 ,  
        40, 36 ,  33, 30, 27 ,  25,  22,  20,  19, 17 ,  15,  14,  13,  12,  11,  10,  
-       10,  10,  10, 10,  10,  10,  10,  10,  10   };
+       10,  10,  10, 10,  10,  10,  0,  20,  20   };
 
     #define BREATHE_TABLE_SIZE (sizeof(LED_Breathe_Table))
     #define BREATHE_CYCLE    700   /*breathe cycle in milliseconds*/
@@ -97,7 +97,6 @@ void loop() {
   // BIT(S)     Meaning
   // ------------------------------
   //   1        Enabled Robot 
-  //   2        Disabled Robot
   //   4        Shot Ready
   //   8        TuskRetractPosition
   //   16        TuskIntermediatePosition
@@ -114,12 +113,7 @@ void loop() {
        DisabledRobot();
           }
    
-  //delay(200);
-    Serial.println(retValue);
-    
-   if(digitalRead(4) == HIGH) { // if 4 is high, return value is 2 (0010)
-     retValue = retValue + 2;
-  }
+  
   //delay(200);
     Serial.println(retValue);
    if(digitalRead(5) == HIGH) { // if 5 is high, return value is 4 (0100)
@@ -168,12 +162,7 @@ void loop() {
    //===================================================
    if(retValue & 0x0001) { 
       EnabledRobot();
-      Serial.println("EnabledRobot");
-   }
-   //===================================================
-   if(retValue & 0x0002) {
-      DisabledRobot();
-      Serial.println("DisabledRobot");              
+      Serial.println("EnabledRobot");          
    }
    //===================================================
    if(retValue & 0x0004) {   
