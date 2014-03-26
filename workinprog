@@ -1,6 +1,4 @@
 
-
-   
 #include "LPD8806.h"
 #include "SPI.h"
 
@@ -8,29 +6,30 @@ int clockPin = 2;
 int dataPin1 = 11;
 
 //Strip Length Data
-int IntakeStripLength = 32;
-int IntakeSideLeftPxZero = 0;    // 0
-int IntakeSideLeftLength = 2;    // 8
-int IntakeFrontLeftPxZero = 2;   // 9
-int IntakeFrontLeftLength = 2;   // 8
-int IntakeFrontRightPxZero = 4;  // 17 
-int IntakeFrontRightLength = 2;  // 8
-int IntakeSideRightPxZero = 6;   // 24
-int IntakeSideRightLength = 2;   // 8 
+int IntakeStripLength       = 8;
+int IntakeSideLeftPxZero    = 0;    // 0
+int IntakeSideLeftLength    = 2;    // 8
+int IntakeFrontLeftPxZero   = 2;   // 9
+int IntakeFrontLeftLength   = 2;   // 8
+int IntakeFrontRightPxZero  = 4;  // 17 
+int IntakeFrontRightLength  = 2;  // 8
+int IntakeSideRightPxZero   = 6;   // 24
+int IntakeSideRightLength   = 2;   // 8 
 
 int i = 0,
     j = 0;
        
 LPD8806 strip(IntakeStripLength, dataPin1, clockPin);
 
-void DisabledRobot();
-void EnabledRobot();
-void ShotReady();
+//void EnabledRobot();
+//void ShotReady();
 void TuskRetractPosition();
 void TuskIntermediatePosition();
 void TuskExtendedPosition();
 void HotGoalLeft();
 void HotGoalRight();
+void UnknownTarget();
+void DisabledRobot();
 
 int retValue = 0;
 int lastretValue = 0;
@@ -69,19 +68,19 @@ void setup() {
   
   // switched from inputs to outputs for testing purposes
   // Change INPUT to OUTPUT to test different pinModes
-  //Set digital pins 3-9 as inputs
-  //Note, pins 10 - 13 are in use by the SPI library. 
-  pinMode(3, OUTPUT); // Robot Enabled/ Disabled
-  pinMode(4, INPUT); // Tusk Retract
-  pinMode(5, OUTPUT); // Tusk Intermediate 
-  pinMode(6, OUTPUT);  // Tusk Extended
-  pinMode(7, OUTPUT); 
-  pinMode(8, OUTPUT);
-  pinMode(9, OUTPUT);
+  // Set digital pins 3-9 as inputs
+  // Note, pins 10 - 13 are in use by the SPI library. 
+  pinMode(3, INPUT); 
+  pinMode(4, INPUT); 
+  pinMode(5, INPUT);  
+  pinMode(6, INPUT);  
+  //pinMode(7, INPUT); 
+  //pinMode(8, INPUT);
+  //pinMode(9, INPUT);
   
   // for testing purpose
-  pinMode(13, OUTPUT); // set pin13 as OUTPUT 
-  digitalWrite(13, HIGH); // write 5V to PIN 8
+  // pinMode(13, OUTPUT); // set pin13 as OUTPUT 
+  //digitalWrite(13, HIGH); // write 5V to PIN 8
   //digitalWrite(3, LOW);
   //digitalWrite(4, LOW);
   //digitalWrite(5, HIGH);
@@ -90,30 +89,37 @@ void setup() {
   //digitalWrite(8, LOW);
   //digitalWrite(9, LOW);  
   
-  Serial.begin(9600); // Serial Monitor
+   Serial.begin(9600); // Serial Monitor
 }
 
 void loop() {
-  // COMMUNICATION PROTOCOL - BITMAP
-  // BIT(S)     Meaning
-  // ------------------------------
-  //   1        Enabled Robot            // xxx1
-  //   2        Disabled Robot           // xxx0
-  //   4        Shot Ready               // 
-  //   8        TuskRetractPosition      // x01x
-  //   16       TuskIntermediatePosition // x10x
-  //   32       TuskExtendedPosition     // x11x
-  //   64       HotGoalLeft              // 1xxx
-  //   128       HotGoalRight            // 0xxx
-  //lastretValue = retValue;
+  
+  //=======================================
+  //          AUTO MODE               Bits
+  //=======================================            
+  //          HotGoalLeft           // xx01
+  //          HotGoalRight          // xx10
+  //          UnknownTarget         // xx11
+  //---------------------------------------
+  //          Not in Auto**         // xx00 check teleop
+  //======================================= 
+  //          TELEOP MODE             Bits
+  //=======================================
+  //          Off                   // 0000 
+  //          TuskExtendedPosition  // 1000
+  //          TuskIntermediate      // 0100
+  //          TuskRetractPosition   // 1100
+  //======================================= 
+  //                 PIN MAP
+  //     TELEOP ->  X X | X X  <- AUTO
+  //       PINS ->  6 5   4 3
+  //=======================================
+  
   retValue = 0;
   //Read signals for cRIO
    if(digitalRead(3) == HIGH) { // if 3 is high, return value is 1 (0001)
      retValue = retValue + 1;
    }
-     else {
-       DisabledRobot();
-          }
   //delay(200);
     Serial.println(retValue);  
    if(digitalRead(4) == HIGH) { // if 4 is high, return value is 2 (0010)
@@ -127,111 +133,52 @@ void loop() {
   //delay(200);
     Serial.println(retValue);
    if(digitalRead(6) == HIGH) { // if 6 is high, return value is 8 (1000)
-     retValue = retValue + 6;
-  }
-  //delay(200);
-    Serial.println(retValue); 
-   if(digitalRead(7) == HIGH) { // if 7 is high, return value is 16 (00010000)
      retValue = retValue + 8;
   }
-  //delay(200);
-    Serial.println(retValue);
-   if(digitalRead(8) == HIGH) { // if 8 is high, return value is 32 (00100000)
-     retValue = retValue + 7; 
-  }
-  //delay(200);
-    Serial.println(retValue);
-   if(digitalRead(9) == HIGH) { // if 9 is high, return value is 64 (01000000)
-     retValue = retValue + 8; 
-  }
-  //delay(200);
-    Serial.println(retValue);
-   
-   if(digitalRead(10) == HIGH) { // if 10 is high, return value is 128 (10000000)
-     retValue = retValue + 128;
-  }
-  //delay(200);
-    Serial.println(retValue);
   
-  //if(retValue != lastretValue) {
    i = 0; //If new data, restart the loop
   
-   // Check the status of the bits in from the message:
-   //EnabledRobot             = retValue & 0x0001;
-   //ShotReady                = retValue & 0x0002;
-   //TuskRetractPosition      = retValue & 0x0004;
-   //TuskIntermediatePosition = retValue & 0x0008;
-   //TuskExtendedPosition     = retValue & 0x0010;
-   //HotGoalLeft              = retValue & 0x0020;
-   //HotGoalRight             = retValue & 0x0040;
-   //===================================================
-   if(retValue & 0x0001) { 
-      EnabledRobot();
-      Serial.println("EnabledRobot");
+   if(retValue & 0x0001) {            
+      HotGoalLeft();                        // HotGoalLeft 
+      Serial.println("HotGoalLeft");
    }
    //===================================================
-   if(retValue & 0x0000) {
-      DisabledRobot();
-      Serial.println("DisabledRobot");              
+   else if(retValue & 0x0002) {             // HotGoalRight
+      HotGoalRight();
+      Serial.println("HotGoalRight");              
    }
    //===================================================
-   /* if(retValue & 0000) { 
-      ShotReady();  
-      Serial.println("ShotReady");                   
+   else if(retValue & 0x0003) {             // UnknownTarget
+      UnknownTarget();
+      Serial.println("UnknownTarget");         
    }
-   */
-   //===================================================
-   if(retValue & 0x0002) {   //2
+   //=================================================== 
+   else if((retValue & 0x000C) == 0x000C) { // TuskRetractPosition
       TuskRetractPosition();
-      Serial.println("TuskRetractPosition");         
+      Serial.println("TuskRetractPosition");    
    }
    //===================================================
-   if(retValue & 0x0004) {   //4
+   else if(retValue & 0x0004) {             // TuskIntermediatePosition
       TuskIntermediatePosition();
       Serial.println("TuskIntermediatePosition");    
- }
-   //===================================================
-   if(retValue & 0x0006) {   //6
-       TuskExtendedPosition();
-       Serial.println("TuskExtendedPosition");      
    }
    //===================================================
-   if(retValue & 0x0010) {  
-       HotGoalLeft();
-       Serial.println("HotGoalLeft");                 
+   else if(retValue & 0x0008) {             // TuskExtendedPosition
+      TuskExtendedPosition();
+      Serial.println("TuskExtendedPosition");    
    }
-   //===================================================
-   if(retValue & 0x0011) {  
-       HotGoalRight();
-       Serial.println("HotGoalRight");               
+   else 
+   {
+      DisabledRobot();
+      Serial.println("DisabledRobot"); 
    }
-   //===================================================
+   strip.show();
+  }
   
-
-}
-//======================================================//
-// Enabled Robot
-//======================================================//
-void EnabledRobot() {
-  for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(0,127,0)); //Green
-  }
-  strip.show();
-}
-
-//======================================================//
-// Disabled Robot
-//======================================================//
-void DisabledRobot() {
-  for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(127,0,0)); //Red
-  }
-  strip.show();  
-}
 //======================================================//
 // Shot Ready
 //======================================================//
-void ShotReady() {
+/*void ShotReady() {
 // Left Side of Intake Arm in solid blue 
  for(int q = 0; q < IntakeSideLeftLength; q++){
    strip.setPixelColor(q + IntakeSideLeftPxZero, strip.Color(0,0,127));  
@@ -243,7 +190,7 @@ void ShotReady() {
  
 // LED pulsation in Red for LEDs 3 through 6 
  for (int cycle1 = 0; cycle1 < 1; cycle1++) {
-   uniformBreathe1((LED_Breathe_Table ), BREATHE_TABLE_SIZE, BREATHE_UPDATE, 256, 2, 2);
+   uniformBreathe1((LED_Breathe_Table ), BREATHE_TABLE_SIZE, BREATHE_UPDATE, 127, 2, 2);
  }
 }
 
@@ -274,101 +221,66 @@ void uniformBreathe1(uint8_t* breatheTable, uint8_t breatheTableSize, uint16_t u
      delay(updatePeriod);    
   }
  }
+ */
 //======================================================//
 // Tusk Retracted
 //======================================================//
 void TuskRetractPosition() {
- for(int x = 0; x < IntakeSideLeftLength; x++) {
-   strip.setPixelColor(x + IntakeSideLeftPxZero, strip.Color(175,238,238)); // pale turquoise
- }
-// Right Side of Intake Arm in 
- for(int x = 0; x < IntakeSideRightLength; x++) {
-   strip.setPixelColor(x + IntakeSideRightPxZero, strip.Color(175,238,238)); // pale turquoise
- }
- 
-// LED pulsation in Red for LEDs 3 through 6 
- for (int cycle1 = 0; cycle1 < 1; cycle1++) {
-   uniformBreathe2((LED_Breathe_Table ), BREATHE_TABLE_SIZE, BREATHE_UPDATE, 127, 5, 3); // 76, 1533
- }
-}
-
-// Breathing Segment for IntakeFrontRight and IntakeFrontLeft pulsation  
-void uniformBreathe2(uint8_t* breatheTable, uint8_t breatheTableSize, uint16_t updatePeriod, uint16_t r, uint16_t g, uint16_t b)
- {
-   int i;
-   uint8_t breatheIndex = 0;
-   uint8_t breatheRed;
-   uint8_t breatheGrn;
-   uint8_t breatheBlu;
-     
-   for (breatheIndex = 0; breatheIndex < breatheTableSize; breatheIndex++) {
-     for (i=0; i < IntakeFrontRightLength; i++) {
-       breatheRed = (r * breatheTable[breatheIndex]) / 256;
-       breatheGrn = (g * breatheTable[breatheIndex]) / 256;
-       breatheBlu = (b * breatheTable[breatheIndex]) / 256;
-       strip.setPixelColor(i + IntakeFrontRightPxZero, breatheRed, breatheGrn, breatheBlu);
-     }
-    
-     for (i=0;  i < IntakeFrontLeftLength; i++) {
-       breatheRed = (r * breatheTable[breatheIndex]) / 256;
-       breatheGrn = (g * breatheTable[breatheIndex]) / 256;
-       breatheBlu = (b * breatheTable[breatheIndex]) / 256;
-       strip.setPixelColor(i + IntakeFrontLeftPxZero, breatheRed, breatheGrn, breatheBlu);
-     }
-     strip.show();   // write all the pixels out
-     delay(updatePeriod);   
-   }
- }
-
-/*
-void TuskRetractPosition() {
-  for(int q = 0; q < strip.numPixels(); q++){
-   strip.setPixelColor(q, strip.Color(229,255,255)); 
-   }
- 
-  for(int q = 0; q < IntakeFrontLength; q++) {
-   strip.setPixelColor(q + IntakeSideLeftPxZero, strip.Color(229,255,255));
-   }
- */ 
- int cycle1;
-     
+  for(int x = 0; x < strip.numPixels(); x++) {
+   strip.setPixelColor(x, strip.Color(0,0,127));        // Blue
+  }
+}   
 //======================================================//
-// Tusk Intermediate
+// Tusk Intermediate Position
 //======================================================//
 void TuskIntermediatePosition() {  
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(0,206,209)); // dark turquoise    
+    strip.setPixelColor(q, strip.Color(127,127,0));     // Yellow    
   } 
 } 
-
 //======================================================//
-// Tusk Extended
+// Tusk Extended Position
 //======================================================//
 void TuskExtendedPosition() {
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(47,79,79)); // dark slate
+    strip.setPixelColor(q, strip.Color(127,0,0));       // Red
   }
 }
-
 //======================================================//
 // Auto Mode - Hot Goal Left
 //======================================================// 
 void HotGoalLeft() {
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(127,0,0)); //Red
+    strip.setPixelColor(q, strip.Color(0,127,0));       // Green
   }
 }
-
 //======================================================//
 // Auto Mode - Hot Goal Right
 //======================================================// 
 void HotGoalRight() {
   for(int q = 0; q < strip.numPixels(); q++){
-    strip.setPixelColor(q, strip.Color(0,127,0)); //Green
+    strip.setPixelColor(q, strip.Color(127,0,0));       // Red
   }
 }
-
+//======================================================//
+// Auto Mode - Unknown Hot Goal Target
+//======================================================//
+void UnknownTarget() {
+  for(int q = 0; q < strip.numPixels(); q++) {
+    strip.setPixelColor(q, strip.Color(127,60,0));      // Orange
+  }
+}
+//======================================================//
+// Disabled Robot
+//======================================================//
+void DisabledRobot() {
+  for(int q = 0; q < strip.numPixels(); q++){
+    strip.setPixelColor(q, strip.Color(0,0,0));         // Off
+  }  
+}
 //======================================================// 
+
+/* 
  void sequencedBreathe(uint8_t* breatheTable, uint8_t breatheTableSize, uint16_t updatePeriod, uint16_t r, uint16_t g, uint16_t b)
  {
    int i;
@@ -400,4 +312,5 @@ void HotGoalRight() {
      delay(updatePeriod);
    }
  }
+ 
 //*****************************************************************************/
