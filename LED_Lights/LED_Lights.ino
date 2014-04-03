@@ -1,16 +1,25 @@
 #include <SPI.h>
 #include <LPD8806.h>
 
-int clockPin = 2;
-int dataPin1 = 11;
+// Wiring
+int inputPin1 = 2;
+int inputPin2 = 3;
+int inputPin3 = 4;
+int inputPin4 = 5;
 
 //Strip Length Data
 int IntakeStripLength = 18;
 
 int i = 0,
     j = 0;
-       
-LPD8806 strip(IntakeStripLength, dataPin1, clockPin);
+
+//Set strip to use SPI. On an UNO pin 11 is MISO and 13 is SCK.
+//Standard ICSP Pinout is as follows:
+// 1 - MISO  |o|o| +Vcc - 2
+// 3 - SCK   |o|o| MOSI - 4
+// 5 - Reset |o|o| GND  - 6
+//           ICSP
+LPD8806 strip(IntakeStripLength);
 
 void TuskRetractPosition();
 void TuskIntermediatePosition();
@@ -24,30 +33,24 @@ int retValue = 0;
 int lastretValue = 0;
     
 void setup() {
-
   strip.begin();
   
+  //light all pixels on the strip to verify they're working
   for(int q = 0; q < strip.numPixels(); q++) {
-    strip.setPixelColor(q, strip.Color(0,127,0)); // green
+    strip.setPixelColor(q, strip.Color(70,70,70));
   }
   strip.show();
-  delay(1000);
+  delay(1500);
    
-   //Turn the LEDs back off
-  for(int q = 0; q < strip.numPixels(); q++) {
-    strip.setPixelColor(q, strip.Color(0,0,0));
-  }
+  //Turn the LEDs back off
+  TurnOffLights();
   strip.show();
-  
-  
-  // switched from inputs to outputs for testing purposes
-  // Change INPUT to OUTPUT to test different pinModes
-  // Set digital pins 3-9 as inputs
+
   // Note, pins 10 - 13 are in use by the SPI library. 
-  pinMode(3, INPUT); 
-  pinMode(4, INPUT); 
-  pinMode(5, INPUT);  
-  pinMode(6, INPUT);  
+  pinMode(inputPin1, INPUT); 
+  pinMode(inputPin2, INPUT); 
+  pinMode(inputPin3, INPUT);  
+  pinMode(inputPin4, INPUT);  
 
   Serial.begin(9600); // Serial Monitor
 }
@@ -71,24 +74,24 @@ void loop() {
   //======================================= 
   //                 PIN MAP
   //     TELEOP ->  X X | X X  <- AUTO
-  //       PINS ->  6 5   4 3
+  // INPUT PINS ->  4 3   2 1
   //=======================================
   
   retValue = 0;
   //Read signals for cRIO
-  if(digitalRead(3) == HIGH) { // if 3 is high, return value is 1 (0001)
+  if(digitalRead(inputPin1) == HIGH) { // if pin is high, return value is 1 (0001)
      retValue = retValue + 1;
   }
   
-  if(digitalRead(4) == HIGH) { // if 4 is high, return value is 2 (0010)
+  if(digitalRead(inputPin2) == HIGH) { // if pin is high, return value is 2 (0010)
      retValue = retValue + 2;
   }
 
-  if(digitalRead(5) == HIGH) { // if 5 is high, return value is 4 (0100)
+  if(digitalRead(inputPin3) == HIGH) { // if pin is high, return value is 4 (0100)
      retValue = retValue + 4;
   }
   
-  if(digitalRead(6) == HIGH) { // if 6 is high, return value is 8 (1000)
+  if(digitalRead(inputPin4) == HIGH) { // if pin is high, return value is 8 (1000)
      retValue = retValue + 8;
   }
   
