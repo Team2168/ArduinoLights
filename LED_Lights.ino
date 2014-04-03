@@ -252,7 +252,7 @@ void TuskExtendedPosition() {
 //======================================================// 
 void HotGoalLeft() {
   for(int q = 0; q < (strip.numPixels())/2; q++){
-    strip.setPixelColor(q, strip.Color(0,127,0));       // Green
+    strip.setPixelColor(q, strip.Color(127,0,0));       // red
   }
   for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
     strip.setPixelColor(q, strip.Color(0,0,0)); 
@@ -263,10 +263,10 @@ void HotGoalLeft() {
 //======================================================// 
 void HotGoalRight() {
     for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
-    strip.setPixelColor(q, strip.Color(127,0,0)); 
+    strip.setPixelColor(q, strip.Color(0,127,0)); 
     }
   for(int q = 0; q < strip.numPixels()/2; q++){
-    strip.setPixelColor(q, strip.Color(0,0,0));       // Red
+    strip.setPixelColor(q, strip.Color(0,0,0));       // green
   }
 }
 //======================================================//
