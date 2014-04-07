@@ -13,7 +13,7 @@ int IntakeStripLength = 18;
 int i = 0,
     j = 0;
 
-//Set strip to use SPI. On an UNO pin 11 is MISO and 13 is SCK.
+//Set strip to use SPI. On an UNO pin 11 is MOSI and 13 is SCK.
 //Standard ICSP Pinout is as follows:
 // 1 - MISO  |o|o| +Vcc - 2
 // 3 - SCK   |o|o| MOSI - 4
