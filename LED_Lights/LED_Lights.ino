@@ -1,8 +1,7 @@
-
 #include <SPI.h>
 #include <LPD8806.h>
 
-// Wiring
+// Wiring (signals from cRIO)
 int inputPin1 = 2;
 int inputPin2 = 3;
 int inputPin3 = 4;
@@ -14,20 +13,18 @@ int IntakeStripLength = 18;
 int i = 0,
     j = 0;
 
-//Set strip to use SPI. On an UNO pin 11 is MOSI and 13 is SCK.
-//Standard ICSP Pinout is as follows:
-// 1 - MISO  |o|o| +Vcc - 2
-// 3 - SCK   |o|o| MOSI - 4
-// 5 - Reset |o|o| GND  - 6
-//           ICSP
-LPD8806 strip(IntakeStripLength,9,10);
+//Strip communication pins.
+int dataPin = 9;
+int clockPin = 10;
+
+LPD8806 strip(IntakeStripLength, dataPin, clockPin);
 
 void HotGoalUnknown2Go();
 void HotGoalUnknown2Clear();
 void HotGoalLeft2BallGo();
 void HotGoalLeft2BallClear();
 void HotGoalRight2BallGo();
-void HotGoalRight2BallClear();
+void HotGoalRight2BallClear();T
 void TuskRetractPosition();
 void TuskIntermediatePosition();
 void TuskExtendedPosition();
@@ -236,7 +233,7 @@ void TurnOffLights() {
 // HotGoalLeft2Ball
 //======================================================//
 void HotGoalLeft2BallGo() {
-   //Set left half of strip red
+   //Set left half of strip green
   for(int q = 0; q < (strip.numPixels())/2; q++){
     strip.setPixelColor(q, strip.Color(0,127,0));
   }
@@ -261,7 +258,7 @@ void HotGoalLeft2BallClear() {
 // HotGoalRight2Ball
 //======================================================//
 void HotGoalRight2BallGo() {
- //Set the right half of the strip green.
+  //Set the right half of the strip red.
   for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
     strip.setPixelColor(q, strip.Color(127,0,0)); 
   }
@@ -272,7 +269,6 @@ void HotGoalRight2BallGo() {
 }
 
 void HotGoalRight2BallClear() {
- //Set the right half of the strip green.
   for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
     strip.setPixelColor(q, strip.Color(0,0,0)); 
   }
