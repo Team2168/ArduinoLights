@@ -1,5 +1,4 @@
 
-
 #include <SPI.h>
 #include <LPD8806.h>
 
@@ -10,7 +9,7 @@ int inputPin3 = 4;
 int inputPin4 = 5;
 
 //Strip Length Data
-int IntakeStripLength = 8;
+int IntakeStripLength = 18;
 
 int i = 0,
     j = 0;
