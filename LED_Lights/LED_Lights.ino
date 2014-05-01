@@ -24,7 +24,7 @@ void HotGoalUnknown2Clear();
 void HotGoalLeft2BallGo();
 void HotGoalLeft2BallClear();
 void HotGoalRight2BallGo();
-void HotGoalRight2BallClear();T
+void HotGoalRight2BallClear();
 void TuskRetractPosition();
 void TuskIntermediatePosition();
 void TuskExtendedPosition();
