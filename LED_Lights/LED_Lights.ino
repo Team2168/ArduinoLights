@@ -44,7 +44,7 @@ void setup() {
     strip.setPixelColor(q, strip.Color(70,70,70));
   }
   strip.show();
-  delay(1500);
+  delay(500);
    
   //Turn the LEDs back off
   TurnOffLights();
@@ -60,49 +60,50 @@ void setup() {
 }
 
 void loop() {
-  Serial.write("main loop\n");
+  
   //=======================================
-  //          AUTO MODE               Bits
+  //  Hex        AUTO MODE               Bits#
+  // Values                             3,2,1,0
   //=======================================            
-  //          HotGoalLeft           // xx01
-  //          HotGoalRight          // xx10
-  //          UnknownTarget         // xx11
-  //---------------------------------------
-  //          Not in Auto**         // xx00 check teleop
+  //  1       HotGoalLeft           // 0 0 0 1
+  //  5       HotGoalLeft2Ball      // 0 1 0 1
+  //  2       HotGoalRight          // 0 0 1 0
+  //  6       HotGoalRight2Ball     // 0 1 1 0
+  //  3       UnknownTarget         // 0 0 1 1
+  //  7       UnknownTarget2Ball    // 0 1 1 1
   //======================================= 
   //          TELEOP MODE             Bits
   //=======================================
-  //          Off                   // 0000 
-  //          TuskExtendedPosition  // 1000
-  //          TuskIntermediate      // 0100
-  //          TuskRetractPosition   // 1100
+  //  0       Off                   // 0 0 0 0 
+  //  8       TuskExtendedPosition  // 1 0 0 0  
+  //  4       TuskIntermediate      // 0 1 0 0
+  //  C       TuskRetractPosition   // 1 1 0 0
   //======================================= 
   //                 PIN MAP
-  //     TELEOP ->  X X | X X  <- AUTO
-  // INPUT PINS ->  4 3   2 1
+  //       Bits ->  3 2 1 0
+  // INPUT PINS ->  4 3 2 1
   //=======================================
   
   retValue = 0;
   //Read signals for cRIO
   if(digitalRead(inputPin1) == HIGH) { // if pin is high, return value is 1 (0001)
      retValue = retValue + 1;
-     Serial.println("pin 0 on");
+     
   }
   
   if(digitalRead(inputPin2) == HIGH) { // if pin is high, return value is 2 (0010)
      retValue = retValue + 2;
-     Serial.println("pin 1 on");
+     
   }
 
   if(digitalRead(inputPin3) == HIGH) { // if pin is high, return value is 4 (0100)
      retValue = retValue + 4;
-     Serial.println("pin 2 on");
+     
   }
   
   if(digitalRead(inputPin4) == HIGH) { // if pin is high, return value is 8 (1000)
      retValue = retValue + 8;
-     Serial.println("pin 3 on");
-     Serial.println(retValue);
+    
   }
   
   i = 0; //If new data, restart the loop
@@ -292,5 +293,4 @@ void HotGoalUnknown2Clear() {
     strip.setPixelColor(q, strip.Color(0,0,0)); // Orange
   }  
 }
-
 
