@@ -19,12 +19,7 @@ int clockPin = 10;
 
 LPD8806 strip(IntakeStripLength, dataPin, clockPin);
 
-void HotGoalUnknown2Go();
-void HotGoalUnknown2Clear();
-void HotGoalLeft2BallGo();
-void HotGoalLeft2BallClear();
-void HotGoalRight2BallGo();
-void HotGoalRight2BallClear();
+
 void TuskRetractPosition();
 void TuskIntermediatePosition();
 void TuskExtendedPosition();
@@ -114,19 +109,19 @@ void loop() {
   if(retValue == 2) {            // HotGoalRight
     HotGoalRight();
   }
-  if(retValue == 6) {
-    HotGoalRight2BallGo();
+  if(retValue == 6) {   //HotGoalRight2ball
+    HotGoalRight();
     strip.show();
     delay(100);
-    HotGoalRight2BallClear();
+    TurnOffLights();
     strip.show();
     delay(100);
   }
-  if(retValue == 5) {
-    HotGoalLeft2BallGo();
+  if(retValue == 5) {   //HotGoalLeft2ball
+    HotGoalLeft();
     strip.show();
     delay(100);
-    HotGoalLeft2BallClear();
+    TurnOffLights();
     strip.show();
     delay(100);
   }
@@ -145,11 +140,11 @@ void loop() {
   if(retValue == 0) {
     TurnOffLights(); 
   }
-  if(retValue == 7) {
-    HotGoalUnknown2Go();
+  if(retValue == 7) {   // UnkownTarget2Ball
+    UnknownTarget();
     strip.show();
     delay(100);
-    HotGoalUnknown2Clear();
+    TurnOffLights();
     strip.show();
     delay(100);  
   }
@@ -230,67 +225,3 @@ void TurnOffLights() {
     strip.setPixelColor(q, strip.Color(0,0,0)); // Off
   }  
 }
-//======================================================//
-// HotGoalLeft2Ball
-//======================================================//
-void HotGoalLeft2BallGo() {
-   //Set left half of strip green
-  for(int q = 0; q < (strip.numPixels())/2; q++){
-    strip.setPixelColor(q, strip.Color(0,127,0));
-  }
-  //Turn off the right half
-  for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
-    strip.setPixelColor(q, strip.Color(0,0,0)); 
-  }  
-}
-
-void HotGoalLeft2BallClear() {
-  for(int q = 0; q < (strip.numPixels())/2; q++){
-    strip.setPixelColor(q, strip.Color(0,0,0));
-  }
-  //Turn off the right half
-  for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
-    strip.setPixelColor(q, strip.Color(0,0,0)); 
-  }
-}
-
-
-//======================================================//
-// HotGoalRight2Ball
-//======================================================//
-void HotGoalRight2BallGo() {
-  //Set the right half of the strip red.
-  for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
-    strip.setPixelColor(q, strip.Color(127,0,0)); 
-  }
-  //Turn off the left half.
-  for(int q = 0; q < strip.numPixels()/2; q++){
-    strip.setPixelColor(q, strip.Color(0,0,0));
-  }
-}
-
-void HotGoalRight2BallClear() {
-  for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
-    strip.setPixelColor(q, strip.Color(0,0,0)); 
-  }
-  //Turn off the left half.
-  for(int q = 0; q < strip.numPixels()/2; q++){
-    strip.setPixelColor(q, strip.Color(0,0,0));
-  }
-}
-
-//======================================================//
-// HotGoalUnknown2Ball
-//======================================================//
-void HotGoalUnknown2Go() {
-  for(int q = 0; q < strip.numPixels(); q++) {
-    strip.setPixelColor(q, strip.Color(127,60,0)); // Orange
-  }
-}
-
-void HotGoalUnknown2Clear() {
-  for(int q = 0; q < strip.numPixels(); q++) {
-    strip.setPixelColor(q, strip.Color(0,0,0)); // Orange
-  }  
-}
-
