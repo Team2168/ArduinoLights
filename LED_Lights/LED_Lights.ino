@@ -8,7 +8,7 @@ int inputPin3 = 4;
 int inputPin4 = 5;
 
 //Strip Length Data
-int IntakeStripLength = 18;
+int IntakeStripLength = 16;
 
 int i = 0,
     j = 0;
@@ -39,7 +39,7 @@ void setup() {
     strip.setPixelColor(q, strip.Color(70,70,70));
   }
   strip.show();
-  delay(500);
+  delay(1500);
    
   //Turn the LEDs back off
   TurnOffLights();
@@ -65,7 +65,7 @@ void loop() {
   //  2       HotGoalRight          // 0 0 1 0
   //  6       HotGoalRight2Ball     // 0 1 1 0
   //  3       UnknownTarget         // 0 0 1 1
-  //  7       UnknownTarget2Ball    // 0 1 1 1
+  //  7       UnknownTagget2Ball    // 0 1 1 1
   //======================================= 
   //          TELEOP MODE             Bits
   //=======================================
@@ -185,12 +185,12 @@ void TuskExtendedPosition() {
 //======================================================// 
 void HotGoalLeft() {
   //Set left half of strip red
-  for(int q = 0; q < (strip.numPixels())/2; q++){
-    strip.setPixelColor(q, strip.Color(0,127,0));
+ for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
+    strip.setPixelColor(q, strip.Color(0,127,0)); 
   }
   //Turn off the right half
-  for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
-    strip.setPixelColor(q, strip.Color(0,0,0)); 
+  for(int q = 0; q < strip.numPixels()/2; q++){
+    strip.setPixelColor(q, strip.Color(0,0,0));
   }
 }
 
@@ -199,12 +199,13 @@ void HotGoalLeft() {
 //======================================================// 
 void HotGoalRight() {
   //Set the right half of the strip green.
-  for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
+ for(int q = 0; q < (strip.numPixels())/2; q++){
     strip.setPixelColor(q, strip.Color(127,0,0)); 
   }
   //Turn off the left half.
-  for(int q = 0; q < strip.numPixels()/2; q++){
-    strip.setPixelColor(q, strip.Color(0,0,0));
+  for(int q = strip.numPixels()/2; q < (strip.numPixels()); q++){
+    strip.setPixelColor(q, strip.Color(0,0,0)); 
+
   }
 }
 
