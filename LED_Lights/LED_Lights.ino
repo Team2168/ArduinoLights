@@ -65,7 +65,7 @@ void loop() {
   //  2       HotGoalRight          // 0 0 1 0
   //  6       HotGoalRight2Ball     // 0 1 1 0
   //  3       UnknownTarget         // 0 0 1 1
-  //  7       UnknownTagget2Ball    // 0 1 1 1
+  //  7       UnknownTarget2Ball    // 0 1 1 1
   //======================================= 
   //          TELEOP MODE             Bits
   //=======================================
