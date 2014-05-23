@@ -56,97 +56,80 @@ void setup() {
 
 void loop() {
   
-  //=======================================
+  //============================================
   //  Hex        AUTO MODE               Bits#
   // Values                             3,2,1,0
-  //=======================================            
+  //============================================
   //  1       HotGoalLeft           // 0 0 0 1
   //  5       HotGoalLeft2Ball      // 0 1 0 1
   //  2       HotGoalRight          // 0 0 1 0
   //  6       HotGoalRight2Ball     // 0 1 1 0
   //  3       UnknownTarget         // 0 0 1 1
   //  7       UnknownTarget2Ball    // 0 1 1 1
-  //======================================= 
+  //============================================
   //          TELEOP MODE             Bits
-  //=======================================
-  //  0       Off                   // 0 0 0 0 
-  //  8       TuskExtendedPosition  // 1 0 0 0  
+  //============================================
+  //  0       Off                   // 0 0 0 0
+  //  8       TuskExtendedPosition  // 1 0 0 0
   //  4       TuskIntermediate      // 0 1 0 0
   //  C       TuskRetractPosition   // 1 1 0 0
-  //======================================= 
-  //                 PIN MAP
-  //       Bits ->  3 2 1 0
-  // INPUT PINS ->  4 3 2 1
-  //=======================================
+  //============================================
   
   retValue = 0;
+
   //Read signals for cRIO
   if(digitalRead(inputPin1) == HIGH) { // if pin is high, return value is 1 (0001)
      retValue = retValue + 1;
-     
   }
   
   if(digitalRead(inputPin2) == HIGH) { // if pin is high, return value is 2 (0010)
      retValue = retValue + 2;
-     
   }
 
   if(digitalRead(inputPin3) == HIGH) { // if pin is high, return value is 4 (0100)
      retValue = retValue + 4;
-     
   }
   
   if(digitalRead(inputPin4) == HIGH) { // if pin is high, return value is 8 (1000)
      retValue = retValue + 8;
-    
   }
-  
-  i = 0; //If new data, restart the loop
- 
-  if(retValue== 0x0003 ) {    // UnknownTarget
+
+
+  if(retValue == 1) {                // HotGoalLeft 
+    HotGoalLeft();
+  } else if(retValue == 2) {         // HotGoalRight
+    HotGoalRight();
+  } else if(retValue == 3 ) {        // UnknownTarget
      UnknownTarget();
-  }
-  if(retValue == 2) {            // HotGoalRight
-    HotGoalRight();
-  }
-  if(retValue == 6) {   //HotGoalRight2ball
-    HotGoalRight();
-    strip.show();
-    delay(100);
-    TurnOffLights();
-    strip.show();
-    delay(100);
-  }
-  if(retValue == 5) {   //HotGoalLeft2ball
-    HotGoalLeft();
-    strip.show();
-    delay(100);
-    TurnOffLights();
-    strip.show();
-    delay(100);
-  }
-  if(retValue == 1) {            // HotGoalLeft 
-    HotGoalLeft();
-  } 
-  if(retValue == 12) {// TuskRetractPosition
-    TuskRetractPosition();
-  }
-  if(retValue == 4) {            // TuskIntermediatePosition
+  } else if(retValue == 4) {         // TuskIntermediatePosition
     TuskIntermediatePosition();
-  }
-  if(retValue == 8) {            // TuskExtendedPosition
-    TuskExtendedPosition();
-  }
-  if(retValue == 0) {
-    TurnOffLights(); 
-  }
-  if(retValue == 7) {   // UnkownTarget2Ball
+  } else if(retValue == 5) {         //HotGoalLeft2ball
+    HotGoalLeft();
+    strip.show();
+    delay(100);
+    TurnOffLights();
+    strip.show();
+    delay(100);
+  } else if(retValue == 6) {         //HotGoalRight2ball
+    HotGoalRight();
+    strip.show();
+    delay(100);
+    TurnOffLights();
+    strip.show();
+    delay(100);
+  } else if(retValue == 7) {         // UnkownTarget2Ball
     UnknownTarget();
     strip.show();
     delay(100);
     TurnOffLights();
     strip.show();
     delay(100);  
+  } else if(retValue == 8) {         // TuskExtendedPosition
+    TuskExtendedPosition();
+  } else if(retValue == 12) {        // TuskRetractPosition
+    TuskRetractPosition();
+  } else {                           // Invalid or retValue = 0
+    TurnOffLights(); 
   }
   
   strip.show();
