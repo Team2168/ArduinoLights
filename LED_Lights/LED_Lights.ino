@@ -1,13 +1,14 @@
+//Note, the TM1803V2.0 strip I'm using looks like it takes values
+//  in the form 0xRRBBGG, doesn't look like FAST LED is working
+//  correctly out of the box w/ appropriate colors on this strip.
+
 #include <SPI.h>
+#include <Wire.h>
 #include <FastLED.h>
 
-#define STRIP_LENGTH 18
-
-// Wiring (signals from cRIO)
-#define inputPin1 2
-#define inputPin2 3
-#define inputPin3 4
-#define inputPin4 5
+#define STRIP_LENGTH 4
+#define SLAVE_ID 4
+#define FLASH_DELAY 500
 
 //Strip communication pins
 #define DATA_PIN  9
@@ -25,7 +26,7 @@ void TurnOffLights();
 
 int retValue = 0;
 int lastretValue = 0;
-    
+
 void setup() {
   FastLED.addLeds<TM1803, DATA_PIN, RGB>(leds, STRIP_LENGTH);
   
@@ -40,105 +41,79 @@ void setup() {
   TurnOffLights();
   FastLED.show();
 
-  // Note, pins 10 - 13 are in use by the SPI library. 
-  pinMode(inputPin1, INPUT); 
-  pinMode(inputPin2, INPUT); 
-  pinMode(inputPin3, INPUT);  
-  pinMode(inputPin4, INPUT);  
+  Wire.begin(SLAVE_ID);         // join i2c bus with address #4
+  Wire.onReceive(receiveEvent); // register event
+  Serial.begin(9600);           // start serial for output
+}
 
-  Serial.begin(9600); // Serial Monitor
+// function that executes whenever data is received from master
+// this function is registered as an event, see setup()
+void receiveEvent(int howMany)
+{
+  while(Wire.available()) { // loop through all but the last
+    retValue = Wire.read();
+    Serial.println(retValue, HEX);
+  }
 }
 
 void loop() {
   
-  //=======================================
+  //===========================================
   //  Hex        AUTO MODE               Bits#
   // Values                             3,2,1,0
-  //=======================================            
+  //===========================================
   //  1       HotGoalLeft           // 0 0 0 1
   //  5       HotGoalLeft2Ball      // 0 1 0 1
   //  2       HotGoalRight          // 0 0 1 0
   //  6       HotGoalRight2Ball     // 0 1 1 0
   //  3       UnknownTarget         // 0 0 1 1
   //  7       UnknownTarget2Ball    // 0 1 1 1
-  //======================================= 
+  //===========================================
   //          TELEOP MODE             Bits
-  //=======================================
-  //  0       Off                   // 0 0 0 0 
-  //  8       TuskExtendedPosition  // 1 0 0 0  
+  //===========================================
+  //  0       Off                   // 0 0 0 0
+  //  8       TuskExtendedPosition  // 1 0 0 0 
   //  4       TuskIntermediate      // 0 1 0 0
   //  C       TuskRetractPosition   // 1 1 0 0
-  //======================================= 
-  //                 PIN MAP
-  //       Bits ->  3 2 1 0
-  // INPUT PINS ->  4 3 2 1
-  //=======================================
-  
-  retValue = 0;
-  //Read signals for cRIO
-  if(digitalRead(inputPin1) == HIGH) { // if pin is high, return value is 1 (0001)
-     retValue = retValue + 1;
-  }
-  
-  if(digitalRead(inputPin2) == HIGH) { // if pin is high, return value is 2 (0010)
-     retValue = retValue + 2;
-  }
+  //===========================================
 
-  if(digitalRead(inputPin3) == HIGH) { // if pin is high, return value is 4 (0100)
-     retValue = retValue + 4;
-  }
-  
-  if(digitalRead(inputPin4) == HIGH) { // if pin is high, return value is 8 (1000)
-     retValue = retValue + 8;
-  }
- 
-  if(retValue== 0x0003 ) {    // UnknownTarget
-    UnknownTarget();
-  }
-  if(retValue == 2) {         // HotGoalRight
-    HotGoalRight();
-  }
-  
-  if(retValue == 6) {
-    HotGoalRight();
-    FastLED.show();
-    delay(100);
-    TurnOffLights();
-    FastLED.show();
-    delay(100);
-  }
-  if(retValue == 5) {
-    HotGoalLeft();
-    FastLED.show();
-    delay(100);
-    TurnOffLights();
-    FastLED.show();
-    delay(100);
-  }
-  if(retValue == 1) {            // HotGoalLeft 
-    HotGoalLeft();
-  } 
   if(retValue == 12) {           // TuskRetractPosition
     TuskRetractPosition();
-  }
-  if(retValue == 4) {            // TuskIntermediatePosition
-    TuskIntermediatePosition();
-  }
-  if(retValue == 8) {            // TuskExtendedPosition
+  } else if(retValue == 8) {     // TuskExtendedPosition
     TuskExtendedPosition();
-  }
-  if(retValue == 0) {
-    TurnOffLights(); 
-  }
-  if(retValue == 7) {
+  } else if(retValue == 7) {     // Unknown target - flash
     UnknownTarget();
     FastLED.show();
-    delay(100);
+    delay(FLASH_DELAY);
     TurnOffLights();
     FastLED.show();
-    delay(100);  
+    delay(FLASH_DELAY);  
+  } else if(retValue == 6) {    // Hot goal right - flash
+    HotGoalRight();
+    FastLED.show();
+    delay(FLASH_DELAY);
+    TurnOffLights();
+    FastLED.show();
+    delay(FLASH_DELAY);
+  } else if(retValue == 5) {    // Hot goal left - flash
+    HotGoalLeft();
+    FastLED.show();
+    delay(FLASH_DELAY);
+    TurnOffLights();
+    FastLED.show();
+    delay(FLASH_DELAY);
+  } else if(retValue == 4) {     // TuskIntermediatePosition
+    TuskIntermediatePosition();
+  } else if(retValue == 3 ) {    // UnknownTarget
+    UnknownTarget();
+  } else if(retValue == 2) {     // HotGoalRight
+    HotGoalRight();
+  } else if(retValue == 1) {     // HotGoalLeft 
+    HotGoalLeft();
+  } else {
+    TurnOffLights(); 
   }
-  
+   
   FastLED.show();
 }
 
@@ -147,7 +122,7 @@ void loop() {
 //======================================================//
 void TuskRetractPosition() {
   for(int x = 0; x < STRIP_LENGTH; x++) {
-    leds[x].setRGB(0, 0, 255); // Blue
+    leds[x] = 0x00FF00; //Blue
   }
 }
 
@@ -156,7 +131,7 @@ void TuskRetractPosition() {
 //======================================================//
 void TuskIntermediatePosition() {  
   for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(255, 255, 0); // Yellow    
+    leds[q] = 0xFF00FF; //Yellow
   } 
 }
 
@@ -165,7 +140,7 @@ void TuskIntermediatePosition() {
 //======================================================//
 void TuskExtendedPosition() {
   for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(255, 0, 0); // Red
+    leds[q] = 0xFF0000;
   }
 }
 
@@ -175,11 +150,11 @@ void TuskExtendedPosition() {
 void HotGoalLeft() {
   //Set left half of strip green
   for(int q = 0; q < (STRIP_LENGTH)/2; q++){
-    leds[q].setRGB(0, 255, 0);
+    leds[q] = 0x0000FF;
   }
   //Turn off the right half
   for(int q = STRIP_LENGTH/2; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(0, 0, 0);
+    leds[q] = 0x000000;
   }
 }
 
@@ -189,11 +164,11 @@ void HotGoalLeft() {
 void HotGoalRight() {
   //Set the right half of the strip red.
   for(int q = STRIP_LENGTH/2; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(255, 0, 0);
+    leds[q] = 0xFF0000;
   }
   //Turn off the left half.
   for(int q = 0; q < STRIP_LENGTH/2; q++){
-    leds[q].setRGB(0, 0, 0);
+    leds[q] = 0x000000;
   }
 }
 
@@ -202,7 +177,7 @@ void HotGoalRight() {
 //======================================================//
 void UnknownTarget() {
   for(int q = 0; q < STRIP_LENGTH; q++) {
-    leds[q].setRGB(255, 120, 0); // Orange
+    leds[q] = 0xFF00FF;
   }
 }
 
@@ -211,7 +186,7 @@ void UnknownTarget() {
 //======================================================//
 void TurnOffLights() {
   for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(0, 0, 0);
+    leds[q] = 0x000000;
   }  
 }
 
