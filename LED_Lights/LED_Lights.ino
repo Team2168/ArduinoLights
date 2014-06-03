@@ -3,181 +3,73 @@
 //  correctly out of the box w/ appropriate colors on this strip.
 
 #include <SPI.h>
-#include <Wire.h>
 #include <FastLED.h>
 
-#define STRIP_LENGTH 4
-#define SLAVE_ID 4
-#define FLASH_DELAY 500
+#define NUM_LEDS 20
+#define PATTERN_REPLAY 1
+#define NUM_PATTERNS 10
 
-//Strip communication pins
-#define DATA_PIN  9
+#define DATA_PIN 3
+#define PAUSE_LOOP_PIN 2
 
 //Set up LED strip
-CRGB leds[STRIP_LENGTH];
+CRGB leds[NUM_LEDS];
 
-void TuskRetractPosition();
-void TuskIntermediatePosition();
-void TuskExtendedPosition();
-void HotGoalLeft();
-void HotGoalRight();
-void UnknownTarget();
-void TurnOffLights();
-
-int retValue = 0;
-int lastretValue = 0;
+int pattern = 0;
 
 void setup() {
-  FastLED.addLeds<TM1803, DATA_PIN, RGB>(leds, STRIP_LENGTH);
+  pinMode(PAUSE_LOOP_PIN, INPUT_PULLUP);
+  
+  FastLED.addLeds<TM1803, DATA_PIN, GBR>(leds, NUM_LEDS);
   
   //light all pixels on the strip to verify they're working
-  for(int q = 0; q < STRIP_LENGTH; q++) {
-    leds[q].setRGB(127,127,127);
-  }
-  FastLED.show();
+  LEDS.showColor(CRGB::White);
   delay(1500);
-   
+
   //Turn the LEDs back off
   TurnOffLights();
   FastLED.show();
-
-  Wire.begin(SLAVE_ID);         // join i2c bus with address #4
-  Wire.onReceive(receiveEvent); // register event
-  Serial.begin(9600);           // start serial for output
-}
-
-// function that executes whenever data is received from master
-// this function is registered as an event, see setup()
-void receiveEvent(int howMany)
-{
-  while(Wire.available()) { // loop through all but the last
-    retValue = Wire.read();
-    Serial.println(retValue, HEX);
-  }
 }
 
 void loop() {
+  //Play through the list of patterns 
+  for(int i = 0; i < PATTERN_REPLAY; i++) {
+    switch(pattern){
+      case 0:
+        LEDS.showColor(CRGB::Red);
+        delay(10000);
+        break;
+      case 1:
+        LEDS.showColor(CRGB::Blue);
+        delay(10000);
+        break;
+      case 2:
+        fadeUpDown(10, 10);
+        break;
+      case 3:
+        twinkleRand(2, CRGB::White, CRGB::Red, 1000, 40);
+        break;
+      case 4:
+        simpleWave(0.03,150,10);
+        break;
+      case 5:
+        rainbow(0.03,150,10);
+        break;
+      case 6:
+
+        break;
+      case 7:
+      case 8:
+      default:
+        //fire();
+        break;
+    }
+  }
   
-  //===========================================
-  //  Hex        AUTO MODE               Bits#
-  // Values                             3,2,1,0
-  //===========================================
-  //  1       HotGoalLeft           // 0 0 0 1
-  //  5       HotGoalLeft2Ball      // 0 1 0 1
-  //  2       HotGoalRight          // 0 0 1 0
-  //  6       HotGoalRight2Ball     // 0 1 1 0
-  //  3       UnknownTarget         // 0 0 1 1
-  //  7       UnknownTarget2Ball    // 0 1 1 1
-  //===========================================
-  //          TELEOP MODE             Bits
-  //===========================================
-  //  0       Off                   // 0 0 0 0
-  //  8       TuskExtendedPosition  // 1 0 0 0 
-  //  4       TuskIntermediate      // 0 1 0 0
-  //  C       TuskRetractPosition   // 1 1 0 0
-  //===========================================
-
-  if(retValue == 12) {           // TuskRetractPosition
-    TuskRetractPosition();
-  } else if(retValue == 8) {     // TuskExtendedPosition
-    TuskExtendedPosition();
-  } else if(retValue == 7) {     // Unknown target - flash
-    UnknownTarget();
-    FastLED.show();
-    delay(FLASH_DELAY);
-    TurnOffLights();
-    FastLED.show();
-    delay(FLASH_DELAY);  
-  } else if(retValue == 6) {    // Hot goal right - flash
-    HotGoalRight();
-    FastLED.show();
-    delay(FLASH_DELAY);
-    TurnOffLights();
-    FastLED.show();
-    delay(FLASH_DELAY);
-  } else if(retValue == 5) {    // Hot goal left - flash
-    HotGoalLeft();
-    FastLED.show();
-    delay(FLASH_DELAY);
-    TurnOffLights();
-    FastLED.show();
-    delay(FLASH_DELAY);
-  } else if(retValue == 4) {     // TuskIntermediatePosition
-    TuskIntermediatePosition();
-  } else if(retValue == 3 ) {    // UnknownTarget
-    UnknownTarget();
-  } else if(retValue == 2) {     // HotGoalRight
-    HotGoalRight();
-  } else if(retValue == 1) {     // HotGoalLeft 
-    HotGoalLeft();
-  } else {
-    TurnOffLights(); 
-  }
-   
-  FastLED.show();
-}
-
-//======================================================//
-// Tusk Retracted
-//======================================================//
-void TuskRetractPosition() {
-  for(int x = 0; x < STRIP_LENGTH; x++) {
-    leds[x] = 0x00FF00; //Blue
-  }
-}
-
-//======================================================//
-// Tusk Intermediate Position
-//======================================================//
-void TuskIntermediatePosition() {  
-  for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q] = 0xFF00FF; //Yellow
-  } 
-}
-
-//======================================================//
-// Tusk Extended Position
-//======================================================//
-void TuskExtendedPosition() {
-  for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q] = 0xFF0000;
-  }
-}
-
-//======================================================//
-// Auto Mode - Hot Goal Left
-//======================================================// 
-void HotGoalLeft() {
-  //Set left half of strip green
-  for(int q = 0; q < (STRIP_LENGTH)/2; q++){
-    leds[q] = 0x0000FF;
-  }
-  //Turn off the right half
-  for(int q = STRIP_LENGTH/2; q < STRIP_LENGTH; q++){
-    leds[q] = 0x000000;
-  }
-}
-
-//======================================================//
-// Auto Mode - Hot Goal Right
-//======================================================// 
-void HotGoalRight() {
-  //Set the right half of the strip red.
-  for(int q = STRIP_LENGTH/2; q < STRIP_LENGTH; q++){
-    leds[q] = 0xFF0000;
-  }
-  //Turn off the left half.
-  for(int q = 0; q < STRIP_LENGTH/2; q++){
-    leds[q] = 0x000000;
-  }
-}
-
-//======================================================//
-// Auto Mode - Unknown Hot Goal Target
-//======================================================//
-void UnknownTarget() {
-  for(int q = 0; q < STRIP_LENGTH; q++) {
-    leds[q] = 0xFF00FF;
+  //Only move on to the next pattern if the jumper is removed.
+  if(digitalRead(PAUSE_LOOP_PIN) == HIGH) {
+    pattern++;
+    pattern = (pattern % NUM_PATTERNS);
   }
 }
 
@@ -185,8 +77,206 @@ void UnknownTarget() {
 // TurnOffLights
 //======================================================//
 void TurnOffLights() {
-  for(int q = 0; q < STRIP_LENGTH; q++){
+  for(int q = 0; q < NUM_LEDS; q++){
     leds[q] = 0x000000;
   }  
 }
 
+void fadeUpDown(int wait, int loops) {
+  for(int i = 0; i < loops; i++) {
+    for(int x = 0; x < 128; x++) { 
+      LEDS.showColor(CRGB(x, 0, 0));
+      delay(wait);
+    }
+
+    // fade down
+    for(int x = 128; x >= 0; x--) { 
+      LEDS.showColor(CRGB(x, 0, 0));
+      delay(wait);
+    }
+  }
+}
+
+// twinkle random number of pixels
+// number, twinkle color, background color, delay
+// twinkleRand(5,strip.Color(255,255,255),strip.Color(255, 0, 100),90);
+void twinkleRand(int num, CRGB c, CRGB bg, int wait, int loops) {
+  for(int x = 0; x < loops; x++){
+    // set background
+    for(int i=0; i<NUM_LEDS; i++){
+      leds[i] = bg;
+    }
+    // for each num
+    for (int i=0; i<num; i++) {
+      leds[random(NUM_LEDS)] = c;
+    }
+    FastLED.show();
+    delay(wait);
+  }
+}
+
+// very simple wave: velocity, cycles,delay between frames
+// simpleWave(0.03,5,10);
+void simpleWave(float rate,int cycles, int wait) {
+  float pos=0.0;
+  // cycle through x times
+  for(int x=0; x<(NUM_LEDS*cycles); x++)
+  {
+      pos = pos+rate;
+      for(int i=0; i<NUM_LEDS; i++) {
+        // sine wave, 3 offset waves make a rainbow!
+        float level = sin(i+pos) * 127 + 128;
+        // set color level 
+        leds[i].setRGB((int)level,0,0);
+      }
+      FastLED.show();
+      delay(wait);
+  }
+}  
+
+void rainbow(float rate,int cycles, int wait) {
+  float pos=0.0;
+  float levelR, levelG, levelB;
+  // cycle through x times
+  for(int x=0; x<(NUM_LEDS*cycles); x++)
+  {
+      pos = pos+rate;
+      for(int i=0; i<NUM_LEDS; i++) {
+        // sine wave, 3 offset waves make a rainbow!
+        levelR = sin(i+pos) * 127 + 128;
+        levelG = sin(i+pos+120) * 127;
+        levelB = sin(i+pos+240) * 127 + 128;
+        // set color level 
+        leds[i].setRGB((int)levelR,(int)levelG,(int)levelB);
+      }
+      FastLED.show();
+      delay(wait);
+  }
+}
+
+// CRGB HeatColor( uint8_t temperature)
+// [to be included in the forthcoming FastLED v2.1]
+//
+// Approximates a 'black body radiation' spectrum for
+// a given 'heat' level.  This is useful for animations of 'fire'.
+// Heat is specified as an arbitrary scale from 0 (cool) to 255 (hot).
+// This is NOT a chromatically correct 'black body radiation'
+// spectrum, but it's surprisingly close, and it's extremely fast and small.
+//
+// On AVR/Arduino, this typically takes around 70 bytes of program memory,
+// versus 768 bytes for a full 256-entry RGB lookup table.
+ 
+CRGB HeatColor( uint8_t temperature)
+{
+  CRGB heatcolor;
+ 
+  // Scale 'heat' down from 0-255 to 0-191,
+  // which can then be easily divided into three
+  // equal 'thirds' of 64 units each.
+  uint8_t t192 = scale8_video( temperature, 192);
+ 
+  // calculate a value that ramps up from
+  // zero to 255 in each 'third' of the scale.
+  uint8_t heatramp = t192 & 0x3F; // 0..63
+  heatramp <<= 2; // scale up to 0..252
+ 
+  // now figure out which third of the spectrum we're in:
+  if( t192 & 0x80) {
+    // we're in the hottest third
+    heatcolor.r = 255; // full red
+    heatcolor.g = 255; // full green
+    heatcolor.b = heatramp; // ramp up blue
+   
+  } else if( t192 & 0x40 ) {
+    // we're in the middle third
+    heatcolor.r = 255; // full red
+    heatcolor.g = heatramp; // ramp up green
+    heatcolor.b = 0; // no blue
+   
+  } else {
+    // we're in the coolest third
+    heatcolor.r = heatramp; // ramp up red
+    heatcolor.g = 0; // no green
+    heatcolor.b = 0; // no blue
+  }
+ 
+  return heatcolor;
+}
+
+// Fire2012 by Mark Kriegsman, July 2012
+// as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
+//// 
+// This basic one-dimensional 'fire' simulation works roughly as follows:
+// There's a underlying array of 'heat' cells, that model the temperature
+// at each point along the line.  Every cycle through the simulation, 
+// four steps are performed:
+//  1) All cells cool down a little bit, losing heat to the air
+//  2) The heat from each cell drifts 'up' and diffuses a little
+//  3) Sometimes randomly new 'sparks' of heat are added at the bottom
+//  4) The heat from each cell is rendered as a color into the leds array
+//     The heat-to-color mapping uses a black-body radiation approximation.
+//
+// Temperature is in arbitrary units from 0 (cold black) to 255 (white hot).
+//
+// This simulation scales it self a bit depending on NUM_LEDS; it should look
+// "OK" on anywhere from 20 to 100 LEDs without too much tweaking. 
+//
+// I recommend running this simulation at anywhere from 30-100 frames per second,
+// meaning an interframe delay of about 10-35 milliseconds.
+//
+// Looks best on a high-density LED setup (60+ pixels/meter).
+//
+//
+// There are two main parameters you can play with to control the look and
+// feel of your fire: COOLING (used in step 1 above), and SPARKING (used
+// in step 3 above).
+//
+// COOLING: How much does the air cool as it rises?
+// Less cooling = taller flames.  More cooling = shorter flames.
+// Default 50, suggested range 20-100 
+#define COOLING  50
+
+// SPARKING: What chance (out of 255) is there that a new spark will be lit?
+// Higher chance = more roaring fire.  Lower chance = more flickery fire.
+// Default 120, suggested range 50-200.
+#define SPARKING 100
+
+void Fire2012()
+{
+// Array of temperature readings at each simulation cell
+  static byte heat[NUM_LEDS];
+
+  // Step 1.  Cool down every cell a little
+    for( int i = 0; i < NUM_LEDS; i++) {
+      heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / NUM_LEDS) + 2));
+    }
+  
+    // Step 2.  Heat from each cell drifts 'up' and diffuses a little
+    for( int k= NUM_LEDS - 3; k > 0; k--) {
+      heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
+    }
+    
+    // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
+    if( random8() < SPARKING ) {
+      int y = random8(7);
+      heat[y] = qadd8( heat[y], random8(160,255) );
+    }
+
+    // Step 4.  Map from heat cells to LED colors
+    for( int j = 0; j < NUM_LEDS; j++) {
+        leds[j] = HeatColor( heat[j]);
+    }
+}
+
+#define FRAMES_PER_SECOND 20
+void fire() {
+  for(int i = 0; i < ((1000 / FRAMES_PER_SECOND) * 10); i++) {
+    // Add entropy to random number generator; we use a lot of it.
+    random16_add_entropy( random());
+
+    Fire2012(); // run simulation frame
+  
+    FastLED.show(); // display this frame
+    delay(1000 / FRAMES_PER_SECOND);
+  }
+}
