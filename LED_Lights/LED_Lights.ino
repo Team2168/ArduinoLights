@@ -8,6 +8,9 @@
 // ground, and power), like the LPD8806 define both DATA_PIN and CLOCK_PIN
 #define DATA_PIN 3
 #define CLOCK_PIN 13
+#define INPUT_PIN_1 10
+#define INPUT_PIN_2 11
+#define INPUT_PIN_3 12
 
 // Define the array of leds
 CRGB leds[NUM_LEDS];
@@ -18,9 +21,7 @@ int leds3[] = {100,149};
 void ColorSweep(int r, int g, int b, int range[]);
 void AlternatingColorSweep(int r1, int g1, int b1, int r2, int g2, int b2, int range[]);
 
-double i1 = 0;
-double i2 = 0;
-double i3 = 0;
+double i = 0;
 
 void setup() { 
       // Uncomment/edit one of the following lines for your leds arrangement.
@@ -47,45 +48,49 @@ void setup() {
 }
 
 void loop() { 
-  ColorSweep(127, 64, 0, leds1);
-  AlternatingColorSweep(127, 127, 0, 64, 0, 127, leds2);
+  if(digitalRead(INPUT_PIN_1) == HIGH) {
+      ColorSweep(127, 0, 0, leds1);
+  }
+  else if(digitalRead(INPUT_PIN_1) == LOW) {
+      ColorSweep(0, 127, 0, leds1);
+  }
+  if(digitalRead(INPUT_PIN_2) == HIGH) {
+      ColorSweep(127, 0, 0, leds2);
+  }
+  else if(digitalRead(INPUT_PIN_2) == LOW) {
+      ColorSweep(0, 0, 127, leds2);
+  }
+  if(digitalRead(INPUT_PIN_3) == HIGH) {
+      ColorSweep(0, 127, 0, leds3);
+  }
+  else if(digitalRead(INPUT_PIN_3) == LOW) {
+      ColorSweep(0, 0, 127, leds3);
+  }
   FastLED.show();
-  delay(500);
-}
-
-void ColorSweep(int r, int g, int b, int range[]) {
-  if (i1 < 1) {
-    for (int j=range[0];j<=range[1];j++) {
-      leds[j] = CRGB(i1*r,i1*g,i1*b);
-    }  
-    i1+=0.1;
-  }
-  else {
-    double i = 2.0-i1;
-    for (int j=range[0];j<=range[1];j++) {
-      leds[j] = CRGB(i*r,i*g,i*b);
-    }  
-    i1+=0.1;
-  }
-  if (i1 >= 2.0) {
-    i1 = 0;
+  delay(50);
+  
+  i+=0.1;
+  if (i >= 2.0) {
+    i = 0;
   }  
 }
 
-void AlternatingColorSweep(int r1, int g1, int b1, int r2, int g2, int b2, int range[]) {
-  if (i2 < 1) {
+void ColorSweep(int r, int g, int b, int range[]) {
+  if (i < 1) {
     for (int j=range[0];j<=range[1];j++) {
-      if (j % 2 == 0) {
-        leds[j] = CRGB(i2*r1,i2*g1,i2*b1);
-      }
-      else {
-        leds[j] = CRGB(i2*r2,i2*g2,i2*b2);
-      }
+      leds[j] = CRGB(i*r,i*g,i*b);
     }  
-    i2+=0.1;
   }
   else {
-    double i = 2.0-i2;
+    double ix = 2.0-i;
+    for (int j=range[0];j<=range[1];j++) {
+      leds[j] = CRGB(ix*r,ix*g,ix*b);
+    }  
+  }
+}
+
+void AlternatingColorSweep(int r1, int g1, int b1, int r2, int g2, int b2, int range[]) {
+  if (i < 1) {
     for (int j=range[0];j<=range[1];j++) {
       if (j % 2 == 0) {
         leds[j] = CRGB(i*r1,i*g1,i*b1);
@@ -94,14 +99,16 @@ void AlternatingColorSweep(int r1, int g1, int b1, int r2, int g2, int b2, int r
         leds[j] = CRGB(i*r2,i*g2,i*b2);
       }
     }  
-    i2+=0.1;
-    Serial.println(i);
   }
-  if (i2 >= 2) {
-    i2 = 0;
+  else {
+    double ix = 2.0-i;
+    for (int j=range[0];j<=range[1];j++) {
+      if (j % 2 == 0) {
+        leds[j] = CRGB(ix*r1,ix*g1,ix*b1);
+      }
+      else {
+        leds[j] = CRGB(ix*r2,ix*g2,ix*b2);
+      }
+    }  
   }
-}
-
-void RainbowSweep() {
-  
 }
