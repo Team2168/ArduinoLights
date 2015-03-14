@@ -1,217 +1,107 @@
-#include <SPI.h>
-#include <FastLED.h>
+#include "FastLED.h"
 
-#define STRIP_LENGTH 18
+// How many leds in your strip?
+#define NUM_LEDS 150
 
-// Wiring (signals from cRIO)
-#define inputPin1 2
-#define inputPin2 3
-#define inputPin3 4
-#define inputPin4 5
+// For led chips like Neopixels, which have a data line, ground, and power, you just
+// need to define DATA_PIN.  For led chipsets that are SPI based (four wires - data, clock,
+// ground, and power), like the LPD8806 define both DATA_PIN and CLOCK_PIN
+#define DATA_PIN 3
+#define CLOCK_PIN 13
 
-//Strip communication pins
-#define DATA_PIN  9
+// Define the array of leds
+CRGB leds[NUM_LEDS];
+int leds1[] = {0,49};
+int leds2[] = {50,99};
+int leds3[] = {100,149};
 
-//Set up LED strip
-CRGB leds[STRIP_LENGTH];
+void ColorSweep(int r, int g, int b, int range[]);
+void AlternatingColorSweep(int r1, int g1, int b1, int r2, int g2, int b2, int range[]);
 
-void TuskRetractPosition();
-void TuskIntermediatePosition();
-void TuskExtendedPosition();
-void HotGoalLeft();
-void HotGoalRight();
-void UnknownTarget();
-void TurnOffLights();
+double i1 = 0;
+double i2 = 0;
+double i3 = 0;
 
-int retValue = 0;
-int lastretValue = 0;
-    
-void setup() {
-  FastLED.addLeds<TM1803, DATA_PIN, RGB>(leds, STRIP_LENGTH);
-  
-  //light all pixels on the strip to verify they're working
-  for(int q = 0; q < STRIP_LENGTH; q++) {
-    leds[q].setRGB(127,127,127);
-  }
+void setup() { 
+      // Uncomment/edit one of the following lines for your leds arrangement.
+      // FastLED.addLeds<TM1803, DATA_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<TM1804, DATA_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<TM1809, DATA_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<WS2811, DATA_PIN, RGB>(leds, NUM_LEDS);
+      FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
+      // FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+      // FastLED.addLeds<UCS1903, DATA_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<UCS1903B, DATA_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<GW6205, DATA_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<GW6205_400, DATA_PIN, RGB>(leds, NUM_LEDS);
+      
+      // FastLED.addLeds<WS2801, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<SM16716, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<LPD8806, RGB>(leds, NUM_LEDS);
+
+      // FastLED.addLeds<WS2801, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<SM16716, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
+      // FastLED.addLeds<LPD8806, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
+      Serial.begin(9600);
+}
+
+void loop() { 
+  ColorSweep(127, 64, 0, leds1);
+  AlternatingColorSweep(127, 127, 0, 64, 0, 127, leds2);
   FastLED.show();
-  delay(1500);
-   
-  //Turn the LEDs back off
-  TurnOffLights();
-  FastLED.show();
-
-  // Note, pins 10 - 13 are in use by the SPI library. 
-  pinMode(inputPin1, INPUT); 
-  pinMode(inputPin2, INPUT); 
-  pinMode(inputPin3, INPUT);  
-  pinMode(inputPin4, INPUT);  
-
-  Serial.begin(9600); // Serial Monitor
+  delay(500);
 }
 
-void loop() {
-  
-  //=======================================
-  //  Hex        AUTO MODE               Bits#
-  // Values                             3,2,1,0
-  //=======================================            
-  //  1       HotGoalLeft           // 0 0 0 1
-  //  5       HotGoalLeft2Ball      // 0 1 0 1
-  //  2       HotGoalRight          // 0 0 1 0
-  //  6       HotGoalRight2Ball     // 0 1 1 0
-  //  3       UnknownTarget         // 0 0 1 1
-  //  7       UnknownTarget2Ball    // 0 1 1 1
-  //======================================= 
-  //          TELEOP MODE             Bits
-  //=======================================
-  //  0       Off                   // 0 0 0 0 
-  //  8       TuskExtendedPosition  // 1 0 0 0  
-  //  4       TuskIntermediate      // 0 1 0 0
-  //  C       TuskRetractPosition   // 1 1 0 0
-  //======================================= 
-  //                 PIN MAP
-  //       Bits ->  3 2 1 0
-  // INPUT PINS ->  4 3 2 1
-  //=======================================
-  
-  retValue = 0;
-  //Read signals for cRIO
-  if(digitalRead(inputPin1) == HIGH) { // if pin is high, return value is 1 (0001)
-     retValue = retValue + 1;
+void ColorSweep(int r, int g, int b, int range[]) {
+  if (i1 < 1) {
+    for (int j=range[0];j<=range[1];j++) {
+      leds[j] = CRGB(i1*r,i1*g,i1*b);
+    }  
+    i1+=0.1;
   }
-  
-  if(digitalRead(inputPin2) == HIGH) { // if pin is high, return value is 2 (0010)
-     retValue = retValue + 2;
+  else {
+    double i = 2.0-i1;
+    for (int j=range[0];j<=range[1];j++) {
+      leds[j] = CRGB(i*r,i*g,i*b);
+    }  
+    i1+=0.1;
   }
-
-  if(digitalRead(inputPin3) == HIGH) { // if pin is high, return value is 4 (0100)
-     retValue = retValue + 4;
-  }
-  
-  if(digitalRead(inputPin4) == HIGH) { // if pin is high, return value is 8 (1000)
-     retValue = retValue + 8;
-  }
- 
-  if(retValue== 0x0003 ) {    // UnknownTarget
-    UnknownTarget();
-  }
-  if(retValue == 2) {         // HotGoalRight
-    HotGoalRight();
-  }
-  
-  if(retValue == 6) {
-    HotGoalRight();
-    FastLED.show();
-    delay(100);
-    TurnOffLights();
-    FastLED.show();
-    delay(100);
-  }
-  if(retValue == 5) {
-    HotGoalLeft();
-    FastLED.show();
-    delay(100);
-    TurnOffLights();
-    FastLED.show();
-    delay(100);
-  }
-  if(retValue == 1) {            // HotGoalLeft 
-    HotGoalLeft();
-  } 
-  if(retValue == 12) {           // TuskRetractPosition
-    TuskRetractPosition();
-  }
-  if(retValue == 4) {            // TuskIntermediatePosition
-    TuskIntermediatePosition();
-  }
-  if(retValue == 8) {            // TuskExtendedPosition
-    TuskExtendedPosition();
-  }
-  if(retValue == 0) {
-    TurnOffLights(); 
-  }
-  if(retValue == 7) {
-    UnknownTarget();
-    FastLED.show();
-    delay(100);
-    TurnOffLights();
-    FastLED.show();
-    delay(100);  
-  }
-  
-  FastLED.show();
-}
-
-//======================================================//
-// Tusk Retracted
-//======================================================//
-void TuskRetractPosition() {
-  for(int x = 0; x < STRIP_LENGTH; x++) {
-    leds[x].setRGB(0, 0, 255); // Blue
-  }
-}
-
-//======================================================//
-// Tusk Intermediate Position
-//======================================================//
-void TuskIntermediatePosition() {  
-  for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(255, 255, 0); // Yellow    
-  } 
-}
-
-//======================================================//
-// Tusk Extended Position
-//======================================================//
-void TuskExtendedPosition() {
-  for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(255, 0, 0); // Red
-  }
-}
-
-//======================================================//
-// Auto Mode - Hot Goal Left
-//======================================================// 
-void HotGoalLeft() {
-  //Set left half of strip green
-  for(int q = 0; q < (STRIP_LENGTH)/2; q++){
-    leds[q].setRGB(0, 255, 0);
-  }
-  //Turn off the right half
-  for(int q = STRIP_LENGTH/2; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(0, 0, 0);
-  }
-}
-
-//======================================================//
-// Auto Mode - Hot Goal Right
-//======================================================// 
-void HotGoalRight() {
-  //Set the right half of the strip red.
-  for(int q = STRIP_LENGTH/2; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(255, 0, 0);
-  }
-  //Turn off the left half.
-  for(int q = 0; q < STRIP_LENGTH/2; q++){
-    leds[q].setRGB(0, 0, 0);
-  }
-}
-
-//======================================================//
-// Auto Mode - Unknown Hot Goal Target
-//======================================================//
-void UnknownTarget() {
-  for(int q = 0; q < STRIP_LENGTH; q++) {
-    leds[q].setRGB(255, 120, 0); // Orange
-  }
-}
-
-//======================================================//
-// TurnOffLights
-//======================================================//
-void TurnOffLights() {
-  for(int q = 0; q < STRIP_LENGTH; q++){
-    leds[q].setRGB(0, 0, 0);
+  if (i1 >= 2.0) {
+    i1 = 0;
   }  
 }
 
+void AlternatingColorSweep(int r1, int g1, int b1, int r2, int g2, int b2, int range[]) {
+  if (i2 < 1) {
+    for (int j=range[0];j<=range[1];j++) {
+      if (j % 2 == 0) {
+        leds[j] = CRGB(i2*r1,i2*g1,i2*b1);
+      }
+      else {
+        leds[j] = CRGB(i2*r2,i2*g2,i2*b2);
+      }
+    }  
+    i2+=0.1;
+  }
+  else {
+    double i = 2.0-i2;
+    for (int j=range[0];j<=range[1];j++) {
+      if (j % 2 == 0) {
+        leds[j] = CRGB(i*r1,i*g1,i*b1);
+      }
+      else {
+        leds[j] = CRGB(i*r2,i*g2,i*b2);
+      }
+    }  
+    i2+=0.1;
+    Serial.println(i);
+  }
+  if (i2 >= 2) {
+    i2 = 0;
+  }
+}
+
+void RainbowSweep() {
+  
+}
