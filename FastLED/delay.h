@@ -1,6 +1,26 @@
 #ifndef __INC_DELAY_H
 #define __INC_DELAY_H
 
+FASTLED_NAMESPACE_BEGIN
+
+/// Class to ensure that a minimum amount of time has kicked since the last time run - and delay if not enough time has passed yet
+/// this should make sure that chipsets that have 
+template<int WAIT> class CMinWait {
+	uint16_t mLastMicros;
+public:
+	CMinWait() { mLastMicros = 0; }
+
+	void wait() { 
+		uint16_t diff;
+		do {
+			diff = (micros() & 0xFFFF) - mLastMicros;			
+		} while(diff < WAIT);
+	}
+
+	void mark() { mLastMicros = micros() & 0xFFFF; }
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Clock cycle counted delay loop
@@ -19,6 +39,9 @@
 template<int CYCLES> inline void delaycycles();
 
 // TODO: ARM version of _delaycycles_
+
+// usable definition
+#if defined(FASTLED_AVR)
 // worker template - this will nop for LOOP * 3 + PAD cycles total
 template<int LOOP, int PAD> inline void _delaycycles_AVR() { 
 	delaycycles<PAD>();
@@ -35,13 +58,28 @@ template<int LOOP, int PAD> inline void _delaycycles_AVR() {
 		);
 }
 
-// usable definition
-#if !defined(__MK20DX128__)
 template<int CYCLES> __attribute__((always_inline)) inline void delaycycles() { 
 	_delaycycles_AVR<CYCLES / 3, CYCLES % 3>();	
 }
 #else
+// template<int LOOP, int PAD> inline void _delaycycles_ARM() { 
+// 	delaycycles<PAD>();
+// 	// the loop below is 3 cycles * LOOP.  the LDI is one cycle,
+// 	// the DEC is 1 cycle, the BRNE is 2 cycles if looping back and
+// 	// 1 if not (the LDI balances out the BRNE being 1 cycle on exit)
+// 	__asm__ __volatile__ ( 
+// 		"		mov.w r9, %0\n"
+// 		"L_%=:  subs.w r9, r9, #1\n"
+// 		"		bne.n L_%=\n"
+// 		: /* no outputs */ 
+// 		: "M" (LOOP) 
+// 		: "r9"
+// 		);
+// }
+
+
 template<int CYCLES> __attribute__((always_inline)) inline void delaycycles() { 
+	// _delaycycles_ARM<CYCLES / 3, CYCLES % 3>();
 	NOP; delaycycles<CYCLES-1>();
 }
 #endif
@@ -65,7 +103,7 @@ template<> __attribute__((always_inline)) inline void delaycycles<5>() {NOP2;NOP
 
 // Macro to convert from nano-seconds to clocks and clocks to nano-seconds
 // #define NS(_NS) (_NS / (1000 / (F_CPU / 1000000L)))
-#if F_CPU < 96000000
+#if 1 || (F_CPU < 96000000)
 #define NS(_NS) ( (_NS * (F_CPU / 1000000L))) / 1000
 #define CLKS_TO_MICROS(_CLKS) ((long)(_CLKS)) / (F_CPU / 1000000L)
 #else
@@ -76,17 +114,6 @@ template<> __attribute__((always_inline)) inline void delaycycles<5>() {NOP2;NOP
 //  Macro for making sure there's enough time available
 #define NO_TIME(A, B, C) (NS(A) < 3 || NS(B) < 3 || NS(C) < 6)
 
-#if defined(__MK20DX128__)
-   extern volatile uint32_t systick_millis_count;
-#  define MS_COUNTER systick_millis_count
-#else
-#  if defined(CORE_TEENSY)
-     extern volatile unsigned long timer0_millis_count;
-#    define MS_COUNTER timer0_millis_count
-#  else
-     extern volatile unsigned long timer0_millis;
-#    define MS_COUNTER timer0_millis
-#  endif
-#endif
+FASTLED_NAMESPACE_END
 
 #endif
