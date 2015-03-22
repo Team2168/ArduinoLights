@@ -1,23 +1,27 @@
 #include <FastLED.h>
 
 // How many leds in your strip?
-#define NUM_LEDS 30
+#define NUM_LEDS 200
 
 // For led chips like Neopixels, which have a data line, ground, and power, you just
 // need to define DATA_PiN.  For led chipsets that are SPi based (four wires - data, clock,
 // ground, and power), like the LPD8806 define both DATA_PiN and CLOCK_PiN
-#define DATA_PIN 12
-#define CLOCK_PIN 13
-#define INPUT_PIN_1 2
-#define INPUT_PIN_2 3
-#define INPUT_PIN_3 4
-#define INPUT_PIN_4 5
+#define DATA_PIN 2
+#define INPUT_PIN_1 10
+#define INPUT_PIN_2 11
+#define INPUT_PIN_3 12
+#define INPUT_PIN_4 13
 
 // Define the array of leds
 CRGB leds[NUM_LEDS];
-int gripLeds[] = {0,10};
-int intkLeds[] = {14,17};
-int leds3[] = {21,2};
+int intkLedsLeft[] = {0, 59};//{0, 59}; //60 LEDs
+int intkLedsRight[] = {60, 119};//{60, 119}; //60 LEDs
+int gripLeds[] = {120,146};//27 leds long
+int leds3[] = {21,29}; //place holder
+
+//int intkLeds[] = {0,119}; //120leds long; first 60 are onm the right side, 2nd 60 on left
+//int gripLeds[] = {120,146};//27 leds long
+//int leds3[] = {147,157}; //place holder
 
 void ColorBlink(int r, int g, int b, int range[]);
 void AlternatingColorBlink(int r1, int g1, int b1, int r2, int g2, int b2, int range[]);
@@ -26,28 +30,8 @@ void StaticColor(int r, int g, int b, int range[]);
 
 double i = 0;
 
-void setup() { 
-  
-      // Uncomment/edit one of the following lines for your leds arrangement.
-      // FastLED.addLeds<TM1803, DATA_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<TM1804, DATA_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<TM1809, DATA_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<WS2811, DATA_PiN, RGB>(leds, NUM_LEDS);
+void setup() {
       FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
-      // FastLED.addLeds<WS2812B, DATA_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<NEOPiXEL, DATA_PiN>(leds, NUM_LEDS);
-      // FastLED.addLeds<UCS1903, DATA_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<UCS1903B, DATA_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<GW6205, DATA_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<GW6205_400, DATA_PiN, RGB>(leds, NUM_LEDS);
-      
-      // FastLED.addLeds<WS2801, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<SM16716, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<LPD8806, RGB>(leds, NUM_LEDS);
-
-      // FastLED.addLeds<WS2801, DATA_PiN, CLOCK_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<SM16716, DATA_PiN, CLOCK_PiN, RGB>(leds, NUM_LEDS);
-      // FastLED.addLeds<LPD8806, DATA_PiN, CLOCK_PiN, RGB>(leds, NUM_LEDS);
       Serial.begin(9600);
 }
 
@@ -55,7 +39,8 @@ void loop() {
   //robot is disabled:
   if(digitalRead(INPUT_PIN_4) == HIGH) {
       RainbowSweep(gripLeds);
-      RainbowSweep(intkLeds);
+      RainbowSweep(intkLedsLeft);
+      RainbowSweep(intkLedsRight);
   }
   else {
     // gripper is in: 
@@ -68,19 +53,23 @@ void loop() {
     }
     // intake is in and intake wheels are off: 
     if (digitalRead(INPUT_PIN_2) == HIGH && digitalRead(INPUT_PIN_3) == LOW) {
-        StaticColor(0, 0, 255, intkLeds);
+        StaticColor(0, 0, 255, intkLedsLeft);
+        StaticColor(0, 0, 255, intkLedsRight);
     }
     // intake is out and intake wheels are off: 
     else if (digitalRead(INPUT_PIN_2) == LOW && digitalRead(INPUT_PIN_3) == LOW) {
-        StaticColor(255, 0, 0, intkLeds);
+        StaticColor(255, 0, 0, intkLedsLeft);
+        StaticColor(255, 0, 0, intkLedsRight);
     }
     // intake is in and intake wheels are off: 
     else if (digitalRead(INPUT_PIN_2) == HIGH && digitalRead(INPUT_PIN_3) == HIGH) {
-        ColorBlink(0, 0, 255, intkLeds);
+        ColorBlink(0, 0, 255, intkLedsLeft);
+        ColorBlink(0, 0, 255, intkLedsRight);
     }
     // intake is out and intake wheels are off: 
     else if (digitalRead(INPUT_PIN_2) == LOW && digitalRead(INPUT_PIN_3) == HIGH) {
-        ColorBlink(255, 0, 0, intkLeds);
+        ColorBlink(255, 0, 0, intkLedsLeft);
+        ColorBlink(255, 0, 0, intkLedsRight);
     }
   }
   FastLED.show();
@@ -132,7 +121,7 @@ void AlternatingColorBlink(int r1, int g1, int b1, int r2, int g2, int b2, int r
 
 void RainbowSweep(int range[]) {
   for (int j=range[0];j<=range[1];j++) {
-      leds[j] = CHSV(i*127,255,255);
+      leds[j] = CHSV(i*127,255,120);
     }
 }
 
