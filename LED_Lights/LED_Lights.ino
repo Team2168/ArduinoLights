@@ -7,10 +7,10 @@
 // need to define DATA_PiN.  For led chipsets that are SPi based (four wires - data, clock,
 // ground, and power), like the LPD8806 define both DATA_PiN and CLOCK_PiN
 #define DATA_PIN 2
-#define INPUT_PIN_1 10
-#define INPUT_PIN_2 11
-#define INPUT_PIN_3 12
-#define INPUT_PIN_4 13
+#define INPUT_PIN_1 13 //Gripper engaged
+#define INPUT_PIN_2 12 //Intake engaged
+#define INPUT_PIN_3 11 //Intake wheels running
+#define INPUT_PIN_4 10 //Enabled
 
 // Define the array of leds
 CRGB leds[NUM_LEDS];
@@ -37,7 +37,7 @@ void setup() {
 
 void loop() {
   //robot is disabled:
-  if(digitalRead(INPUT_PIN_4) == HIGH) {
+  if(digitalRead(INPUT_PIN_4) == LOW) {
       RainbowSweep(gripLeds);
       RainbowSweep(intkLedsLeft);
       RainbowSweep(intkLedsRight);
@@ -45,31 +45,31 @@ void loop() {
   else {
     // gripper is in: 
     if(digitalRead(INPUT_PIN_1) == HIGH) {
-        StaticColor(0, 0, 255, gripLeds);
+        StaticColor(0, 0, 128, gripLeds);
     }
     // gripper is out: 
     else if(digitalRead(INPUT_PIN_1) == LOW) {
-        StaticColor(255, 0, 0, gripLeds);
+        StaticColor(128, 0, 0, gripLeds);
     }
     // intake is in and intake wheels are off: 
     if (digitalRead(INPUT_PIN_2) == HIGH && digitalRead(INPUT_PIN_3) == LOW) {
-        StaticColor(0, 0, 255, intkLedsLeft);
-        StaticColor(0, 0, 255, intkLedsRight);
+        StaticColor(0, 0, 128, intkLedsLeft);
+        StaticColor(0, 0, 128, intkLedsRight);
     }
     // intake is out and intake wheels are off: 
     else if (digitalRead(INPUT_PIN_2) == LOW && digitalRead(INPUT_PIN_3) == LOW) {
-        StaticColor(255, 0, 0, intkLedsLeft);
-        StaticColor(255, 0, 0, intkLedsRight);
+        StaticColor(128, 0, 0, intkLedsLeft);
+        StaticColor(128, 0, 0, intkLedsRight);
     }
     // intake is in and intake wheels are off: 
     else if (digitalRead(INPUT_PIN_2) == HIGH && digitalRead(INPUT_PIN_3) == HIGH) {
-        ColorBlink(0, 0, 255, intkLedsLeft);
-        ColorBlink(0, 0, 255, intkLedsRight);
+        ColorBlink(0, 0, 128, intkLedsLeft);
+        ColorBlink(0, 0, 128, intkLedsRight);
     }
     // intake is out and intake wheels are off: 
     else if (digitalRead(INPUT_PIN_2) == LOW && digitalRead(INPUT_PIN_3) == HIGH) {
-        ColorBlink(255, 0, 0, intkLedsLeft);
-        ColorBlink(255, 0, 0, intkLedsRight);
+        ColorBlink(128, 0, 0, intkLedsLeft);
+        ColorBlink(128, 0, 0, intkLedsRight);
     }
   }
   FastLED.show();
