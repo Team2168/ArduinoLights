@@ -10,23 +10,38 @@
 #define INPUT_PIN_1 13 //Gripper engaged
 #define INPUT_PIN_2 12 //Intake engaged
 #define INPUT_PIN_3 11 //Intake tote in/out
-#define INPUT_PIN_4 10 //Enabled
+#define INPUT_PIN_4 10 //Intake On/Off
 
 // Define the array of leds
 CRGB leds[NUM_LEDS];
-int intkLedsLeft[] = {0, 59};//{0, 59}; //60 LEDs
-int intkLedsRight[] = {60, 119};//{60, 119}; //60 LEDs
-int gripLeds[] = {120,146};//27 leds long
-int leds3[] = {21,29}; //place holder
+int intkLedsLeft[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                      29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15,
+                      30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+                      59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45}; //60 LEDs (4x15)
+                      
+int intkLedsRight[] =  {60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74,
+                        89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75,
+                        90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104,
+                        119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105}; //60 LEDs (4x15)
+                        
+int gripLeds[] = {120, 121, 122, 123, 124, 125, 126, 127, 128,
+                  137, 136, 135, 134, 133, 132, 131, 130, 129,
+                  138, 139, 140, 141, 142, 143, 144, 145, 146}; //27 LEDs (3x9)
 
-//int intkLeds[] = {0,119}; //120leds long; first 60 are onm the right side, 2nd 60 on left
-//int gripLeds[] = {120,146};//27 leds long
-//int leds3[] = {147,157}; //place holder
+int intkLedsLeftLength = 60;
+int intkLedsRightLength = 60;
+int gripLedsLength = 27;
 
-void ColorBlink(int r, int g, int b, int range[]);
-void AlternatingColorBlink(int r1, int g1, int b1, int r2, int g2, int b2, int range[]);
-void RainbowSweep(int range[]);
-void StaticColor(int r, int g, int b, int range[]);
+//int intkLedsLeft[] = {0, 59} //60 LEDs (4x15)
+//int intkLedsRight[] = {60, 119} //60 LEDs (4x15)
+//int gripLeds = {120, 146} //27 LEDs (3x9)
+//int leds3[] = {21,29}; //place holder
+
+void ColorBlink(int r, int g, int b, int range[], int rangeLength);
+void AlternatingColorBlink(int r1, int g1, int b1, int r2, int g2, int b2, int range[], int rangeLength);
+void RainbowSweep(int range[], int rangeLength);
+void StaticColor(int r, int g, int b, int range[], int rangeLength);
+void IntakeChase(int r, int g, int b, int range[]);
 
 double i = 0;
 
@@ -36,37 +51,51 @@ void setup() {
 }
 
 void loop() {
-  //robot is disabled:
-  if(digitalRead(INPUT_PIN_4) == LOW) {
-      RainbowSweep(gripLeds);
-      RainbowSweep(intkLedsLeft);
-      RainbowSweep(intkLedsRight);
+  // gripper is in: 
+  if(digitalRead(INPUT_PIN_1) == HIGH) {
+      StaticColor(0, 0, 128, gripLeds, gripLedsLength);
   }
-  else {
-    // gripper is in: 
-    if(digitalRead(INPUT_PIN_1) == HIGH) {
-        StaticColor(0, 0, 128, gripLeds);
-    }
-    // gripper is out: 
-    else if(digitalRead(INPUT_PIN_1) == LOW) {
-        StaticColor(128, 0, 0, gripLeds);
-    }
-    // intake is engaged: 
+  // gripper is out: 
+  else if(digitalRead(INPUT_PIN_1) == LOW) {
+      StaticColor(128, 0, 0, gripLeds, gripLedsLength);
+  }
+  // intake wheels are off:
+  if (digitalRead(INPUT_PIN_4) == LOW) {
+    //intake is engaged: 
     if (digitalRead(INPUT_PIN_2) == HIGH) {
-        StaticColor(128, 0, 0, intkLedsLeft);
-
+        StaticColor(128, 0, 0, intkLedsLeft, intkLedsLeftLength);
+        StaticColor(128, 0, 0, intkLedsRight, intkLedsRightLength);
     }
     // intake is not engaged: 
     else if (digitalRead(INPUT_PIN_2) == LOW) {
-        StaticColor(0, 0, 128, intkLedsLeft);
+        StaticColor(0, 0, 128, intkLedsLeft, intkLedsLeftLength);
+        StaticColor(0, 0, 128, intkLedsRight, intkLedsRightLength);
     }
-    //tote intake is in:  
-    if (digitalRead(INPUT_PIN_3) == HIGH) {
-        ColorBlink(128, 0, 0, intkLedsRight);
+  }
+  //tote intake is in:
+  else if (digitalRead(INPUT_PIN_3) == LOW) {
+    //intake is engaged: 
+    if (digitalRead(INPUT_PIN_2) == HIGH) {
+        IntakeChaseIn(128, 0, 0, intkLedsLeft, intkLedsLeftLength);
+        IntakeChaseIn(128, 0, 0, intkLedsRight, intkLedsRightLength);
     }
-    //tote intake is out: 
-    else if (digitalRead(INPUT_PIN_3) == LOW) {
-        ColorBlink(0, 0, 128, intkLedsRight);
+    // intake is not engaged: 
+    else if (digitalRead(INPUT_PIN_2) == LOW) {
+        IntakeChaseIn(0, 0, 128, intkLedsLeft, intkLedsLeftLength);
+        IntakeChaseIn(0, 0, 128, intkLedsRight, intkLedsRightLength);
+    }
+  }
+  //tote intake is out: 
+  else if (digitalRead(INPUT_PIN_3) == HIGH) {
+    //intake is engaged: 
+    if (digitalRead(INPUT_PIN_2) == HIGH) {
+        IntakeChaseOut(128, 0, 0, intkLedsLeft, intkLedsLeftLength);
+        IntakeChaseOut(128, 0, 0, intkLedsRight, intkLedsRightLength);
+    }
+    // intake is not engaged: 
+    else if (digitalRead(INPUT_PIN_2) == LOW) {
+        IntakeChaseOut(0, 0, 128, intkLedsLeft, intkLedsLeftLength);
+        IntakeChaseOut(0, 0, 128, intkLedsRight, intkLedsRightLength);
     }
   }
   FastLED.show();
@@ -78,52 +107,70 @@ void loop() {
   }  
 }
 
-void ColorBlink(int r, int g, int b, int range[]) {
+void ColorBlink(int r, int g, int b, int range[], int rangeLength) {
   if (i < 1) {
-    for (int j=range[0];j<=range[1];j++) {
-      leds[j] = CRGB(i*r,i*g,i*b);
-    }  
+    for (int j=0;j<rangeLength;j++) {
+        leds[range[j]] = CRGB(i*r,i*g,i*b);
+      }  
   }
   else {
     double ix = 2.0-i;
-    for (int j=range[0];j<=range[1];j++) {
-      leds[j] = CRGB(ix*r,ix*g,ix*b);
-    }  
+    for (int j=0;j<rangeLength;j++) {
+        leds[range[j]] = CRGB(ix*r,ix*g,ix*b);
+      }  
   }
 }
 
-void AlternatingColorBlink(int r1, int g1, int b1, int r2, int g2, int b2, int range[]) {
+void AlternatingColorBlink(int r1, int g1, int b1, int r2, int g2, int b2, int range[], int rangeLength) {
   if (i < 1) {
-    for (int j=range[0];j<=range[1];j++) {
-      if (j % 2 == 0) {
-        leds[j] = CRGB(i*r1,i*g1,i*b1);
-      }
-      else {
-        leds[j] = CRGB(i*r2,i*g2,i*b2);
-      }
-    }  
+    for (int j=0;j<=rangeLength;j++) {
+        if (j % 2 == 0) {
+          leds[range[j]] = CRGB(i*r1,i*g1,i*b1);
+        }
+        else {
+          leds[range[j]] = CRGB(i*r2,i*g2,i*b2);
+        }
+      }  
   }
   else {
     double ix = 2.0-i;
-    for (int j=range[0];j<=range[1];j++) {
-      if (j % 2 == 0) {
-        leds[j] = CRGB(ix*r1,ix*g1,ix*b1);
-      }
-      else {
-        leds[j] = CRGB(ix*r2,ix*g2,ix*b2);
-      }
-    }  
+    for (int j=0;j<rangeLength;j++) {
+        if (j % 2 == 0) {
+          leds[range[j]] = CRGB(ix*r1,ix*g1,ix*b1);
+        }
+        else {
+          leds[range[j]] = CRGB(ix*r2,ix*g2,ix*b2);
+        }
+      }  
   }
 }
 
-void RainbowSweep(int range[]) {
-  for (int j=range[0];j<=range[1];j++) {
-      leds[j] = CHSV(i*127,255,120);
+void RainbowSweep(int range[], int rangeLength) {
+  for (int j=0;j<rangeLength;j++) {
+      leds[range[j]] = CHSV(i*127,255,120);
     }
 }
 
-void StaticColor(int r, int g, int b, int range[]) {
-  for (int j=range[0];j<=range[1];j++) {
-      leds[j] = CRGB(r,g,b);
+void StaticColor(int r, int g, int b, int range[], int rangeLength) {
+  for (int j=0;j<rangeLength;j++) {
+      leds[range[j]] = CRGB(r,g,b);
     }
+}
+
+void IntakeChaseIn(int r, int g, int b, int range[]) {
+  for (int j=0;j<15;j++) {
+     leds[range[j]] = CRGB(r,g,b);
+     leds[range[j]+15] = CRGB(r,g,b);
+     leds[range[j]+30] = CRGB(r,g,b);
+     leds[range[j]+45] = CRGB(r,g,b);
+  }
+}
+
+void IntakeChaseOut(int r, int g, int b, int range[]) {
+  for (int j=14;j>=0;j++) {
+     leds[range[j]] = CRGB(r,g,b);
+     leds[range[j]+15] = CRGB(r,g,b);
+     leds[range[j]+30] = CRGB(r,g,b);
+     leds[range[j]+45] = CRGB(r,g,b);
+  }
 }
