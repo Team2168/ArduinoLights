@@ -4,7 +4,7 @@
 #define NUM_LEDS 11
 
 void IncrementCounter();
-void ColorFadeInOut(CRGB color);
+void ColorFadeInOut(int r, int g, int b);
 void ChaseIn(CRGB color);
 
 int counter = 0;
@@ -17,30 +17,29 @@ void setup() {
 }
 
 void loop() {
-  ColorFadeInOut(CRGB::Red);
+  ColorFadeInOut(255, 0, 0);
   FastLED.show();
   delay(10);
-  EVERY_N_MILLISECONDS( 100 ) { IncrementCounter(); }
+  EVERY_N_MILLISECONDS( 10 ) { IncrementCounter(); }
 }
 
 void IncrementCounter() {
   counter++;
   if (counter == 100) {
     counter = 0;
-    fadeIn == !fadeIn;
+    fadeIn = !fadeIn;
   }
 }
 
-void ColorFadeInOut(CRGB color) {
+void ColorFadeInOut(int r, int g, int b) {
+  CRGB color = CRGB(r,g,b);
   if (fadeIn) {
     double factor = ((double)counter)/((double)100);
-    color *= factor;
-    Serial.print(color.r);
+    color.r = factor*color.r;
   }
   else {
     double factor = ((double)(100-counter))/((double)100);
-    color *= factor;
-    Serial.print(color.r);
+    color.r = factor*color.r;
   }
   for (int i=0;i<NUM_LEDS;i++) {
     leds[i] = color;
