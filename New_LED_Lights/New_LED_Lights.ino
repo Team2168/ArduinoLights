@@ -29,17 +29,19 @@ void IncrementCounter() {
     counter = 0;
     fadeIn == !fadeIn;
   }
-  Serial.print(counter);
 }
 
 void ColorFadeInOut(CRGB color) {
   if (fadeIn) {
-    color *= (counter/100);
+    double factor = ((double)counter)/((double)100);
+    color *= factor;
+    Serial.print(color.r);
   }
   else {
-    color *= (100-counter)/100;
+    double factor = ((double)(100-counter))/((double)100);
+    color *= factor;
+    Serial.print(color.r);
   }
-  Serial.print(fadeIn);
   for (int i=0;i<NUM_LEDS;i++) {
     leds[i] = color;
   }
