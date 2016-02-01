@@ -3,6 +3,12 @@
 #define DATA_PIN 2
 #define NUM_LEDS 30
 
+#define COM_PIN0 4
+#define COM_PIN1 5
+#define COM_PIN2 6
+#define COM_PIN3 7
+
+
 void IncrementCounter();
 void ColorFadeInOut(int r, int g, int b);
 void ChaseIn(CRGB color);
@@ -14,11 +20,19 @@ boolean blinkOn = true;
 CRGB leds[NUM_LEDS];
 void setup() {
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
+  pinMode(COM_PIN0, INPUT);
+  pinMode(COM_PIN1, INPUT);
+  pinMode(COM_PIN2, INPUT);
+  pinMode(COM_PIN3, INPUT);
   Serial.begin(9600);
 }
 
 void loop() {
-  ColorFadeInOut(255,0,0);
+  if(ValFromRobo() == 1){
+    ColorFadeInOut(255,255,255);
+  }else{
+    Blink(CRGB::Red, 5000);
+  }
   FastLED.show();
   delay(10);
   EVERY_N_MILLISECONDS( 10 ) { IncrementCounter(); }
@@ -73,8 +87,7 @@ void Blink(CRGB color, int delTime){
   if(!blinkOn){
     for (int i = 0; i < NUM_LEDS; i++){
       leds[i] = 0;
-      leds[i] = 0;
-      leds[i] = 0;
+      
     }
     delay(delTime);
   }
@@ -84,4 +97,29 @@ void Blink(CRGB color, int delTime){
   }else if(!blinkOn){
     blinkOn = true;
   }
+}
+
+void Off(){
+  for (int i = 0; i < NUM_LEDS; i++){
+      leds[i] = 0;
+    }
+}
+
+int ValFromRobo()
+{
+  int Sum = 0;
+
+  if (digitalRead(COM_PIN0) == HIGH){
+    Sum += 1;
+  }
+  if (digitalRead(COM_PIN1) == HIGH){
+    Sum += 2;
+  }
+  if (digitalRead(COM_PIN2) == HIGH){
+    Sum += 4;
+  }
+  if (digitalRead(COM_PIN3) == HIGH){
+    Sum += 8;
+  }
+  return(Sum);
 }
