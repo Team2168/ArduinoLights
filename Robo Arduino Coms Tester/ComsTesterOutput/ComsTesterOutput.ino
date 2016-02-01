@@ -68,5 +68,7 @@ void loop() {
     Serial.print("Bit2: " +  ((String)Bit2) + "\n");
     Serial.print("Bit3: " +  ((String)Bit3) + "\n");
     Serial.print("Bit4: " +  ((String)Bit4) + "\n");
+    Serial.print("--------------------Finished Output----------------- \n");
+    Serial.print("\n");
   }
 }
