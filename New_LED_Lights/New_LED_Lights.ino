@@ -13,7 +13,7 @@ void IncrementCounter();
 void ColorFadeInOut(int r, int g, int b);
 void ChaseIn(CRGB color);
 
-int counter = 0;
+int counter = 0;          
 boolean fadeIn = true;
 boolean blinkOn = true;
 
@@ -30,8 +30,10 @@ void setup() {
 void loop() {
   if(ValFromRobo() == 1){
     ColorFadeInOut(255,255,255);
+  }else if(ValFromRobo() == 3){
+    Blink(CRGB::Red, 500);
   }else{
-    Blink(CRGB::Red, 5000);
+    Off();  
   }
   FastLED.show();
   delay(10);
