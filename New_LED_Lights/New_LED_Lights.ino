@@ -1,23 +1,18 @@
 #include "FastLED.h"
 
-#define DATA_PIN 2
 #define NUM_LEDS 30
 
+#define DATA_PIN 2
 #define COM_PIN0 4
 #define COM_PIN1 5
 #define COM_PIN2 6
 #define COM_PIN3 7
 
-
-void IncrementCounter();
-void ColorFadeInOut(int r, int g, int b);
-void ChaseIn(CRGB color);
-
-int counter = 0;          
+int counter = 0;
 boolean fadeIn = true;
-boolean blinkOn = true;
 
 CRGB leds[NUM_LEDS];
+
 void setup() {
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
   pinMode(COM_PIN0, INPUT);
@@ -29,11 +24,13 @@ void setup() {
 
 void loop() {
   if(ValFromRobo() == 1){
-    ColorFadeInOut(255,255,255);
+    ColorFadeInOut(CRGB::White,0,15);
   }else if(ValFromRobo() == 3){
-    Blink(CRGB::Red, 500);
+    Blink(CRGB::Red, 0, NUM_LEDS-1);
   }else{
-    Off();  
+    ColorFadeInOut(CRGB::Turquoise,21,29);
+    StaticColor(CRGB::Orange,16,20);
+    Blink(CRGB::Purple,0,15);
   }
   FastLED.show();
   delay(10);
@@ -48,8 +45,7 @@ void IncrementCounter() {
   }
 }
 
-void ColorFadeInOut(int r, int g, int b) {
-  CRGB color = CRGB(r,g,b);
+void ColorFadeInOut(CRGB color, int startLED, int endLED) {
   if (fadeIn) {
     double factor = ((double)counter)/((double)100);
     color.r = factor*color.r;
@@ -62,42 +58,27 @@ void ColorFadeInOut(int r, int g, int b) {
     color.g = factor*color.g;
     color.b = factor*color.b;
   }
-  for (int i=0;i<NUM_LEDS;i++) {
+  for (int i=startLED;i<endLED+1;i++) {
     leds[i] = color;
   }
 }
 
-void ChaseIn(CRGB color) {
-  int i = int((counter/100)*(NUM_LEDS/2));
-  leds[i] = color;
-}
-
-void SolidColor(CRGB color){
-  for (int i = 0; i < NUM_LEDS; i++){
+void StaticColor(CRGB color, int startLED, int endLED){
+  for (int i=startLED; i<endLED+1; i++){
     leds[i] = color;
   }
 }
 
-void Blink(CRGB color, int delTime){
-  if(blinkOn){
-    for (int i = 0; i < NUM_LEDS; i++){
+void Blink(CRGB color, int startLED, int endLED) {
+  if(counter <= 50){
+    for (int i=startLED; i<endLED+1; i++){
       leds[i] = color;
-    }
-    delay(delTime);
+    }  
   }
-
-  if(!blinkOn){
-    for (int i = 0; i < NUM_LEDS; i++){
+  if(counter > 50){
+    for (int i=startLED; i<endLED+1; i++){
       leds[i] = 0;
-      
     }
-    delay(delTime);
-  }
-  
-  if(blinkOn){
-    blinkOn = false;
-  }else if(!blinkOn){
-    blinkOn = true;
   }
 }
 
@@ -107,8 +88,7 @@ void Off(){
     }
 }
 
-int ValFromRobo()
-{
+int ValFromRobo() {
   int Sum = 0;
 
   if (digitalRead(COM_PIN0) == HIGH){
