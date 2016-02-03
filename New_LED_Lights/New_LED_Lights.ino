@@ -28,9 +28,9 @@ void loop() {
   }else if(ValFromRobo() == 3){
     Blink(CRGB::Red, 0, NUM_LEDS-1);
   }else{
-    ColorFadeInOut(CRGB::Turquoise,21,29);
-    StaticColor(CRGB::Orange,16,20);
-    Blink(CRGB::Purple,0,15);
+    ChaseIn(CRGB::Turquoise,22,29);
+    ChaseIn(CRGB::Orange,16,21);
+    ChaseIn(CRGB::Purple,0,15);
   }
   FastLED.show();
   delay(10);
@@ -42,6 +42,7 @@ void IncrementCounter() {
   if (counter == 100) {
     counter = 0;
     fadeIn = !fadeIn;
+    Off();
   }
 }
 
@@ -67,6 +68,13 @@ void StaticColor(CRGB color, int startLED, int endLED){
   for (int i=startLED; i<endLED+1; i++){
     leds[i] = color;
   }
+}
+
+void ChaseIn(CRGB color, int startLED, int endLED) {
+  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
+  Serial.print(String(i) + "\n");
+  leds[startLED + i] = color;
+  leds[endLED - i] = color;
 }
 
 void Blink(CRGB color, int startLED, int endLED) {
