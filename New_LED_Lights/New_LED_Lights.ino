@@ -10,6 +10,7 @@
 
 int counter = 0;
 boolean fadeIn = true;
+int gHue = 0;
 
 CRGB leds[NUM_LEDS];
 
@@ -28,12 +29,11 @@ void loop() {
   }else if(ValFromRobo() == 3){
     Blink(CRGB::Red, 0, NUM_LEDS-1);
   }else{
-    ChaseIn(CRGB::Turquoise,22,29);
-    ChaseIn(CRGB::Orange,16,21);
-    ChaseIn(CRGB::Purple,0,15);
+    Rainbow(gHue);
   }
   FastLED.show();
   delay(10);
+  EVERY_N_MILLISECONDS( 20 ) { gHue++; }
   EVERY_N_MILLISECONDS( 10 ) { IncrementCounter(); }
 }
 
@@ -75,6 +75,11 @@ void ChaseIn(CRGB color, int startLED, int endLED) {
   Serial.print(String(i) + "\n");
   leds[startLED + i] = color;
   leds[endLED - i] = color;
+}
+
+void Rainbow(int gHue) 
+{
+  fill_rainbow( leds, NUM_LEDS, gHue, 7);
 }
 
 void Blink(CRGB color, int startLED, int endLED) {
