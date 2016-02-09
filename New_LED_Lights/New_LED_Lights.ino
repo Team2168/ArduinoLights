@@ -27,8 +27,8 @@ void setup() {
 }
 
 void loop() {
-  
-  Rainbow(gHue);
+  ColorFadeInOut(CRGB::Red, 0, 9);
+  ColorFadeInOut(CRGB::Blue, 10, 19);
   FastLED.show();
   delay(10);
   EVERY_N_MILLISECONDS( 20 ) { gHue++; }
@@ -100,8 +100,9 @@ void Off(){
 }
 
 void receiveEvent(int numBytes){
-  while(Wire.available != 0){
+  while(Wire.available() != 0){
     lightState = Wire.read();
+    Serial.print(lightState);
   }
 }
 
