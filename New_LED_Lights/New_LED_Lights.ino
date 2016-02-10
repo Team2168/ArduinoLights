@@ -11,7 +11,7 @@ int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
 
-int lightState = 0;
+byte lightState = 0;
 //int lightRange = 0; <---this will be implimented when LED ranges are.
 
 CRGB leds[NUM_LEDS];
@@ -27,8 +27,11 @@ void setup() {
 }
 
 void loop() {
-  ColorFadeInOut(CRGB::Red, 0, 9);
-  ColorFadeInOut(CRGB::Blue, 10, 19);
+  if(lightState == 1){
+    StaticColor(CRGB::Green, 0, 10);
+  }else{
+    StaticColor(CRGB::Red, 0, 10);
+  }
   FastLED.show();
   delay(10);
   EVERY_N_MILLISECONDS( 20 ) { gHue++; }
