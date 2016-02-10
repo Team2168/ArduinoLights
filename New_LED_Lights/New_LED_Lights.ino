@@ -1,18 +1,14 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 30
-
+#define NUM_LEDS 40
 #define DATA_PIN 2
-
 #define I2C_ID 10
 
 int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
-
-byte lightState = 0;
-//int lightRange = 0; <---this will be implimented when LED ranges are.
+byte lightStates[6] = {0, 0, 0, 0, 0, 0};
 
 CRGB leds[NUM_LEDS];
 
@@ -27,11 +23,7 @@ void setup() {
 }
 
 void loop() {
-  if(lightState == 1){
-    StaticColor(CRGB::Green, 0, 10);
-  }else{
-    StaticColor(CRGB::Red, 0, 10);
-  }
+  ColorFadeInOut(CRGB(lightStates[1], lightStates[2], lightStates[3]), lightStates[4], lightStates[5]);
   FastLED.show();
   delay(10);
   EVERY_N_MILLISECONDS( 20 ) { gHue++; }
@@ -104,8 +96,7 @@ void Off(){
 
 void receiveEvent(int numBytes){
   while(Wire.available() != 0){
-    lightState = Wire.read();
-    Serial.print(lightState);
+    lightStates[6 - Wire.available()] = Wire.read();
   }
 }
 
