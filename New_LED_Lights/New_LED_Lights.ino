@@ -8,14 +8,16 @@
 int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
-byte lightStates[6] = {0, 0, 0, 0, 0, 0};
+int driveTRange[2] = {0,10};
+int shooter[2] = {11, 20};
+byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB leds[NUM_LEDS];
 
 void setup() {
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
   Serial.begin(9600);
-
+  
   //begins the i2c connection.
   Wire.begin(I2C_ID);
   //Sets the Recieve Event Function
@@ -23,7 +25,25 @@ void setup() {
 }
 
 void loop() {
-  ColorFadeInOut(CRGB(lightStates[1], lightStates[2], lightStates[3]), lightStates[4], lightStates[5]);
+  if(lightStates[3] == 0){
+    ColorFadeInOut(CRGB(lightStates[0], lightStates[1], lightStates[2]), driveTRange[0], driveTRange[1]);
+  }
+  else if(lightStates[3] == 1){
+    StaticColor(CRGB(lightStates[0], lightStates[1], lightStates[2]), driveTRange[0], driveTRange[1]);
+  }
+  
+  if(lightStates[7] == 0){
+    ColorFadeInOut(CRGB(lightStates[4], lightStates[5], lightStates[6]), shooter[0], shooter[1]);
+  }
+  else if(lightStates[7] == 1){
+    StaticColor(CRGB(lightStates[4], lightStates[5], lightStates[6]), shooter[0], shooter[1]);
+  }
+  
+  for(int i=0;i<8;i++) {
+    Serial.print((String)lightStates[i]);
+  }  
+  Serial.print("\n");
+  
   FastLED.show();
   delay(10);
   EVERY_N_MILLISECONDS( 20 ) { gHue++; }
@@ -96,7 +116,7 @@ void Off(){
 
 void receiveEvent(int numBytes){
   while(Wire.available() != 0){
-    lightStates[6 - Wire.available()] = Wire.read();
+    lightStates[8 - Wire.available()] = Wire.read();
   }
 }
 
