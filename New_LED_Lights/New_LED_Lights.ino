@@ -30,6 +30,8 @@ void loop() {
   }
   else if(lightStates[3] == 1){
     StaticColor(CRGB(lightStates[0], lightStates[1], lightStates[2]), intakeRange[0], intakeRange[1]);
+  }else if(lightStates[3] == 2){
+    ChaseIn(CRGB(lightStates[0], lightStates[1], lightStates[2]), intakeRange[0], intakeRange[1]);
   }
   
   if(lightStates[7] == 0){
@@ -37,6 +39,8 @@ void loop() {
   }
   else if(lightStates[7] == 1){
     StaticColor(CRGB(lightStates[4], lightStates[5], lightStates[6]), shooter[0], shooter[1]);
+  }else if(lightStates[7] == 2){
+    ChaseIn(CRGB(lightStates[4], lightStates[5], lightStates[6]), shooter[0], shooter[1]);
   }
   
   for(int i=0;i<8;i++) {
