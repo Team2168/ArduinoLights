@@ -1,15 +1,15 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 40
+#define NUM_LEDS 42
 #define DATA_PIN 2
 #define I2C_ID 10
 
 int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
-int driveTRange[2] = {0,10};
-int shooter[2] = {11, 20};
+int intakeRange[2] = {0,21};
+int shooter[2] = {21, 41};
 byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB leds[NUM_LEDS];
@@ -26,10 +26,10 @@ void setup() {
 
 void loop() {
   if(lightStates[3] == 0){
-    ColorFadeInOut(CRGB(lightStates[0], lightStates[1], lightStates[2]), driveTRange[0], driveTRange[1]);
+    ColorFadeInOut(CRGB(lightStates[0], lightStates[1], lightStates[2]), intakeRange[0], intakeRange[1]);
   }
   else if(lightStates[3] == 1){
-    StaticColor(CRGB(lightStates[0], lightStates[1], lightStates[2]), driveTRange[0], driveTRange[1]);
+    StaticColor(CRGB(lightStates[0], lightStates[1], lightStates[2]), intakeRange[0], intakeRange[1]);
   }
   
   if(lightStates[7] == 0){
