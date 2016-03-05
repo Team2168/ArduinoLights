@@ -15,7 +15,6 @@
 
 int counter = 0;
 boolean fadeIn = true;
-boolean blinkOn = true;
 int gHue = 0;
 
 int intakeRange[2] = {0,21};
@@ -43,12 +42,12 @@ void setup() {
 
 void loop() {
   makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3], \
-               lightStates[4], lightStates[5], lightStates[6], lightStates[7])
+               lightStates[4], lightStates[5], lightStates[6], lightStates[7]);
   
-  for(int i=0;i<8;i++) {
-    Serial.print((String)lightStates[i]);
-  }  
-  Serial.print("\n");
+//  for(int i=0;i<8;i++) {
+//    Serial.print((String)lightStates[i]);
+//  }  
+//  Serial.print("\n");
   
   FastLED.show();
   delay(10);
@@ -59,13 +58,16 @@ void loop() {
 void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, int pattern2) {
   switch(pattern1) {
     case OFF_PATTERN_ID:
-      Off();
+      Off(intakeRange[0], intakeRange[1]);
       break;
     case SOLID_PATTERN_ID:
-      StaticColor(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      Fill(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
       break;
-    case BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+    case FAST_BLINK_PATTERN_ID:
+      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 20);
+      break;
+    case SLOW_BLINK_PATTERN_ID:
+      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 50);
       break;
     case FADE_PATTERN_ID:
       ColorFadeInOut(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
@@ -79,23 +81,27 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
   }
   switch(pattern2) {
     case OFF_PATTERN_ID:
-      Off();
+      Off(shooterRange[0], shooterRange[1]);
       break;
     case SOLID_PATTERN_ID:
-      StaticColor(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
+      Fill(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
       break;
-    case BLINK_PATTERN_ID:
-      Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
+    case FAST_BLINK_PATTERN_ID:
+      Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1], 20); //blink at 5 Hz
+      break;
+    case SLOW_BLINK_PATTERN_ID:
+      Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1], 50); //blink at 1 Hz
       break;
     case FADE_PATTERN_ID:
       ColorFadeInOut(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
       break;
     case CHASE_PATTERN_ID:
-      ChaseIn(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      ChaseIn(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
       break;
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
       break;
+  }
 }
 
 void IncrementCounter() {
@@ -119,19 +125,20 @@ void ColorFadeInOut(CRGB color, int startLED, int endLED) {
     color.g = factor*color.g;
     color.b = factor*color.b;
   }
-  for (int i=startLED;i<endLED+1;i++) {
-    leds[i] = color;
-  }
+  Fill(color, startLED, endLED);
 }
 
-void StaticColor(CRGB color, int startLED, int endLED){
-  for (int i=startLED; i<endLED+1; i++){
+void Fill(CRGB color, int startLED, int endLED){
+  for (int i=startLED; i<=endLED; i++){
     leds[i] = color;
   }
 }
 
 void ChaseIn(CRGB color, int startLED, int endLED) {
   int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
+  if (i == 0) {
+    Off(startLED, endLED);
+  }
   leds[startLED + i] = color;
   leds[endLED - i] = color;
 }
@@ -143,23 +150,17 @@ void Rainbow(int gHue)
 
 void Blink(CRGB color, int startLED, int endLED, int freq) {
   if ((counter % freq) == 0) {
-    blinkOn = !blinkOn;
-  }
-
-  if (blinkOn) {
-    for (int i=startLED; i<endLED+1; i++){
-      leds[i] = color;
+    if ( leds[startLED] ) {                     //test one LED in range to see if it is not black
+      Off(startLED, endLED);
     }
-  }
   else {
-    for (int i = 0; i < NUM_LEDS; i++){
-      leds[i] = 0;
+      Fill(color, startLED, endLED);
     }
   }
 }
 
-void Off(){
-  for (int i = 0; i < NUM_LEDS; i++){
+void Off(int startLED, int endLED){
+  for (int i = startLED; i <= endLED; i++){
       leds[i] = 0;
     }
 }
