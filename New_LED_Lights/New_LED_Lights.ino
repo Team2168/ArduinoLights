@@ -64,7 +64,7 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
       Fill(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
       break;
     case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 20);
+      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 10);
       break;
     case SLOW_BLINK_PATTERN_ID:
       Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 50);
@@ -87,7 +87,7 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
       Fill(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
       break;
     case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1], 20); //blink at 5 Hz
+      Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1], 10); //blink at 5 Hz
       break;
     case SLOW_BLINK_PATTERN_ID:
       Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1], 50); //blink at 1 Hz
