@@ -1,8 +1,8 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 42
-#define DATA_PIN 2
+#define NUM_LEDS 61
+#define DATA_PIN 4
 #define I2C_ID 10
 
 #define OFF_PATTERN_ID 0
@@ -17,10 +17,10 @@ int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
 
-int intakeRange[2] = {0,21};
-int shooterRange[2] = {21, 41};
+int intakeRange[2] = {0,50};
+int shooterRange[2] = {52, 60};
 
-byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
+byte lightStates[8] = {0, 255, 0, 6, 255, 255, 0, 3}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB leds[NUM_LEDS];
 
@@ -57,9 +57,6 @@ void loop() {
 
 void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, int pattern2) {
   switch(pattern1) {
-    case OFF_PATTERN_ID:
-      Off(intakeRange[0], intakeRange[1]);
-      break;
     case SOLID_PATTERN_ID:
       Fill(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
       break;
@@ -78,11 +75,12 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
       break;
+      
+    default: //OFF_PATTERN_ID:
+      Off(intakeRange[0], intakeRange[1]);
+      break;
   }
   switch(pattern2) {
-    case OFF_PATTERN_ID:
-      Off(shooterRange[0], shooterRange[1]);
-      break;
     case SOLID_PATTERN_ID:
       Fill(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
       break;
@@ -100,6 +98,9 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
       break;
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
+      break;
+    default: //OFF_PATTERN_ID:
+      Off(shooterRange[0], shooterRange[1]);
       break;
   }
 }
