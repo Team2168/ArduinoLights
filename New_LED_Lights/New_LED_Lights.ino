@@ -20,7 +20,7 @@ int gHue = 0;
 int intakeRange[2] = {0,21};
 int shooterRange[2] = {22, 60};
 
-byte lightStates[8] = {0, 255, 0, 6, 255, 255, 0, 3}; //range1(RGB pattern) range2(RGB pattern)
+byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB leds[NUM_LEDS];
 
@@ -33,6 +33,7 @@ void setup() {
     }
   FastLED.show();
   delay(1000);
+  Off(0, NUM_LEDS-1)
   
   //begins the i2c connection.
   Wire.begin(I2C_ID);
