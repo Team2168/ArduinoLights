@@ -17,8 +17,8 @@ int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
 
-int intakeRange[2] = {0,50};
-int shooterRange[2] = {52, 60};
+int intakeRange[2] = {0,21};
+int shooterRange[2] = {22, 60};
 
 byte lightStates[8] = {0, 255, 0, 6, 255, 255, 0, 3}; //range1(RGB pattern) range2(RGB pattern)
 
