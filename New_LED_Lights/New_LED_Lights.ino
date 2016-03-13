@@ -33,7 +33,7 @@ void setup() {
     }
   FastLED.show();
   delay(1000);
-  Off(0, NUM_LEDS-1)
+  Off(0, NUM_LEDS-1);
   
   //begins the i2c connection.
   Wire.begin(I2C_ID);
