@@ -1,7 +1,7 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 61
+#define NUM_LEDS 24
 #define DATA_PIN 4
 #define I2C_ID 10
 
@@ -18,7 +18,7 @@ boolean fadeIn = true;
 int gHue = 0;
 
 int intakeRange[2] = {0,21};
-int shooterRange[2] = {22, 60};
+int shooterRange[2] = {22, 23};
 
 byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
 
@@ -42,13 +42,13 @@ void setup() {
 }
 
 void loop() {
-  makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3], \
+  makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3],
                lightStates[4], lightStates[5], lightStates[6], lightStates[7]);
   
-//  for(int i=0;i<8;i++) {
-//    Serial.print((String)lightStates[i]);
-//  }  
-//  Serial.print("\n");
+  for(int i=0;i<8;i++) {
+    Serial.print((String)lightStates[i]);
+  }  
+  Serial.print("\n");
   
   FastLED.show();
   delay(10);
