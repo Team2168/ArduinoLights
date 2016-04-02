@@ -1,7 +1,7 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 24
+#define NUM_LEDS 54
 #define DATA_PIN 4
 #define I2C_ID 10
 
@@ -17,8 +17,8 @@ int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
 
-int intakeRange[2] = {0,21};
-int shooterRange[2] = {22, 23};
+int intakeRange[2] = {0,51};
+int shooterRange[2] = {52, 53};
 
 byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
 
