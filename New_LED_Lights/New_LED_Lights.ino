@@ -22,7 +22,7 @@ int curChase = 0;
 int intakeRange[2] = {0,51};
 int shooterRange[2] = {52, 53};
 
-byte lightStates[8] = {200, 100, 100, 7, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
+byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB curCol = CRGB::Red;
 
