@@ -13,6 +13,7 @@
 #define CHASE_PATTERN_ID 5
 #define RAINBOW_PATTERN_ID 6
 #define CHASE_ALL_PATTERN_ID 7
+#define CHASE_OUT_PATTERN_ID 8
 int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
@@ -83,7 +84,9 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
     case CHASE_ALL_PATTERN_ID:
       ChaseAll(intakeRange[0], intakeRange[1]);
       break;
-          
+    case CHASE_OUT_PATTERN_ID:
+      ChaseOut(CRGB(r1,g1,b1), intakeRange[0], intakeRange[1]);
+      break;
     default: //OFF_PATTERN_ID:
       Off(intakeRange[0], intakeRange[1]);
       break;
@@ -109,6 +112,9 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
       break;
     case CHASE_ALL_PATTERN_ID:
       ChaseAll(shooterRange[0], shooterRange[1]);
+      break;
+    case CHASE_OUT_PATTERN_ID:
+      ChaseOut(CRGB(r2,g2,b2), shooterRange[0], shooterRange[1]);
       break;
     default: //OFF_PATTERN_ID:
       Off(shooterRange[0], shooterRange[1]);
@@ -151,9 +157,17 @@ void ChaseIn(CRGB color, int startLED, int endLED) {
   if (i == 0) {
     Off(startLED, endLED);
   }
-  leds[startLED + i] = color;
-  leds[endLED - i] = color;
-  Serial.print(i);
+  leds[endLED + i] = color;
+  leds[startLED - i] = color;
+}
+
+void ChaseOut(CRGB color, int startLED, int endLED) {
+  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
+  if (i == 0) {
+    Off(startLED, endLED);
+  }
+  leds[endLED / 2 - i] = color;
+  leds[endLED / 2 + i] = color;
 }
 
 void Rainbow(int gHue) 
