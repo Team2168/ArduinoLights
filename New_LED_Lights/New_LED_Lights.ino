@@ -16,15 +16,16 @@
 #define CHASE_OUT_PATTERN_ID 8
 int counter = 0;
 boolean fadeIn = true;
+boolean hasChanged = false;
 int gHue = 0;
 
 int curChase = 0;
 
-int gearIntakeRange[2] = {0,4};
-int shooterRange[2] = {5, 9};
-int driveTrainRange[2] = {10,14};
+int gearIntakeRange[2] = {0,2};
+int shooterRange[2] = {3, 8};
+int driveTrainRange[2] = {9,14};
 
-byte lightStates[12] = {100, 100, 100, 1, 255, 0, 0, 3, 0, 0, 255, 2}; //range1(RGB pattern) range2(RGB pattern)
+byte lightStates[12] = {100, 100, 100, 1, 255, 0, 0, 7, 0, 0, 255, 5}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB curCol = CRGB::Red;
 
@@ -188,17 +189,18 @@ void ChaseIn(CRGB color, int startLED, int endLED) {
   if (i == 0) {
     Off(startLED, endLED);
   }
-  leds[endLED + i] = color;
-  leds[startLED - i] = color;
+  leds[startLED + i] = color;
+  leds[endLED - i] = color;
 }
 
 void ChaseOut(CRGB color, int startLED, int endLED) {
-  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
+int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
   if (i == 0) {
     Off(startLED, endLED);
   }
-  leds[endLED / 2 - i] = color;
-  leds[endLED / 2 + i] = color;
+
+  leds[((startLED + endLED) / 2) - i - 1] = color;
+  leds[((startLED + endLED) / 2) + i + 1] = color;
 }
 
 void Rainbow(int gHue) 
@@ -223,18 +225,24 @@ void ChaseAll(int startLED, int endLED){
   
 
   
-   if(i == 0){
+   if(i == 0 && !hasChanged){
       if(curChase == 0){
         curCol = CRGB::Green;  
         curChase ++;
-        
-      }else if(curChase ==1){
+        hasChanged = true;
+      }else if(curChase ==1 && !hasChanged){
         curCol = CRGB::Blue;
         curChase ++;
-      }else{
+        hasChanged = true;
+      }else if(!hasChanged){
         curCol = CRGB::Red;
         curChase = 0;
+        hasChanged = true;
       }
+    }
+
+    if(hasChanged && i != 0){
+      hasChanged = false;  
     }
     
     leds[startLED + i] = curCol;
