@@ -1,7 +1,7 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 54
+#define NUM_LEDS 15
 #define DATA_PIN 4
 #define I2C_ID 10
 
@@ -20,10 +20,11 @@ int gHue = 0;
 
 int curChase = 0;
 
-int intakeRange[2] = {0,51};
-int shooterRange[2] = {52, 53};
+int gearIntakeRange[2] = {0,4};
+int shooterRange[2] = {5, 9};
+int driveTrainRange[2] = {10,14};
 
-byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
+byte lightStates[12] = {100, 100, 100, 1, 255, 0, 0, 3, 0, 0, 255, 2}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB curCol = CRGB::Red;
 
@@ -48,7 +49,8 @@ void setup() {
 
 void loop() {
   makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3],
-               lightStates[4], lightStates[5], lightStates[6], lightStates[7]);
+               lightStates[4], lightStates[5], lightStates[6], lightStates[7],
+               lightStates[8], lightStates[9], lightStates[10], lightStates[11]);
   
   for(int i=0;i<8;i++) {
     //Serial.print((String)lightStates[i]);
@@ -61,34 +63,34 @@ void loop() {
   EVERY_N_MILLISECONDS( 10 ) { IncrementCounter(); }
 }
 
-void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, int pattern2) {
+void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, int pattern2, int r3, int g3, int b3, int pattern3) {
   switch(pattern1) {
     case SOLID_PATTERN_ID:
-      Fill(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      Fill(CRGB(r1, g1, b1), gearIntakeRange[0], gearIntakeRange[1]);
       break;
     case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 10);
+      Blink(CRGB(r1, g1, b1), gearIntakeRange[0], gearIntakeRange[1], 10);
       break;
     case SLOW_BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 50);
+      Blink(CRGB(r1, g1, b1), gearIntakeRange[0], gearIntakeRange[1], 50);
       break;
     case FADE_PATTERN_ID:
-      ColorFadeInOut(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      ColorFadeInOut(CRGB(r1, g1, b1), gearIntakeRange[0], gearIntakeRange[1]);
       break;
     case CHASE_PATTERN_ID:
-      ChaseIn(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      ChaseIn(CRGB(r1, g1, b1), gearIntakeRange[0], gearIntakeRange[1]);
       break;
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
       break;
     case CHASE_ALL_PATTERN_ID:
-      ChaseAll(intakeRange[0], intakeRange[1]);
+      ChaseAll(gearIntakeRange[0], gearIntakeRange[1]);
       break;
     case CHASE_OUT_PATTERN_ID:
-      ChaseOut(CRGB(r1,g1,b1), intakeRange[0], intakeRange[1]);
+      ChaseOut(CRGB(r1,g1,b1), gearIntakeRange[0], gearIntakeRange[1]);
       break;
     default: //OFF_PATTERN_ID:
-      Off(intakeRange[0], intakeRange[1]);
+      Off(gearIntakeRange[0], gearIntakeRange[1]);
       break;
   }
   switch(pattern2) {
@@ -118,6 +120,35 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
       break;
     default: //OFF_PATTERN_ID:
       Off(shooterRange[0], shooterRange[1]);
+      break;
+  }
+  switch(pattern3) {
+    case SOLID_PATTERN_ID:
+      Fill(CRGB(r3, g3, b3), driveTrainRange[0], driveTrainRange[1]);
+      break;
+    case FAST_BLINK_PATTERN_ID:
+      Blink(CRGB(r3, g3, b3), driveTrainRange[0],driveTrainRange[1], 10); //blink at 5 Hz
+      break;
+    case SLOW_BLINK_PATTERN_ID:
+      Blink(CRGB(r3, g3, b3), driveTrainRange[0], driveTrainRange[1], 50); //blink at 1 Hz
+      break;
+    case FADE_PATTERN_ID:
+      ColorFadeInOut(CRGB(r3, g3, b3), driveTrainRange[0], driveTrainRange[1]);
+      break;
+    case CHASE_PATTERN_ID:
+      ChaseIn(CRGB(r3, g3, b3), driveTrainRange[0], driveTrainRange[1]);
+      break;
+    case RAINBOW_PATTERN_ID:
+      Rainbow(gHue);
+      break;
+    case CHASE_ALL_PATTERN_ID:
+      ChaseAll(driveTrainRange[0], driveTrainRange[1]);
+      break;
+    case CHASE_OUT_PATTERN_ID:
+      ChaseOut(CRGB(r3,g3,b3), driveTrainRange[0], driveTrainRange[1]);
+      break;
+    default: //OFF_PATTERN_ID:
+      Off(driveTrainRange[0], driveTrainRange[1]);
       break;
   }
 }
