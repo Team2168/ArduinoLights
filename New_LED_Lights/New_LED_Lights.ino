@@ -16,14 +16,15 @@
 #define CHASE_OUT_PATTERN_ID 8
 int counter = 0;
 boolean fadeIn = true;
+bool hasChanged = false;
 int gHue = 0;
 
 int curChase = 0;
 
-int intakeRange[2] = {0,51};
+int intakeRange[2] = {0,14};
 int shooterRange[2] = {52, 53};
 
-byte lightStates[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
+byte lightStates[8] = {0, 0, 0, 7, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB curCol = CRGB::Red;
 
@@ -188,26 +189,34 @@ void Blink(CRGB color, int startLED, int endLED, int freq) {
 
 void ChaseAll(int startLED, int endLED){
   int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
-
+  
   
 
   
    if(i == 0){
-      if(curChase == 0){
+      if(curChase == 0 && !hasChanged){
         curCol = CRGB::Green;  
         curChase ++;
-        
-      }else if(curChase ==1){
+        hasChanged = true;
+        Serial.print("changed To Green");
+      }else if(curChase == 1 && !hasChanged){
         curCol = CRGB::Blue;
         curChase ++;
-      }else{
+        hasChanged = true;
+        Serial.print("changed To Blue");
+      }else if(!hasChanged){
         curCol = CRGB::Red;
         curChase = 0;
+        hasChanged = true;
+        Serial.print("changed To Red");
       }
     }
     
     leds[startLED + i] = curCol;
     leds[endLED - i] = curCol;
+    if(hasChanged && i != 0){
+      hasChanged = false;
+    }
   
 }
 
