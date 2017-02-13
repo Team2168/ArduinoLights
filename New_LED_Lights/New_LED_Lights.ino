@@ -4,7 +4,7 @@
 #define NUM_LEDS 15
 #define DATA_PIN 4
 #define I2C_ID 10
-#define RANGE_COUNT 3
+#define RANGE_COUNT 3 //<--- make sure you change this to the amount of ranges being used! It's responsible for a few loops and 2D array amounts! 
 
 #define OFF_PATTERN_ID 0
 #define SOLID_PATTERN_ID 1
