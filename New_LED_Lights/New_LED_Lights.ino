@@ -26,7 +26,9 @@ int curChase = 0;
 int shooterRange[2] = {3, 8};
 int driveTrainRange[2] = {9,14};*/
 
-int ranges[RANGE_COUNT][2] = {{0,2},{3,8},{9,14}};
+int ranges[RANGE_COUNT][2] = {{0,2},
+                              {3,8},
+                              {9,14}};
 
 byte lightStates[RANGE_COUNT][4];
 
@@ -209,7 +211,7 @@ void Off(int startLED, int endLED){
 
 void receiveEvent(int numBytes){
   while(Wire.available() >= RANGE_COUNT * 4) { //<---- This gon be fixed next u just w8 m8.
-    for(int x=0; x <= RANGE_COUNT; x++){
+    for(int x=0; x < RANGE_COUNT; x++){
      for(int i=0; i < 4; i++) { 
         lightStates[x][i] = Wire.read();
      } 
