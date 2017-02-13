@@ -28,17 +28,25 @@ int driveTrainRange[2] = {9,14};*/
 
 int ranges[RANGE_COUNT][2] = {{0,2},{3,8},{9,14}};
 
-byte lightStates[RANGE_COUNT][4]={{100,100,100,1},{255,0,0,7},{0,0,255,1}};
-
-/*byte lightStates[12] = {100, 100, 100, 1, 255, 0, 0, 7, 0, 0, 255, 1}; //range1(RGB pattern) range2(RGB pattern) <--- incorrect comment and a bad use of an array. tsk. tsk.*/
+byte lightStates[RANGE_COUNT][4];
 
 CRGB curCol = CRGB::Red;
 
 CRGB leds[NUM_LEDS];
 
 void setup() {
+  
+  
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
   Serial.begin(9600);
+  
+  for(int i=0; i<RANGE_COUNT;i++){
+    lightStates[i][0] = 0;
+    lightStates[i][1] = 0;
+    lightStates[i][2] = 0;
+    lightStates[i][3] = 0;
+    Serial.print(i, " ");
+  }
 
   for (int i = 0; i < NUM_LEDS; i++){
       leds[i] = CRGB::White;
