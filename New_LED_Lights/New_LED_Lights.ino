@@ -4,6 +4,7 @@
 #define NUM_LEDS 15
 #define DATA_PIN 4
 #define I2C_ID 10
+#define RANGE_COUNT 3
 
 #define OFF_PATTERN_ID 0
 #define SOLID_PATTERN_ID 1
@@ -25,11 +26,11 @@ int curChase = 0;
 int shooterRange[2] = {3, 8};
 int driveTrainRange[2] = {9,14};*/
 
-int ranges[3][2] = {{0,2},{3,8},{9,14}};
+int ranges[RANGE_COUNT][2] = {{0,2},{3,8},{9,14}};
 
+byte lightStates[RANGE_COUNT][4]={{100,100,100,1},{255,0,0,7},{0,0,255,1}};
 
-
-byte lightStates[12] = {100, 100, 100, 1, 255, 0, 0, 7, 0, 0, 255, 1}; //range1(RGB pattern) range2(RGB pattern)
+/*byte lightStates[12] = {100, 100, 100, 1, 255, 0, 0, 7, 0, 0, 255, 1}; //range1(RGB pattern) range2(RGB pattern) <--- incorrect comment and a bad use of an array. tsk. tsk.*/
 
 CRGB curCol = CRGB::Red;
 
@@ -53,14 +54,10 @@ void setup() {
 }
 
 void loop() {
-  makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3],
-               lightStates[4], lightStates[5], lightStates[6], lightStates[7],
-               lightStates[8], lightStates[9], lightStates[10], lightStates[11]);
+  for(int x= 0; x < RANGE_COUNT; x++){
+    makePatterns(lightStates[x][0], lightStates[x][1], lightStates[x][2], lightStates[x][3], ranges[x][0], ranges[x][1]);
+  }
   
-  for(int i=0;i<8;i++) {
-    //Serial.print((String)lightStates[i]);
-  }  
- // Serial.print("\n");
   
   FastLED.show();
   delay(10);
@@ -68,92 +65,34 @@ void loop() {
   EVERY_N_MILLISECONDS( 10 ) { IncrementCounter(); }
 }
 
-void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, int pattern2, int r3, int g3, int b3, int pattern3) {
-  switch(pattern1) {
+void makePatterns(int r1, int g1, int b1, int pattern, int startLED, int endLED) { //<----- God, this thing is more of a bloat problem than most American customers.
+  switch(pattern) {
     case SOLID_PATTERN_ID:
-      Fill(CRGB(r1, g1, b1), ranges[0][0], ranges[0][1]);
+      Fill(CRGB(r1, g1, b1), startLED, endLED);
       break;
     case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), ranges[0], ranges[0][1], 10);
+      Blink(CRGB(r1, g1, b1), startLED, endLED, 10);
       break;
     case SLOW_BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), ranges[0][0], ranges[0][1], 50);
+      Blink(CRGB(r1, g1, b1), startLED, endLED, 50);
       break;
     case FADE_PATTERN_ID:
-      ColorFadeInOut(CRGB(r1, g1, b1), ranges[0][0], ranges[0][1]);
+      ColorFadeInOut(CRGB(r1, g1, b1), startLED, endLED);
       break;
     case CHASE_PATTERN_ID:
-      ChaseIn(CRGB(r1, g1, b1), ranges[0][0], ranges[0][1]);
+      ChaseIn(CRGB(r1, g1, b1), startLED, endLED);
       break;
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
       break;
     case CHASE_ALL_PATTERN_ID:
-      ChaseAll(ranges[0][0], ranges[0][1]);
+      ChaseAll(startLED, endLED);
       break;
     case CHASE_OUT_PATTERN_ID:
-      ChaseOut(CRGB(r1,g1,b1), ranges[0][0], ranges[0][1]);
+      ChaseOut(CRGB(r1,g1,b1), startLED, endLED);
       break;
     default: //OFF_PATTERN_ID:
-      Off(ranges[0][0], ranges[0][1]);
-      break;
-  }
-  switch(pattern2) {
-    case SOLID_PATTERN_ID:
-      Fill(CRGB(r2, g2, b2), ranges[1][0], ranges[1][1]);
-      break;
-    case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r2, g2, b2), ranges[1][0], ranges[1][1], 10); //blink at 5 Hz
-      break;
-    case SLOW_BLINK_PATTERN_ID:
-      Blink(CRGB(r2, g2, b2), ranges[1][0], ranges[1][1], 50); //blink at 1 Hz
-      break;
-    case FADE_PATTERN_ID:
-      ColorFadeInOut(CRGB(r2, g2, b2), ranges[1][0], ranges[1][1]);
-      break;
-    case CHASE_PATTERN_ID:
-      ChaseIn(CRGB(r2, g2, b2), ranges[1][0], ranges[1][1]);
-      break;
-    case RAINBOW_PATTERN_ID:
-      Rainbow(gHue);
-      break;
-    case CHASE_ALL_PATTERN_ID:
-      ChaseAll(ranges[1][0], ranges[1][1]);
-      break;
-    case CHASE_OUT_PATTERN_ID:
-      ChaseOut(CRGB(r2,g2,b2), ranges[1][0], ranges[1][1]);
-      break;
-    default: //OFF_PATTERN_ID:
-      Off(ranges[1][0], ranges[1][1]);
-      break;
-  }
-  switch(pattern3) {
-    case SOLID_PATTERN_ID:
-      Fill(CRGB(r3, g3, b3), ranges[2][0], ranges[2][1]);
-      break;
-    case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r3, g3, b3), ranges[2][0],ranges[2][1], 10); //blink at 5 Hz
-      break;
-    case SLOW_BLINK_PATTERN_ID:
-      Blink(CRGB(r3, g3, b3), ranges[2][0], ranges[2][1], 50); //blink at 1 Hz
-      break;
-    case FADE_PATTERN_ID:
-      ColorFadeInOut(CRGB(r3, g3, b3), ranges[2][0], ranges[2][1]);
-      break;
-    case CHASE_PATTERN_ID:
-      ChaseIn(CRGB(r3, g3, b3), ranges[2][0],ranges[2][1]);
-      break;
-    case RAINBOW_PATTERN_ID:
-      Rainbow(gHue);
-      break;
-    case CHASE_ALL_PATTERN_ID:
-      ChaseAll(ranges[2][0], ranges[2][1]);
-      break;
-    case CHASE_OUT_PATTERN_ID:
-      ChaseOut(CRGB(r3,g3,b3), ranges[2][0], ranges[2][1]);
-      break;
-    default: //OFF_PATTERN_ID:
-      Off(ranges[2][0], ranges[2][1]);
+      Off(startLED, endLED);
       break;
   }
 }
@@ -261,11 +200,13 @@ void Off(int startLED, int endLED){
 }
 
 void receiveEvent(int numBytes){
-  while(Wire.available() >= 8) { 
-    for(int i=0; i < 8; i++) { 
-      lightStates[i] = Wire.read();
-    } 
-  }
+  while(Wire.available() >= RANGE_COUNT * 4) { //<---- This gon be fixed next u just w8 m8.
+    for(int x=0; x <= RANGE_COUNT; x++){
+     for(int i=0; i < 4; i++) { 
+        lightStates[x][i] = Wire.read();
+     } 
+    }
+   }
 }
 
 //That's all folks!
