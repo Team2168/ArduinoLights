@@ -1,38 +1,52 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 54
+#define NUM_LEDS 41
 #define DATA_PIN 4
 #define I2C_ID 10
+#define RANGE_COUNT 3 //<--- make sure you change this to the amount of ranges being used! It's responsible for a few loops and 2D array amounts! 
 
-#define OFF_PATTERN_ID 0
-#define SOLID_PATTERN_ID 1
-#define FAST_BLINK_PATTERN_ID 2
-#define SLOW_BLINK_PATTERN_ID 3
-#define FADE_PATTERN_ID 4
-#define CHASE_PATTERN_ID 5
-#define RAINBOW_PATTERN_ID 6
-#define CHASE_ALL_PATTERN_ID 7
-#define CHASE_OUT_PATTERN_ID 8
+#define OFF_PATTERN_ID 0 //PatData = None.
+#define SOLID_PATTERN_ID 1 //PatData = None.
+#define BLINK_PATTERN_ID 2 //PatData = Speed in hertz.
+#define FADE_PATTERN_ID 3 //PatData = none.
+#define CHASE_PATTERN_ID 4 //patData = 0 for chase in, 1 for chase out, 2 for chase all colors..
+#define RAINBOW_PATTERN_ID 5 //patData = none.
 int counter = 0;
 boolean fadeIn = true;
-bool hasChanged = false;
+boolean hasChanged = false;
 int gHue = 0;
 
 int curChase = 0;
 
-int intakeRange[2] = {0,14};
-int shooterRange[2] = {52, 53};
+/*int gearIntakeRange[2] = {0,2}; //<---- Gross old fangled way of doing things, yick!
+int shooterRange[2] = {3, 8};
+int driveTrainRange[2] = {9,14};*/
 
-byte lightStates[8] = {0, 0, 0, 7, 0, 0, 0, 0}; //range1(RGB pattern) range2(RGB pattern)
+int ranges[RANGE_COUNT][2] = {{0,12},
+                              {13,26},
+                              {27,40}};
+
+byte lightStates[RANGE_COUNT][5];
 
 CRGB curCol = CRGB::Red;
 
 CRGB leds[NUM_LEDS];
 
 void setup() {
+  
+  
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
   Serial.begin(9600);
+  
+  for(int i=0; i<RANGE_COUNT;i++){
+    lightStates[i][0] = 100; //Red
+    lightStates[i][1] = 0;  //Green
+    lightStates[i][2] = 0;  //Blue
+    lightStates[i][3] = 6;  //Pattern
+    lightStates[i][4] = 0;  //PatternData(if neccessary)
+    Serial.print(i, " ");
+  }
 
   for (int i = 0; i < NUM_LEDS; i++){
       leds[i] = CRGB::White;
@@ -48,13 +62,11 @@ void setup() {
 }
 
 void loop() {
-  makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3],
-               lightStates[4], lightStates[5], lightStates[6], lightStates[7]);
   
-  for(int i=0;i<8;i++) {
-    //Serial.print((String)lightStates[i]);
-  }  
- // Serial.print("\n");
+  for(int x= 0; x < RANGE_COUNT; x++){
+    makePatterns(lightStates[x][0], lightStates[x][1], lightStates[x][2], lightStates[x][3], lightStates[x][4],ranges[x][0], ranges[x][1]);
+  }
+  
   
   FastLED.show();
   delay(10);
@@ -62,63 +74,34 @@ void loop() {
   EVERY_N_MILLISECONDS( 10 ) { IncrementCounter(); }
 }
 
-void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, int pattern2) {
-  switch(pattern1) {
+void makePatterns(int r1, int g1, int b1, int pattern, int patData, int startLED, int endLED) {//Its so pretty now!
+  switch(pattern) {
     case SOLID_PATTERN_ID:
-      Fill(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      Fill(CRGB(r1, g1, b1), startLED, endLED);
       break;
-    case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 10);
-      break;
-    case SLOW_BLINK_PATTERN_ID:
-      Blink(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1], 50);
+    case BLINK_PATTERN_ID:
+      Blink(CRGB(r1, g1, b1), startLED, endLED, patData);
       break;
     case FADE_PATTERN_ID:
-      ColorFadeInOut(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      ColorFadeInOut(CRGB(r1, g1, b1), startLED, endLED);
       break;
     case CHASE_PATTERN_ID:
-      ChaseIn(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
-      break;
+      switch(patData){
+        case 1:
+          ChaseOut(CRGB(r1,g1,b1), startLED, endLED);
+          break;
+        case 2:
+          ChaseAll(startLED, endLED);
+          break;
+        default:
+          ChaseIn(CRGB(r1, g1, b1), startLED, endLED);
+          break;
+      }
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
       break;
-    case CHASE_ALL_PATTERN_ID:
-      ChaseAll(intakeRange[0], intakeRange[1]);
-      break;
-    case CHASE_OUT_PATTERN_ID:
-      ChaseOut(CRGB(r1,g1,b1), intakeRange[0], intakeRange[1]);
-      break;
     default: //OFF_PATTERN_ID:
-      Off(intakeRange[0], intakeRange[1]);
-      break;
-  }
-  switch(pattern2) {
-    case SOLID_PATTERN_ID:
-      Fill(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
-      break;
-    case FAST_BLINK_PATTERN_ID:
-      Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1], 10); //blink at 5 Hz
-      break;
-    case SLOW_BLINK_PATTERN_ID:
-      Blink(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1], 50); //blink at 1 Hz
-      break;
-    case FADE_PATTERN_ID:
-      ColorFadeInOut(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
-      break;
-    case CHASE_PATTERN_ID:
-      ChaseIn(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
-      break;
-    case RAINBOW_PATTERN_ID:
-      Rainbow(gHue);
-      break;
-    case CHASE_ALL_PATTERN_ID:
-      ChaseAll(shooterRange[0], shooterRange[1]);
-      break;
-    case CHASE_OUT_PATTERN_ID:
-      ChaseOut(CRGB(r2,g2,b2), shooterRange[0], shooterRange[1]);
-      break;
-    default: //OFF_PATTERN_ID:
-      Off(shooterRange[0], shooterRange[1]);
+      Off(startLED, endLED);
       break;
   }
 }
@@ -154,21 +137,30 @@ void Fill(CRGB color, int startLED, int endLED){
 }
 
 void ChaseIn(CRGB color, int startLED, int endLED) {
-  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
+  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1)) + 0.5));
   if (i == 0) {
     Off(startLED, endLED);
   }
-  leds[endLED + i] = color;
-  leds[startLED - i] = color;
+  leds[startLED + i] = color;
+  leds[endLED - i] = color;
 }
 
 void ChaseOut(CRGB color, int startLED, int endLED) {
-  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
+bool centerOn = false;
+int i = (int) ( ( (double)counter / (double)200) * int(((endLED - startLED + 1)) + 0.5));
   if (i == 0) {
     Off(startLED, endLED);
+    centerOn = false;
   }
-  leds[endLED / 2 - i] = color;
-  leds[endLED / 2 + i] = color;
+
+  Serial.print(i);
+
+  if(!centerOn){
+    leds[(int)(startLED + endLED) / 2] = color;
+    centerOn = true;
+  }
+    leds[((startLED + endLED) / 2) - i - 1] = color;
+    leds[((startLED + endLED) / 2) + i + 1] = color;
 }
 
 void Rainbow(int gHue) 
@@ -177,7 +169,7 @@ void Rainbow(int gHue)
 }
 
 void Blink(CRGB color, int startLED, int endLED, int freq) {
-  if ((counter % freq) == 0) {
+  if ((counter % (freq * 10)) == 0) {
     if ( leds[startLED] ) {                     //test one LED in range to see if it is not black
       Off(startLED, endLED);
     }
@@ -188,36 +180,31 @@ void Blink(CRGB color, int startLED, int endLED, int freq) {
 }
 
 void ChaseAll(int startLED, int endLED){
-  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1) / 2) + 0.5));
-  
-  
+  int i = (int) ( ( (double)counter / (double)100) * int(((endLED - startLED + 1)) + 0.5));
 
-  
-   if(i == 0){
-      if(curChase == 0 && !hasChanged){
-        curCol = CRGB::Green;  
-        curChase ++;
-        hasChanged = true;
-        Serial.print("changed To Green");
-      }else if(curChase == 1 && !hasChanged){
-        curCol = CRGB::Blue;
-        curChase ++;
-        hasChanged = true;
-        Serial.print("changed To Blue");
-      }else if(!hasChanged){
-        curCol = CRGB::Red;
-        curChase = 0;
-        hasChanged = true;
-        Serial.print("changed To Red");
-      }
-    }
-    
-    leds[startLED + i] = curCol;
-    leds[endLED - i] = curCol;
-    if(hasChanged && i != 0){
+    if(i != 0 && hasChanged){
       hasChanged = false;
     }
-  
+    
+   if(i == 0 && !hasChanged){
+      if(curChase == 0){
+          
+        curChase = 1;
+        hasChanged = true;
+        curCol = CRGB::Green;
+      }else if(curChase == 1 && !hasChanged){
+        curChase = 2;
+        hasChanged = true;
+        curCol = CRGB::Blue;
+      }else if(!hasChanged && curChase == 2){
+        curChase = 0;
+        hasChanged = true;
+        curCol = CRGB::Red;
+      }
+    }
+
+    leds[startLED + i] = curCol;
+    leds[endLED - i] = curCol;
 }
 
 void Off(int startLED, int endLED){
@@ -227,11 +214,13 @@ void Off(int startLED, int endLED){
 }
 
 void receiveEvent(int numBytes){
-  while(Wire.available() >= 8) { 
-    for(int i=0; i < 8; i++) { 
-      lightStates[i] = Wire.read();
-    } 
-  }
+  while(Wire.available() >= RANGE_COUNT * 4) { //<---- This gon be fixed next u just w8 m8.
+    for(int x=0; x < RANGE_COUNT; x++){
+     for(int i=0; i < 4; i++) { 
+        lightStates[x][i] = Wire.read();
+     } 
+    }
+   }
 }
 
 //That's all folks!
