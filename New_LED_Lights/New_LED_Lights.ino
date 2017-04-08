@@ -1,10 +1,10 @@
 #include "FastLED.h"
 #include <Wire.h>
 
-#define NUM_LEDS 41
-#define DATA_PIN 4
+#define NUM_LEDS 30
+#define DATA_PIN 5
 #define I2C_ID 10
-#define RANGE_COUNT 3 //<--- make sure you change this to the amount of ranges being used! It's responsible for a few loops and 2D array amounts! 
+#define RANGE_COUNT 1 //<--- make sure you change this to the amount of ranges being used! It's responsible for a few loops and 2D array amounts! 
 
 #define OFF_PATTERN_ID 0 //PatData = None.
 #define SOLID_PATTERN_ID 1 //PatData = None.
@@ -23,9 +23,7 @@ int curChase = 0;
 int shooterRange[2] = {3, 8};
 int driveTrainRange[2] = {9,14};*/
 
-int ranges[RANGE_COUNT][2] = {{0,12},
-                              {13,26},
-                              {27,40}};
+int ranges[RANGE_COUNT][2] = {{0,29}};
 
 byte lightStates[RANGE_COUNT][5];
 
@@ -36,16 +34,15 @@ CRGB leds[NUM_LEDS];
 void setup() {
   
   
-  FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2812, DATA_PIN>(leds, NUM_LEDS);
   Serial.begin(9600);
   
   for(int i=0; i<RANGE_COUNT;i++){
     lightStates[i][0] = 100; //Red
     lightStates[i][1] = 0;  //Green
     lightStates[i][2] = 0;  //Blue
-    lightStates[i][3] = 6;  //Pattern
+    lightStates[i][3] = 5;  //Pattern
     lightStates[i][4] = 0;  //PatternData(if neccessary)
-    Serial.print(i, " ");
   }
 
   for (int i = 0; i < NUM_LEDS; i++){
