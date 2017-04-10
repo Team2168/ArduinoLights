@@ -19,13 +19,12 @@ void loop() {
     data[i][4] = 2;  //PatternData(if neccessary)
     for(int x=0; x<4; i++){
       Wire.write(data[i][x]);
-      Serial.print(data[i][x]);
+      Serial.print(i);
     }
-    Serial.print("\n");
   }
   
   
-  //delay(2000);
+  //delay(500);
   
 
 }
