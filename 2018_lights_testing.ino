@@ -8,46 +8,24 @@
 // lightStates[0] is red1, [1] is g1, [2] is b1, [3] is r2, [4] is g2, [5] is b2, [6] is pattern, and [7] is speed
 //byte lightStates[8] = {0, 0, 255, 255, 0, 0, 5, 300};
 
-
 int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 25, 67, 66, 65, 31}, {20, 19, 18, 25, 26, 66, 65, 64, 31}, {19, 18, 17, 26, 27, 65, 64, 63, 31}, {18, 17, 16, 27, 28, 64, 63, 62, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 31}, {16, 15, 14, 29, 30, 62, 61, 60, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 30}, {18, 17, 16, 27, 28, 64, 63, 62, 29}, {19, 18, 17, 26, 27, 65, 64, 63, 28}, {20, 19, 18, 25, 26, 66, 65, 64, 27}, {21, 20, 19, 24, 25, 67, 66, 65, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 25}, {22, 21, 20, 23, 24, 68, 67, 66, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 27}, {22, 21, 20, 23, 24, 68, 67, 66, 28}, {22, 21, 20, 23, 24, 68, 67, 66, 29}, {22, 21, 20, 23, 24, 68, 67, 66, 30}, {22, 21, 20, 23, 24, 68, 67, 66, 31}};
 
-//int frame1[9] = {0, 1, 2, 16, 17, 18, 19, 20, 9};
-//int frame2[9] = {1, 2, 3, 15, 16, 19, 20, 21, 9};
-//int frame3[9] = {2, 3, 4, 14, 15, 20, 21, 22, 9};
-//int frame4[9] = {3, 4, 5, 13, 14, 21, 22, 23, 9};
-//int frame5[9] = {4, 5, 6, 12, 13, 22, 23, 24, 9};
-//int frame6[9] = {5, 6, 7, 11, 12, 23, 24, 25, 9};
-//int frame7[9] = {6, 7, 8, 10, 11, 24, 25, 26, 9};
-//int frame8[9] = {5, 6, 7, 11, 12, 23, 24, 25, 10};
-//int frame9[9] = {4, 5, 6, 12, 13, 22, 23, 24, 11};
-//int frame10[9] = {3, 4, 5, 13, 14, 21, 22, 23, 12};
-//int frame11[9] = {2, 3, 4, 14, 15, 20, 21, 22, 13};
-//int frame12[9] = {1, 2, 3, 15, 16, 19, 20, 21, 14};
-//int frame13[9] = {0, 1, 2, 16, 17, 18, 19, 20, 15};
-//int frame14[9] = {0, 1, 2, 16, 17, 18, 19, 20, 14};
-//int frame15[9] = {0, 1, 2, 16, 17, 18, 19, 20, 13};
-//int frame16[9] = {0, 1, 2, 16, 17, 18, 19, 20, 12};
-//int frame17[9] = {0, 1, 2, 16, 17, 18, 19, 20, 11};
-//int frame18[9] = {0, 1, 2, 16, 17, 18, 19, 20, 10};
-//int frame19[9] = {0, 1, 2, 16, 17, 18, 19, 20, 9};
-//int animation[19] = {&frame1, &frame2, &frame3, &frame4, &frame5, &frame6, &frame7, &frame8, &frame9, &frame10, &frame11, &frame12, &frame13, &frame14, &frame15, &frame16, &frame17, &frame18, &frame19};
-
-//#define OFF_PATTERN_ID 0 // 
-//#define FILL_PATTERN_ID 1 // 
-//#define BLINK_PATTERN_ID 2 // 
-//#define CHASE_PATTERN_ID 3 // 
-//#define LOADING_PATTERN_ID 4 // 
-//#define ARROWS_RIGHT_PATTERN_ID 5 // 
-//#define ARROWS_LEFT_PATTERN_ID 6 // 
-//#define RAINBOW_PATTERN_ID 7 // 
-//#define SPARKLE_PATTERN_ID 8 // 
-//#define CONFETTI_PATTERN_ID 9 // 
-//#define CROSS_PATTERN_ID 10 // 
-//#define POLICE_PATTERN_ID 11 // 
-//#define LEAPFROG_PATTERN_ID 12 // 
-//#define WAVE_PATTERN_ID 13 // 
-//#define CANDY_CANE_PATTERN_ID 14 // 
-//#define INTAKE_CUBE_PATTERN_ID 15 // 
+//#define OFF_PATTERN_ID 0
+//#define FILL_PATTERN_ID 1
+//#define BLINK_PATTERN_ID 2
+//#define CHASE_PATTERN_ID 3
+//#define LOADING_PATTERN_ID 4
+//#define ARROWS_RIGHT_PATTERN_ID 5
+//#define ARROWS_LEFT_PATTERN_ID 6
+//#define RAINBOW_PATTERN_ID 7
+//#define SPARKLE_PATTERN_ID 8
+//#define CONFETTI_PATTERN_ID 9
+//#define CROSS_PATTERN_ID 10
+//#define POLICE_PATTERN_ID 11
+//#define LEAPFROG_PATTERN_ID 12
+//#define WAVE_PATTERN_ID 13
+//#define CANDY_CANE_PATTERN_ID 14
+//#define INTAKE_CUBE_PATTERN_ID 15
 
   CRGB leds[NUM_LEDS];
   uint8_t hue = 0;
@@ -80,7 +58,11 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
   String toggleString = "";
   boolean stringComplete = false;
   boolean newPattern = false;
-  
+
+
+//////////////////////////////////////// SETUP /////////////////////////////////////////////
+
+
   void setup() {
 
     FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
@@ -93,7 +75,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 //    Wire.begin(I2C_ID);
 //    Wire.onReceive(receiveEvent1);
 
-    //FastLED.setBrightness(20);
+    FastLED.setBrightness(20);
 
   }
 
@@ -160,7 +142,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 //  }
 
 
-  //////////////////////////////////////// MAIN PATTERNS /////////////////////////////////////////////
+  //////////////////////////////////////// PATTERNS /////////////////////////////////////////////
 
 
   // Turns off all LEDs
@@ -441,9 +423,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
 
 
-  ////////////////////////////////////////// EXTRA PATTERNS /////////////////////////////////////////
-
-
   // Makes the lights change colors to different colors of the rainbow
   void rainbow() {
 
@@ -524,7 +503,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
 
 
-  // Makes a red, blinking cross with a blinking white background
+  // Makes red, blinking crosses with a blinking white background
   // Hardcoded; only works as intended with 3 rows of 23 LEDs
   void cross() {
 
@@ -616,9 +595,9 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
 
 
+  // Makes the lights look like they're playing leapfrog
   void leapfrog(CRGB color) {
 
-    // Makes the lights look like they're playing leapfrog
     if(leapfrogCounter < NUM_LEDS) {
 
       if(millis()-leapfrogDelayStart >= 0 && millis()-leapfrogDelayStart <= 200) {
