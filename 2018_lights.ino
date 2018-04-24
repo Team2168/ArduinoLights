@@ -49,12 +49,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 #define CANDY_CANE_PATTERN_ID 14 // 
 #define INTAKE_CUBE_PATTERN_ID 15 // 
 
-/**
- * Situations that need patterns:
- * When robot is placing cube
- * When robot is climbing
- * 
- */
 
   CRGB leds[NUM_LEDS];
   uint8_t hue = 0;
@@ -82,7 +76,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
   unsigned long candyCaneDelayStart = 0.0;
 
 
-  //This is for serial communication testing
   int inputRoboRio = -1;
   int toggleRoboRio = -1;
   boolean messageReceived = false;
@@ -894,8 +887,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
 
   void loop() {
-
-    //makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3], lightStates[4], lightStates[5], lightStates[6], lightStates[7]);
      
     // Causes a pattern to be shown when you type in its assigned number
     if(toggleRoboRio == 1)
