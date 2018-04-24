@@ -6,7 +6,7 @@
 #define I2C_ID 10
 
 // lightStates[0] is red1, [1] is g1, [2] is b1, [3] is r2, [4] is g2, [5] is b2, [6] is pattern, and [7] is speed
-byte lightStates[8] = {0, 0, 255, 255, 0, 0, 5, 300};
+//byte lightStates[8] = {0, 0, 255, 255, 0, 0, 5, 300};
 
 
 int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 25, 67, 66, 65, 31}, {20, 19, 18, 25, 26, 66, 65, 64, 31}, {19, 18, 17, 26, 27, 65, 64, 63, 31}, {18, 17, 16, 27, 28, 64, 63, 62, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 31}, {16, 15, 14, 29, 30, 62, 61, 60, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 30}, {18, 17, 16, 27, 28, 64, 63, 62, 29}, {19, 18, 17, 26, 27, 65, 64, 63, 28}, {20, 19, 18, 25, 26, 66, 65, 64, 27}, {21, 20, 19, 24, 25, 67, 66, 65, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 25}, {22, 21, 20, 23, 24, 68, 67, 66, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 27}, {22, 21, 20, 23, 24, 68, 67, 66, 28}, {22, 21, 20, 23, 24, 68, 67, 66, 29}, {22, 21, 20, 23, 24, 68, 67, 66, 30}, {22, 21, 20, 23, 24, 68, 67, 66, 31}};
@@ -32,29 +32,22 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 //int frame19[9] = {0, 1, 2, 16, 17, 18, 19, 20, 9};
 //int animation[19] = {&frame1, &frame2, &frame3, &frame4, &frame5, &frame6, &frame7, &frame8, &frame9, &frame10, &frame11, &frame12, &frame13, &frame14, &frame15, &frame16, &frame17, &frame18, &frame19};
 
-#define OFF_PATTERN_ID 0 // 
-#define FILL_PATTERN_ID 1 // 
-#define BLINK_PATTERN_ID 2 // 
-#define CHASE_PATTERN_ID 3 // 
-#define LOADING_PATTERN_ID 4 // 
-#define ARROWS_RIGHT_PATTERN_ID 5 // 
-#define ARROWS_LEFT_PATTERN_ID 6 // 
-#define RAINBOW_PATTERN_ID 7 // 
-#define SPARKLE_PATTERN_ID 8 // 
-#define CONFETTI_PATTERN_ID 9 // 
-#define CROSS_PATTERN_ID 10 // 
-#define POLICE_PATTERN_ID 11 // 
-#define LEAPFROG_PATTERN_ID 12 // 
-#define WAVE_PATTERN_ID 13 // 
-#define CANDY_CANE_PATTERN_ID 14 // 
-#define INTAKE_CUBE_PATTERN_ID 15 // 
-
-/**
- * Situations that need patterns:
- * When robot is placing cube
- * When robot is climbing
- * 
- */
+//#define OFF_PATTERN_ID 0 // 
+//#define FILL_PATTERN_ID 1 // 
+//#define BLINK_PATTERN_ID 2 // 
+//#define CHASE_PATTERN_ID 3 // 
+//#define LOADING_PATTERN_ID 4 // 
+//#define ARROWS_RIGHT_PATTERN_ID 5 // 
+//#define ARROWS_LEFT_PATTERN_ID 6 // 
+//#define RAINBOW_PATTERN_ID 7 // 
+//#define SPARKLE_PATTERN_ID 8 // 
+//#define CONFETTI_PATTERN_ID 9 // 
+//#define CROSS_PATTERN_ID 10 // 
+//#define POLICE_PATTERN_ID 11 // 
+//#define LEAPFROG_PATTERN_ID 12 // 
+//#define WAVE_PATTERN_ID 13 // 
+//#define CANDY_CANE_PATTERN_ID 14 // 
+//#define INTAKE_CUBE_PATTERN_ID 15 // 
 
   CRGB leds[NUM_LEDS];
   uint8_t hue = 0;
@@ -91,17 +84,16 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
   void setup() {
 
     FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
+    FastLED.addLeds<WS2812, 4, GRB>(leds, NUM_LEDS);
 
     Serial.begin(9600);
-    inputString.reserve(200);
+    inputString.reserve(100);
     
     
 //    Wire.begin(I2C_ID);
 //    Wire.onReceive(receiveEvent1);
 
     //FastLED.setBrightness(20);
-
-    delay(30);
 
   }
 
@@ -111,61 +103,61 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
   **/
 
 
-  void makePatterns(int r1, int g1, int b1, int r2, int g2, int b2, int pattern, int speed) {
-
-    switch (pattern) {
-      case FILL_PATTERN_ID:
-        fill(CRGB(r1, g1, b1));
-        break;
-      case BLINK_PATTERN_ID:
-        blink_all(CRGB(r1, g1, b1), speed);
-        break;
-      case CHASE_PATTERN_ID:
-        chase(CRGB(r1, g1, b1), speed);
-        break;
-      case LOADING_PATTERN_ID:
-        loading(CRGB(r1, g1, b1), speed);
-        break;
-      case ARROWS_RIGHT_PATTERN_ID:
-        arrows_right();
-        break;
-      case ARROWS_LEFT_PATTERN_ID:
-        arrows_left();
-        break;
-      case RAINBOW_PATTERN_ID:
-        rainbow();
-        break;
-      case SPARKLE_PATTERN_ID:
-        sparkle();
-        break;
-      case CONFETTI_PATTERN_ID:
-        confetti();
-        break;
-      case CROSS_PATTERN_ID:
-        cross();
-        break;
-      case POLICE_PATTERN_ID:
-        police();
-        break;
-      case LEAPFROG_PATTERN_ID:
-        leapfrog(CRGB(r1, g1, b1));
-        break;
-      case WAVE_PATTERN_ID:
-        wave(CRGB(r1, g1, b1));
-        break;
-      case CANDY_CANE_PATTERN_ID:
-        candy_cane(CRGB(r1, g1, b1), CRGB(r2, g2, b2));
-        break;
-       case INTAKE_CUBE_PATTERN_ID:
-        intake_cube(CRGB(r1, g1, b1));
-        break;
-
-      default: //OFF_PATTERN_ID:
-        off();
-        break;
-    }
-
-  }
+//  void makePatterns(int r1, int g1, int b1, int r2, int g2, int b2, int pattern, int speed) {
+//
+//    switch (pattern) {
+//      case FILL_PATTERN_ID:
+//        fill(CRGB(r1, g1, b1));
+//        break;
+//      case BLINK_PATTERN_ID:
+//        blink_all(CRGB(r1, g1, b1), speed);
+//        break;
+//      case CHASE_PATTERN_ID:
+//        chase(CRGB(r1, g1, b1), speed);
+//        break;
+//      case LOADING_PATTERN_ID:
+//        loading(CRGB(r1, g1, b1), speed);
+//        break;
+//      case ARROWS_RIGHT_PATTERN_ID:
+//        arrows_right();
+//        break;
+//      case ARROWS_LEFT_PATTERN_ID:
+//        arrows_left();
+//        break;
+//      case RAINBOW_PATTERN_ID:
+//        rainbow();
+//        break;
+//      case SPARKLE_PATTERN_ID:
+//        sparkle();
+//        break;
+//      case CONFETTI_PATTERN_ID:
+//        confetti();
+//        break;
+//      case CROSS_PATTERN_ID:
+//        cross();
+//        break;
+//      case POLICE_PATTERN_ID:
+//        police();
+//        break;
+//      case LEAPFROG_PATTERN_ID:
+//        leapfrog(CRGB(r1, g1, b1));
+//        break;
+//      case WAVE_PATTERN_ID:
+//        wave(CRGB(r1, g1, b1));
+//        break;
+//      case CANDY_CANE_PATTERN_ID:
+//        candy_cane(CRGB(r1, g1, b1), CRGB(r2, g2, b2));
+//        break;
+//       case INTAKE_CUBE_PATTERN_ID:
+//        intake_cube(CRGB(r1, g1, b1));
+//        break;
+//
+//      default: //OFF_PATTERN_ID:
+//        off();
+//        break;
+//    }
+//
+//  }
 
 
   //////////////////////////////////////// MAIN PATTERNS /////////////////////////////////////////////
@@ -358,7 +350,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
     leds[0 + (i + 6) % 23] = CRGB::Blue;
     leds[45 - (i + 7) % 23] = CRGB::Blue;
 
-    delay(30);
     FastLED.show();
 
     if(millis()-arrowsRightDelayStart >= 150) {
@@ -411,7 +402,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
     leds[22 - (i + 6) % 23] = CRGB::Blue;
     leds[23 + (i + 7) % 23] = CRGB::Blue;
 
-    delay(30);
     FastLED.show();
     if(millis()-arrowsLeftDelayStart >= 150) {
     // If the amount of milliseconds that has passed is greater than or equal to 150, the following code will execute
@@ -459,8 +449,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
     fill_rainbow(leds, NUM_LEDS, hue, 4);
 
-    delay(30);
-
     FastLED.show();
 
     hue++;
@@ -476,13 +464,12 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
     int i = random(0, NUM_LEDS - 1);
 
     leds[i] = CRGB::Red;
-    delay(30);
     FastLED.show();
-    delay(30);
+    //delay(30);
     leds[i] = CRGB::Black;
-    delay(30);
+    //delay(30);
     FastLED.show();
-    delay(30);
+    //delay(30);
 
   }
 
@@ -500,37 +487,37 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
     // If color equals 0, the LED will be red
     if (color == 0) {
       leds[i] = CRGB::Red;
-      delay(30);
+      //delay(30);
       FastLED.show();
-      delay(30);
+      //delay(30);
       leds[i] = CRGB::Black;
-      delay(30);
+      //delay(30);
       FastLED.show();
-      delay(30);
+      //delay(30);
     }
 
     // If color equals 1, the LED will be green
     if (color == 1) {
       leds[i] = CRGB::Green;
-      delay(30);
+      //delay(30);
       FastLED.show();
-      delay(30);
+      //delay(30);
       leds[i] = CRGB::Black;
-      delay(30);
+      //delay(30);
       FastLED.show();
-      delay(30);
+      //delay(30);
     }
 
     // If color equals 2, the LED will be blue
     if (color == 2) {
       leds[i] = CRGB::Blue;
-      delay(30);
+      //delay(30);
       FastLED.show();
-      delay(30);
+      //delay(30);
       leds[i] = CRGB::Black;
-      delay(30);
+      //delay(30);
       FastLED.show();
-      delay(30);
+      //delay(30);
     }
 
   }
@@ -568,8 +555,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
       leds[49] = CRGB::Black;
       leds[53] = CRGB::Black;
       leds[57] = CRGB::Black;
-  
-      delay(30);
     }
     else if(millis()-crossDelayStart>500 && millis()-crossDelayStart<=1000) {
       // If the amount of seconds that has passed is greater than 500 and less than or equal to 1000, the following code will execute
@@ -598,8 +583,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
       leds[49] = CRGB::Red;
       leds[53] = CRGB::Red;
       leds[57] = CRGB::Red;
-  
-      delay(30);
     }
     else {
       // Otherwise, crossDelayStart will be set to the current amount of milliseconds passed
@@ -616,7 +599,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
   // Makes all LEDs blink from blue to red
   void police() {
 
-    if(millis()-policeDelayStart > 0 && millis()-policeDelayStart <= 500) {
+    if(millis()-policeDelayStart > 0 && millis()-policeDelayStart <= 500 ) {
       // If the amount of milliseconds that has passed is greater than 0 and less than or equal to 500, all LEDs will become blue
       fill(CRGB::Blue);
     }
@@ -671,161 +654,137 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
       // If the amount of milliseconds that has passed is greater than 0 and less than or equal to 100, the following code will execute
       leds[22] = CRGB::Black;
       leds[0] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 100 && millis()-waveDelayStart <= 200) {
       // If the amount of milliseconds that has passed is greater than 100 and less than or equal to 200, the following code will execute
       leds[0] = CRGB::Black;
       leds[44] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 200 && millis()-waveDelayStart <= 300) {
       // If the amount of milliseconds that has passed is greater than 200 and less than or equal to 300, the following code will execute
       leds[44] = CRGB::Black;
       leds[2] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 300 && millis()-waveDelayStart <= 400) {
       // If the amount of milliseconds that has passed is greater than 300 and less than or equal to 400, the following code will execute
       leds[2] = CRGB::Black;
       leds[42] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 400 && millis()-waveDelayStart <= 500) {
       // If the amount of milliseconds that has passed is greater than 400 and less than or equal to 500, the following code will execute
       leds[42] = CRGB::Black;
       leds[4] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 500 && millis()-waveDelayStart <= 600) {
       // If the amount of milliseconds that has passed is greater than 500 and less than or equal to 600, the following code will execute
       leds[4] = CRGB::Black;
       leds[40] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 600 && millis()-waveDelayStart <= 700) {
       // If the amount of milliseconds that has passed is greater than 600 and less than or equal to 700, the following code will execute
       leds[40] = CRGB::Black;
       leds[6] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 700 && millis()-waveDelayStart <= 800) {
       // If the amount of milliseconds that has passed is greater than 700 and less than or equal to 800, the following code will execute
       leds[6] = CRGB::Black;
       leds[38] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 800 && millis()-waveDelayStart <= 900) {
       // If the amount of milliseconds that has passed is greater than 800 and less than or equal to 900, the following code will execute
       leds[38] = CRGB::Black;
       leds[8] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 900 && millis()-waveDelayStart <= 1000) {
       // If the amount of milliseconds that has passed is greater than 900 and less than or equal to 1000, the following code will execute
       leds[8] = CRGB::Black;
       leds[36] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1000 && millis()-waveDelayStart <= 1100) {
       // If the amount of milliseconds that has passed is greater than 1000 and less than or equal to 1100, the following code will execute
       leds[36] = CRGB::Black;
       leds[10] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1100 && millis()-waveDelayStart <= 1200) {
       // If the amount of milliseconds that has passed is greater than 1100 and less than or equal to 1200, the following code will execute
       leds[10] = CRGB::Black;
-      leds[34] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1200 && millis()-waveDelayStart <= 1300) {
       // If the amount of milliseconds that has passed is greater than 1200 and less than or equal to 1300, the following code will execute
       leds[34] = CRGB::Black;
       leds[12] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1300 && millis()-waveDelayStart <= 1400) {
       // If the amount of milliseconds that has passed is greater than 1300 and less than or equal to 1400, the following code will execute
       leds[12] = CRGB::Black;
       leds[32] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1400 && millis()-waveDelayStart <= 1500) {
       // If the amount of milliseconds that has passed is greater than 1400 and less than or equal to 1500, the following code will execute
       leds[32] = CRGB::Black;
       leds[14] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1500 && millis()-waveDelayStart <= 1600) {
       // If the amount of milliseconds that has passed is greater than 1500 and less than or equal to 1600, the following code will execute
       leds[14] = CRGB::Black;
       leds[30] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1600 && millis()-waveDelayStart <= 1700) {
       // If the amount of milliseconds that has passed is greater than 1600 and less than or equal to 1700, the following code will execute
       leds[30] = CRGB::Black;
       leds[16] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1700 && millis()-waveDelayStart <= 1800) {
       // If the amount of milliseconds that has passed is greater than 1700 and less than or equal to 1800, the following code will execute
       leds[16] = CRGB::Black;
       leds[28] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1800 && millis()-waveDelayStart <= 1900) {
       // If the amount of milliseconds that has passed is greater than 1800 and less than or equal to 1900, the following code will execute
       leds[28] = CRGB::Black;
       leds[18] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 1900 && millis()-waveDelayStart <= 2000) {
       // If the amount of milliseconds that has passed is greater than 1900 and less than or equal to 2000, the following code will execute
       leds[18] = CRGB::Black;
       leds[26] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 2000 && millis()-waveDelayStart <= 2100) {
       // If the amount of milliseconds that has passed is greater than 2000 and less than or equal to 2100, the following code will execute
       leds[26] = CRGB::Black;
       leds[20] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 2100 && millis()-waveDelayStart <= 2200) {
       // If the amount of milliseconds that has passed is greater than 2100 and less than or equal to 2200, the following code will execute
       leds[20] = CRGB::Black;
       leds[24] = color;
-      delay(30);
       FastLED.show();
     }
     else if(millis()-waveDelayStart > 2200 && millis()-waveDelayStart <= 2300) {
       // If the amount of milliseconds that has passed is greater than 2200 and less than or equal to 2300, the following code will execute
       leds[24] = CRGB::Black;
       leds[22] = color;
-      delay(30);
       FastLED.show();
     }
     else {
@@ -883,7 +842,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
     leds[animation[intakePatternCounter][7]] = robotColor;
     leds[animation[intakePatternCounter][8]] = CRGB::Yellow;
 
-    delay(30);
     FastLED.show();
 
     if(millis()-intakePatternDelayStart >= 100) {
@@ -906,8 +864,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
   void loop() {
 
-    //makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3], lightStates[4], lightStates[5], lightStates[6], lightStates[7]);
-     
     // Causes a pattern to be shown when you type in its assigned number
     if(toggleString == "1\n")
       fill(CRGB::Red);
@@ -915,7 +871,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
       fill(CRGB::Blue);
     else if(toggleString == "g\n")
       fill(CRGB::Green);
-    else if(toggleString == "o\n")
+    else if(toggleString == "1\n")
       off();
     else if(toggleString == "2\n")
       blink_all(CRGB::Red, 500);
@@ -954,44 +910,44 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
         toggleString = inputString;
         newPattern = true;
       }
-      if(toggleString == "1\n")
-        Serial.println("Arduino: Okay, now I'm red!");
-      else if(toggleString == "b\n")
-        Serial.println("Arduino: Okay, now I'm blue!");
-      else if(toggleString == "g\n")
-        Serial.println("Arduino: Okay, now I'm green!");
-      else if(toggleString == "o\n")
-        Serial.println("Arduino: Okay, now I'm off!");
-      else if(toggleString == "2\n")
-        Serial.println("Arduino: Okay, I'm blinking now!");
-      else if(toggleString == "3\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'chase' now!");
-      else if(toggleString == "4\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'loading' now!");
-      else if(toggleString == "5\n")
-        Serial.println("Arduino: Okay, now I'll show arrows!");
-      else if(toggleString == "6\n")
-        Serial.println("Arduino: Okay, now I'll show arrows!");
-      else if(toggleString == "7\n")
-        Serial.println("Arduino: Okay, now I'm rainbow-colored!");
-      else if(toggleString == "8\n")
-        Serial.println("Arduino: Okay, now I'm sparkly!");
-      else if(toggleString == "9\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'confetti' now!");
-      else if(toggleString == "10\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'cross' now!");
-      else if(toggleString == "11\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'police' now!");
-      else if(toggleString == "12\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'leapfrog' now!");
-      else if(toggleString == "13\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'wave' now!");
-      else if(toggleString == "14\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'candy_cane' now!");
-      else if(toggleString == "15\n")
-        Serial.println("Arduino: Okay, I'll show the pattern 'intake_cube' now!");
-      else if(toggleString == "hello\n")
-        Serial.println("Arduino: Hello!");
+//      if(toggleString == "1\n")
+//        Serial.println("Arduino: Okay, now I'm red!");
+//      else if(toggleString == "b\n")
+//        Serial.println("Arduino: Okay, now I'm blue!");
+//      else if(toggleString == "g\n")
+//        Serial.println("Arduino: Okay, now I'm green!");
+//      else if(toggleString == "1\n")
+//        Serial.println("Arduino: Okay, now I'm off!");
+//      else if(toggleString == "2\n")
+//        Serial.println("Arduino: Okay, I'm blinking now!");
+//      else if(toggleString == "3\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'chase' now!");
+//      else if(toggleString == "4\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'loading' now!");
+//      else if(toggleString == "5\n")
+//        Serial.println("Arduino: Okay, now I'll show arrows!");
+//      else if(toggleString == "6\n")
+//        Serial.println("Arduino: Okay, now I'll show arrows!");
+//      else if(toggleString == "7\n")
+//        Serial.println("Arduino: Okay, now I'm rainbow-colored!");
+//      else if(toggleString == "8\n")
+//        Serial.println("Arduino: Okay, now I'm sparkly!");
+//      else if(toggleString == "9\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'confetti' now!");
+//      else if(toggleString == "10\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'cross' now!");
+//      else if(toggleString == "11\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'police' now!");
+//      else if(toggleString == "12\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'leapfrog' now!");
+//      else if(toggleString == "13\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'wave' now!");
+//      else if(toggleString == "14\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'candy_cane' now!");
+//      else if(toggleString == "15\n")
+//        Serial.println("Arduino: Okay, I'll show the pattern 'intake_cube' now!");
+//      else if(toggleString == "hello\n")
+//        Serial.println("Arduino: Hello!");
         
 
       inputString = "";
@@ -1020,6 +976,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
       if(inChar == '\n') {
         stringComplete = true;
+        Serial.println("y");
       }
     }
   }
