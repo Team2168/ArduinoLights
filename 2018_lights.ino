@@ -3,7 +3,7 @@
 
 #define NUM_LEDS 69
 #define DATA_PIN 3
-#define I2C_ID 10
+#define I2C_ID 8
 
 // lightStates[0] is red1, [1] is g1, [2] is b1, [3] is r2, [4] is g2, [5] is b2, [6] is pattern, and [7] is speed
 byte lightStates[8] = {0, 0, 255, 255, 0, 0, 5, 300};
@@ -83,21 +83,22 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
 
   //This is for serial communication testing
-  String inputString = "";
-  String toggleString = "";
-  boolean stringComplete = false;
+  int inputRoboRio = -1;
+  int toggleRoboRio = -1;
+  boolean messageReceived = false;
   boolean newPattern = false;
   
   void setup() {
 
     FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
 
+//    Serial.begin(9600);
+//    inputRoboRio.reserve(200);
+    
+    
+    Wire.begin(I2C_ID);
+    Wire.onReceive(receiveEvent1);
     Serial.begin(9600);
-    inputString.reserve(200);
-    
-    
-//    Wire.begin(I2C_ID);
-//    Wire.onReceive(receiveEvent1);
 
     //FastLED.setBrightness(20);
 
@@ -436,18 +437,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
     }
 
   }
-
-
-
-//  void receiveEvent1(int numBytes) {
-//
-//    while (Wire.available() >= 8) {
-//      for (int i = 0; i < 8; i++) {
-//        lightStates[i] = Wire.read();
-//      }
-//    }
-//
-//  }
 
 
 
@@ -909,100 +898,98 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
     //makePatterns(lightStates[0], lightStates[1], lightStates[2], lightStates[3], lightStates[4], lightStates[5], lightStates[6], lightStates[7]);
      
     // Causes a pattern to be shown when you type in its assigned number
-    if(toggleString == "1\n")
+    if(toggleRoboRio == 1)
       fill(CRGB::Red);
-    else if(toggleString == "b\n")
-      fill(CRGB::Blue);
-    else if(toggleString == "g\n")
-      fill(CRGB::Green);
-    else if(toggleString == "o\n")
+//    else if(toggleRoboRio == "b\n")
+//      fill(CRGB::Blue);
+//    else if(toggleRoboRio == "g\n")
+//      fill(CRGB::Green);
+    else if(toggleRoboRio == 0)
       off();
-    else if(toggleString == "2\n")
+    else if(toggleRoboRio == 2)
       blink_all(CRGB::Red, 500);
-    else if(toggleString == "3\n")
+    else if(toggleRoboRio == 3)
       chase(CRGB::Blue, 100);
-    else if(toggleString == "4\n")
+    else if(toggleRoboRio == 4)
       loading(CRGB::Green, 100);
-    else if(toggleString == "5\n")
+    else if(toggleRoboRio == 5)
       arrows_right();
-    else if(toggleString == "6\n")
+    else if(toggleRoboRio == 6)
       arrows_left();
-    else if(toggleString == "7\n")
+    else if(toggleRoboRio == 7)
       rainbow();
-    else if(toggleString == "8\n")
+    else if(toggleRoboRio == 8)
       sparkle();
-    else if(toggleString == "9\n")
+    else if(toggleRoboRio == 9)
       confetti();
-    else if(toggleString == "10\n")
+    else if(toggleRoboRio == 10)
       cross();
-    else if(toggleString == "11\n")
+    else if(toggleRoboRio == 11)
       police();
-    else if(toggleString == "12\n")
+    else if(toggleRoboRio == 12)
       leapfrog(CRGB::Green);
-    else if(toggleString == "13\n")
+    else if(toggleRoboRio == 13)
       wave(CRGB::Blue);
-    else if(toggleString == "14\n")
+    else if(toggleRoboRio == 14)
       candy_cane(CRGB::White, CRGB::Red);
-    else if(toggleString == "15\n")
+    else if(toggleRoboRio == 15)
       intake_cube(CRGB::Red);
 
     // Causes text to be printed when you select a pattern to be shown
-    if(stringComplete) {
+    if(messageReceived) {
       // If a string is enterred, the following code will execute
-      if(toggleString != inputString) {
-        // If toggleString does not match inputString, a new pattern is being selected, so newPattern is set to true
-        toggleString = inputString;
+      if(toggleRoboRio != inputRoboRio) {
+        // If toggleRoboRio does not match inputRoboRio, a new pattern is being selected, so newPattern is set to true
+        toggleRoboRio = inputRoboRio;
         newPattern = true;
       }
-      if(toggleString == "1\n")
+      if(toggleRoboRio == 1)
         Serial.println("Arduino: Okay, now I'm red!");
-      else if(toggleString == "b\n")
-        Serial.println("Arduino: Okay, now I'm blue!");
-      else if(toggleString == "g\n")
-        Serial.println("Arduino: Okay, now I'm green!");
-      else if(toggleString == "o\n")
+//      else if(toggleRoboRio == "b\n")
+//        Serial.println("Arduino: Okay, now I'm blue!");
+//      else if(toggleRoboRio == "g\n")
+//        Serial.println("Arduino: Okay, now I'm green!");
+      else if(toggleRoboRio == 0)
         Serial.println("Arduino: Okay, now I'm off!");
-      else if(toggleString == "2\n")
+      else if(toggleRoboRio == 2)
         Serial.println("Arduino: Okay, I'm blinking now!");
-      else if(toggleString == "3\n")
+      else if(toggleRoboRio == 3)
         Serial.println("Arduino: Okay, I'll show the pattern 'chase' now!");
-      else if(toggleString == "4\n")
+      else if(toggleRoboRio == 4)
         Serial.println("Arduino: Okay, I'll show the pattern 'loading' now!");
-      else if(toggleString == "5\n")
+      else if(toggleRoboRio == 5)
         Serial.println("Arduino: Okay, now I'll show arrows!");
-      else if(toggleString == "6\n")
+      else if(toggleRoboRio == 6)
         Serial.println("Arduino: Okay, now I'll show arrows!");
-      else if(toggleString == "7\n")
+      else if(toggleRoboRio == 7)
         Serial.println("Arduino: Okay, now I'm rainbow-colored!");
-      else if(toggleString == "8\n")
+      else if(toggleRoboRio == 8)
         Serial.println("Arduino: Okay, now I'm sparkly!");
-      else if(toggleString == "9\n")
+      else if(toggleRoboRio == 9)
         Serial.println("Arduino: Okay, I'll show the pattern 'confetti' now!");
-      else if(toggleString == "10\n")
+      else if(toggleRoboRio == 10)
         Serial.println("Arduino: Okay, I'll show the pattern 'cross' now!");
-      else if(toggleString == "11\n")
+      else if(toggleRoboRio == 11)
         Serial.println("Arduino: Okay, I'll show the pattern 'police' now!");
-      else if(toggleString == "12\n")
+      else if(toggleRoboRio == 12)
         Serial.println("Arduino: Okay, I'll show the pattern 'leapfrog' now!");
-      else if(toggleString == "13\n")
+      else if(toggleRoboRio == 13)
         Serial.println("Arduino: Okay, I'll show the pattern 'wave' now!");
-      else if(toggleString == "14\n")
+      else if(toggleRoboRio == 14)
         Serial.println("Arduino: Okay, I'll show the pattern 'candy_cane' now!");
-      else if(toggleString == "15\n")
+      else if(toggleRoboRio == 15)
         Serial.println("Arduino: Okay, I'll show the pattern 'intake_cube' now!");
-      else if(toggleString == "hello\n")
-        Serial.println("Arduino: Hello!");
         
 
-      inputString = "";
-      stringComplete = false;
+      inputRoboRio = -1;
+      messageReceived = false;
     }
     
     
     if(newPattern) {
       // If the pattern is being changed, all LEDs are briefly turned off and some variables are reset
       off();
-      if(toggleString == "4\n") {
+      if(toggleRoboRio == 4) {
         loadingCounter = -1;
         loadingColor = true;
       }
@@ -1013,14 +1000,23 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
 
 
-  void serialEvent() {
-    while(Serial.available()) {
-      char inChar = (char)Serial.read();
-      inputString += inChar;
+//  void serialEvent() {
+//    while(Serial.available()) {
+//      char inChar = (char)Serial.read();
+//      inputRoboRio += inChar;
+//
+//      if(inChar == '\n') {
+//        messageReceived = true;
+//      }
+//    }
+//  }
 
-      if(inChar == '\n') {
-        stringComplete = true;
+
+    void receiveEvent1(int numBytes) {
+      while (1 < Wire.available()) {
+        inputRoboRio = Wire.read();
+        messageReceived = true;
       }
-    }
-  }
+      Serial.println(inputRoboRio);
+     }
 
