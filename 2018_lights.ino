@@ -10,22 +10,22 @@ byte lightStates[8] = {0, 0, 255, 255, 0, 0, 5, 300};
 
 int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 25, 67, 66, 65, 31}, {20, 19, 18, 25, 26, 66, 65, 64, 31}, {19, 18, 17, 26, 27, 65, 64, 63, 31}, {18, 17, 16, 27, 28, 64, 63, 62, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 31}, {16, 15, 14, 29, 30, 62, 61, 60, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 30}, {18, 17, 16, 27, 28, 64, 63, 62, 29}, {19, 18, 17, 26, 27, 65, 64, 63, 28}, {20, 19, 18, 25, 26, 66, 65, 64, 27}, {21, 20, 19, 24, 25, 67, 66, 65, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 25}, {22, 21, 20, 23, 24, 68, 67, 66, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 27}, {22, 21, 20, 23, 24, 68, 67, 66, 28}, {22, 21, 20, 23, 24, 68, 67, 66, 29}, {22, 21, 20, 23, 24, 68, 67, 66, 30}, {22, 21, 20, 23, 24, 68, 67, 66, 31}};
 
-#define OFF_PATTERN_ID 0
-#define FILL_PATTERN_ID 1
-#define BLINK_PATTERN_ID 2
-#define CHASE_PATTERN_ID 3
-#define LOADING_PATTERN_ID 4
-#define ARROWS_RIGHT_PATTERN_ID 5
-#define ARROWS_LEFT_PATTERN_ID 6
-#define RAINBOW_PATTERN_ID 7
-#define SPARKLE_PATTERN_ID 8
-#define CONFETTI_PATTERN_ID 9
-#define CROSS_PATTERN_ID 10
-#define POLICE_PATTERN_ID 11
-#define LEAPFROG_PATTERN_ID 12 
-#define WAVE_PATTERN_ID 13
-#define CANDY_CANE_PATTERN_ID 14
-#define INTAKE_CUBE_PATTERN_ID 15
+//#define OFF_PATTERN_ID 0
+//#define FILL_PATTERN_ID 1
+//#define BLINK_PATTERN_ID 2
+//#define CHASE_PATTERN_ID 3
+//#define LOADING_PATTERN_ID 4
+//#define ARROWS_RIGHT_PATTERN_ID 5
+//#define ARROWS_LEFT_PATTERN_ID 6
+//#define RAINBOW_PATTERN_ID 7
+//#define SPARKLE_PATTERN_ID 8
+//#define CONFETTI_PATTERN_ID 9
+//#define CROSS_PATTERN_ID 10
+//#define POLICE_PATTERN_ID 11
+//#define LEAPFROG_PATTERN_ID 12 
+//#define WAVE_PATTERN_ID 13
+//#define CANDY_CANE_PATTERN_ID 14
+//#define INTAKE_CUBE_PATTERN_ID 15
 
   CRGB leds[NUM_LEDS];
   uint8_t hue = 0;
@@ -54,7 +54,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 
   // For I2C communication
   int inputRoboRio = -1;
-  int toggleRoboRio = -1;
+  int toggleRoboRio = 99;
   boolean messageReceived = false;
   boolean newPattern = false;
 
@@ -65,6 +65,7 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
   void setup() {
 
     FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
+    FastLED.addLeds<WS2812, 4, GRB>(leds, NUM_LEDS);
 
 //    Serial.begin(9600);
 //    inputRoboRio.reserve(200);
@@ -86,61 +87,61 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
   **/
 
 
-  void makePatterns(int r1, int g1, int b1, int r2, int g2, int b2, int pattern, int speed) {
-
-    switch (pattern) {
-      case FILL_PATTERN_ID:
-        fill(CRGB(r1, g1, b1));
-        break;
-      case BLINK_PATTERN_ID:
-        blink_all(CRGB(r1, g1, b1), speed);
-        break;
-      case CHASE_PATTERN_ID:
-        chase(CRGB(r1, g1, b1), speed);
-        break;
-      case LOADING_PATTERN_ID:
-        loading(CRGB(r1, g1, b1), speed);
-        break;
-      case ARROWS_RIGHT_PATTERN_ID:
-        arrows_right();
-        break;
-      case ARROWS_LEFT_PATTERN_ID:
-        arrows_left();
-        break;
-      case RAINBOW_PATTERN_ID:
-        rainbow();
-        break;
-      case SPARKLE_PATTERN_ID:
-        sparkle();
-        break;
-      case CONFETTI_PATTERN_ID:
-        confetti();
-        break;
-      case CROSS_PATTERN_ID:
-        cross();
-        break;
-      case POLICE_PATTERN_ID:
-        police();
-        break;
-      case LEAPFROG_PATTERN_ID:
-        leapfrog(CRGB(r1, g1, b1));
-        break;
-      case WAVE_PATTERN_ID:
-        wave(CRGB(r1, g1, b1));
-        break;
-      case CANDY_CANE_PATTERN_ID:
-        candy_cane(CRGB(r1, g1, b1), CRGB(r2, g2, b2));
-        break;
-       case INTAKE_CUBE_PATTERN_ID:
-        intake_cube(CRGB(r1, g1, b1));
-        break;
-
-      default: //OFF_PATTERN_ID:
-        off();
-        break;
-    }
-
-  }
+//  void makePatterns(int r1, int g1, int b1, int r2, int g2, int b2, int pattern, int speed) {
+//
+//    switch (pattern) {
+//      case FILL_PATTERN_ID:
+//        fill(CRGB(r1, g1, b1));
+//        break;
+//      case BLINK_PATTERN_ID:
+//        blink_all(CRGB(r1, g1, b1), speed);
+//        break;
+//      case CHASE_PATTERN_ID:
+//        chase(CRGB(r1, g1, b1), speed);
+//        break;
+//      case LOADING_PATTERN_ID:
+//        loading(CRGB(r1, g1, b1), speed);
+//        break;
+//      case ARROWS_RIGHT_PATTERN_ID:
+//        arrows_right();
+//        break;
+//      case ARROWS_LEFT_PATTERN_ID:
+//        arrows_left();
+//        break;
+//      case RAINBOW_PATTERN_ID:
+//        rainbow();
+//        break;
+//      case SPARKLE_PATTERN_ID:
+//        sparkle();
+//        break;
+//      case CONFETTI_PATTERN_ID:
+//        confetti();
+//        break;
+//      case CROSS_PATTERN_ID:
+//        cross();
+//        break;
+//      case POLICE_PATTERN_ID:
+//        police();
+//        break;
+//      case LEAPFROG_PATTERN_ID:
+//        leapfrog(CRGB(r1, g1, b1));
+//        break;
+//      case WAVE_PATTERN_ID:
+//        wave(CRGB(r1, g1, b1));
+//        break;
+//      case CANDY_CANE_PATTERN_ID:
+//        candy_cane(CRGB(r1, g1, b1), CRGB(r2, g2, b2));
+//        break;
+//       case INTAKE_CUBE_PATTERN_ID:
+//        intake_cube(CRGB(r1, g1, b1));
+//        break;
+//
+//      default: //OFF_PATTERN_ID:
+//        off();
+//        break;
+//    }
+//
+//  }
 
 
   //////////////////////////////////////// PATTERNS /////////////////////////////////////////////
@@ -874,6 +875,8 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 //      fill(CRGB::Blue);
 //    else if(toggleRoboRio == "g\n")
 //      fill(CRGB::Green);
+    else if(toggleRoboRio == 99)
+        fill(CRGB::Purple);
     else if(toggleRoboRio == 0)
       off();
     else if(toggleRoboRio == 2)
@@ -913,42 +916,42 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
         toggleRoboRio = inputRoboRio;
         newPattern = true;
       }
-      if(toggleRoboRio == 1)
-        Serial.println("Arduino: Okay, now I'm red!");
+//      if(toggleRoboRio == 1)
+//        Serial.println("Arduino: Okay, now I'm red!");
 //      else if(toggleRoboRio == "b\n")
 //        Serial.println("Arduino: Okay, now I'm blue!");
 //      else if(toggleRoboRio == "g\n")
 //        Serial.println("Arduino: Okay, now I'm green!");
-      else if(toggleRoboRio == 0)
-        Serial.println("Arduino: Okay, now I'm off!");
-      else if(toggleRoboRio == 2)
-        Serial.println("Arduino: Okay, I'm blinking now!");
-      else if(toggleRoboRio == 3)
-        Serial.println("Arduino: Okay, I'll show the pattern 'chase' now!");
-      else if(toggleRoboRio == 4)
-        Serial.println("Arduino: Okay, I'll show the pattern 'loading' now!");
-      else if(toggleRoboRio == 5)
-        Serial.println("Arduino: Okay, now I'll show arrows!");
-      else if(toggleRoboRio == 6)
-        Serial.println("Arduino: Okay, now I'll show arrows!");
-      else if(toggleRoboRio == 7)
-        Serial.println("Arduino: Okay, now I'm rainbow-colored!");
-      else if(toggleRoboRio == 8)
-        Serial.println("Arduino: Okay, now I'm sparkly!");
-      else if(toggleRoboRio == 9)
-        Serial.println("Arduino: Okay, I'll show the pattern 'confetti' now!");
-      else if(toggleRoboRio == 10)
-        Serial.println("Arduino: Okay, I'll show the pattern 'cross' now!");
-      else if(toggleRoboRio == 11)
-        Serial.println("Arduino: Okay, I'll show the pattern 'police' now!");
-      else if(toggleRoboRio == 12)
-        Serial.println("Arduino: Okay, I'll show the pattern 'leapfrog' now!");
-      else if(toggleRoboRio == 13)
-        Serial.println("Arduino: Okay, I'll show the pattern 'wave' now!");
-      else if(toggleRoboRio == 14)
-        Serial.println("Arduino: Okay, I'll show the pattern 'candy_cane' now!");
-      else if(toggleRoboRio == 15)
-        Serial.println("Arduino: Okay, I'll show the pattern 'intake_cube' now!");
+//      else if(toggleRoboRio == 0)
+//        Serial.println("Arduino: Okay, now I'm off!");
+//      else if(toggleRoboRio == 2)
+//        Serial.println("Arduino: Okay, I'm blinking now!");
+//      else if(toggleRoboRio == 3)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'chase' now!");
+//      else if(toggleRoboRio == 4)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'loading' now!");
+//      else if(toggleRoboRio == 5)
+//        Serial.println("Arduino: Okay, now I'll show arrows!");
+//      else if(toggleRoboRio == 6)
+//        Serial.println("Arduino: Okay, now I'll show arrows!");
+//      else if(toggleRoboRio == 7)
+//        Serial.println("Arduino: Okay, now I'm rainbow-colored!");
+//      else if(toggleRoboRio == 8)
+//        Serial.println("Arduino: Okay, now I'm sparkly!");
+//      else if(toggleRoboRio == 9)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'confetti' now!");
+//      else if(toggleRoboRio == 10)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'cross' now!");
+//      else if(toggleRoboRio == 11)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'police' now!");
+//      else if(toggleRoboRio == 12)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'leapfrog' now!");
+//      else if(toggleRoboRio == 13)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'wave' now!");
+//      else if(toggleRoboRio == 14)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'candy_cane' now!");
+//      else if(toggleRoboRio == 15)
+//        Serial.println("Arduino: Okay, I'll show the pattern 'intake_cube' now!");
         
 
       inputRoboRio = -1;
@@ -988,6 +991,6 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
         inputRoboRio = Wire.read();
         messageReceived = true;
       }
-      Serial.println(inputRoboRio);
+      //Serial.println(inputRoboRio);
      }
 
