@@ -985,12 +985,14 @@ int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 2
 //  }
 
 
-
-    void receiveEvent1(int numBytes) {
-      while (1 < Wire.available()) {
-        inputRoboRio = Wire.read();
-        messageReceived = true;
-      }
-      //Serial.println(inputRoboRio);
-     }
+void receiveEvent1(int howMany) {
+  while (1 < Wire.available()) { // loop through all but the last
+    char c = Wire.read(); // receive byte as a character
+    //Serial.print(c);         // print the character
+  }
+  int x = Wire.read();    // receive byte as an integer
+  inputRoboRio = x;
+  messageReceived = true;
+  Serial.println(x);         // print the integer
+}
 
