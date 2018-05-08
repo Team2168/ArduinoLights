@@ -606,143 +606,188 @@ void leapfrog(CRGB color) {
  * Hardcoded; only works as intended with 3 rows of 69 LEDs
  */
 void wave(CRGB color) {
-
-  /**
-   * During the given time interval, the LED will change position
-   */
-  if(millis()-waveDelayStart > 0 && millis()-waveDelayStart <= 100) {
+  
+  int number = 100;
+  bool timeElapsedGreaterThanZero = millis()-waveDelayStart > 0;
+  bool timeElapsedLessThanEqualNumber = millis()-waveDelayStart <= number;
+  bool timeElapsedGreaterThanNumber = millis()-waveDelayStart > number;
+  bool timeElapsedLessThanEqualTwiceNumber = millis()-waveDelayStart <= 2*number;
+  bool timeElapsedGreaterThanTwiceNumber = millis()-waveDelayStart > 2*number;
+  bool timeElapsedLessThanEqualThreeTimesNumber = millis()-waveDelayStart <= 3*number;
+  bool timeElapsedGreaterThanThreeTimesNumber = millis()-waveDelayStart > 3*number;
+  bool timeElapsedLessThanEqualFourTimesNumber = millis()-waveDelayStart <= 4*number;
+  bool timeElapsedGreaterThanFourTimesNumber = millis()-waveDelayStart > 4*number;
+  bool timeElapsedLessThanEqualFiveTimesNumber = millis()-waveDelayStart <= 5*number;
+  bool timeElapsedGreaterThanFiveTimesNumber = millis()-waveDelayStart > 5*number;
+  bool timeElapsedLessThanEqualSixTimesNumber = millis()-waveDelayStart <= 6*number;
+  bool timeElapsedGreaterThanSixTimesNumber = millis()-waveDelayStart > 6*number;
+  bool timeElapsedLessThanEqualSevenTimesNumber = millis()-waveDelayStart <= 7*number;
+  bool timeElapsedGreaterThanSevenTimesNumber = millis()-waveDelayStart > 7*number;
+  bool timeElapsedLessThanEqualEightTimesNumber = millis()-waveDelayStart <= 8*number;
+  bool timeElapsedGreaterThanEightTimesNumber = millis()-waveDelayStart > 8*number;
+  bool timeElapsedLessThanEqualNineTimesNumber = millis()-waveDelayStart <= 9*number;
+  bool timeElapsedGreaterThanNineTimesNumber = millis()-waveDelayStart > 9*number;
+  bool timeElapsedLessThanEqualTenTimesNumber = millis()-waveDelayStart <= 10*number;
+  bool timeElapsedGreaterThanTenTimesNumber = millis()-waveDelayStart > 10*number;
+  bool timeElapsedLessThanEqualElevenTimesNumber = millis()-waveDelayStart <= 11*number;
+  bool timeElapsedGreaterThanElevenTimesNumber = millis()-waveDelayStart > 11*number;
+  bool timeElapsedLessThanEqualTwelveTimesNumber = millis()-waveDelayStart <= 12*number;
+  bool timeElapsedGreaterThanTwelveTimesNumber = millis()-waveDelayStart > 12*number;
+  bool timeElapsedLessThanEqualThirteenTimesNumber = millis()-waveDelayStart <= 13*number;
+  bool timeElapsedGreaterThanThirteenTimesNumber = millis()-waveDelayStart > 13*number;
+  bool timeElapsedLessThanEqualFourteenTimesNumber = millis()-waveDelayStart <= 14*number;
+  bool timeElapsedGreaterThanFourteenTimesNumber = millis()-waveDelayStart > 14*number;
+  bool timeElapsedLessThanEqualFifteenTimesNumber = millis()-waveDelayStart <= 15*number;
+  bool timeElapsedGreaterThanFifteenTimesNumber = millis()-waveDelayStart > 15*number;
+  bool timeElapsedLessThanEqualSixteenTimesNumber = millis()-waveDelayStart <= 16*number;
+  bool timeElapsedGreaterThanSixteenTimesNumber = millis()-waveDelayStart > 16*number;
+  bool timeElapsedLessThanEqualSeventeenTimesNumber = millis()-waveDelayStart <= 17*number;
+  bool timeElapsedGreaterThanSeventeenTimesNumber = millis()-waveDelayStart > 17*number;
+  bool timeElapsedLessThanEqualEighteenTimesNumber = millis()-waveDelayStart <= 18*number;
+  bool timeElapsedGreaterThanEighteenTimesNumber = millis()-waveDelayStart > 18*number;
+  bool timeElapsedLessThanEqualNineteenTimesNumber = millis()-waveDelayStart <= 19*number;
+  bool timeElapsedGreaterThanNineteenTimesNumber = millis()-waveDelayStart > 19*number;
+  bool timeElapsedLessThanEqualTwentyTimesNumber = millis()-waveDelayStart <= 20*number;
+  bool timeElapsedGreaterThanTwentyTimesNumber = millis()-waveDelayStart > 20*number;
+  bool timeElapsedLessThanEqualTwentyoneTimesNumber = millis()-waveDelayStart <= 21*number;
+  bool timeElapsedGreaterThanTwentyoneTimesNumber = millis()-waveDelayStart > 21*number;
+  bool timeElapsedLessThanEqualTwentytwoTimesNumber = millis()-waveDelayStart <= 22*number;
+  bool timeElapsedGreaterThanTwentytwoTimesNumber = millis()-waveDelayStart > 22*number;
+  bool timeElapsedLessThanEqualTwentythreeTimesNumber = millis()-waveDelayStart <= 23*number;
+  
+  if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualNumber) {
     leds[22] = CRGB::Black;
     leds[0] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 100 && millis()-waveDelayStart <= 200) {
+  else if(timeElapsedGreaterThanNumber && timeElapsedLessThanEqualTwiceNumber) {
     leds[0] = CRGB::Black;
     leds[44] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 200 && millis()-waveDelayStart <= 300) {
+  else if(timeElapsedGreaterThanTwiceNumber && timeElapsedLessThanEqualThreeTimesNumber) {
     leds[44] = CRGB::Black;
     leds[2] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 300 && millis()-waveDelayStart <= 400) {
+  else if(timeElapsedGreaterThanThreeTimesNumber && timeElapsedLessThanEqualFourTimesNumber) {
     leds[2] = CRGB::Black;
     leds[42] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 400 && millis()-waveDelayStart <= 500) {
+  else if(timeElapsedGreaterThanFourTimesNumber && timeElapsedLessThanEqualFiveTimesNumber) {
     leds[42] = CRGB::Black;
     leds[4] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 500 && millis()-waveDelayStart <= 600) {
+  else if(timeElapsedGreaterThanFiveTimesNumber && timeElapsedLessThanEqualSixTimesNumber) {
     leds[4] = CRGB::Black;
     leds[40] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 600 && millis()-waveDelayStart <= 700) {
+  else if(timeElapsedGreaterThanSixTimesNumber && timeElapsedLessThanEqualSevenTimesNumber) {
     leds[40] = CRGB::Black;
     leds[6] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 700 && millis()-waveDelayStart <= 800) {
+  else if(timeElapsedGreaterThanSevenTimesNumber && timeElapsedLessThanEqualEightTimesNumber) {
     leds[6] = CRGB::Black;
     leds[38] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 800 && millis()-waveDelayStart <= 900) {
+  else if(timeElapsedGreaterThanEightTimesNumber && timeElapsedLessThanEqualNineTimesNumber) {
     leds[38] = CRGB::Black;
     leds[8] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 900 && millis()-waveDelayStart <= 1000) {
+  else if(timeElapsedGreaterThanNineTimesNumber && timeElapsedLessThanEqualTenTimesNumber) {
     leds[8] = CRGB::Black;
     leds[36] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1000 && millis()-waveDelayStart <= 1100) {
+  else if(timeElapsedGreaterThanTenTimesNumber && timeElapsedLessThanEqualElevenTimesNumber) {
     leds[36] = CRGB::Black;
     leds[10] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1100 && millis()-waveDelayStart <= 1200) {
+  else if(timeElapsedGreaterThanElevenTimesNumber && timeElapsedLessThanEqualTwelveTimesNumber) {
     leds[10] = CRGB::Black;
     leds[34] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1200 && millis()-waveDelayStart <= 1300) {
+  else if(timeElapsedGreaterThanTwelveTimesNumber && timeElapsedLessThanEqualThirteenTimesNumber) {
     leds[34] = CRGB::Black;
     leds[12] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1300 && millis()-waveDelayStart <= 1400) {
+  else if(timeElapsedGreaterThanThirteenTimesNumber && timeElapsedLessThanEqualFourteenTimesNumber) {
     leds[12] = CRGB::Black;
     leds[32] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1400 && millis()-waveDelayStart <= 1500) {
+  else if(timeElapsedGreaterThanFourteenTimesNumber && timeElapsedLessThanEqualFifteenTimesNumber) {
     leds[32] = CRGB::Black;
     leds[14] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1500 && millis()-waveDelayStart <= 1600) {
+  else if(timeElapsedGreaterThanFifteenTimesNumber && timeElapsedLessThanEqualSixteenTimesNumber) {
     leds[14] = CRGB::Black;
     leds[30] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1600 && millis()-waveDelayStart <= 1700) {
+  else if(timeElapsedGreaterThanSixteenTimesNumber && timeElapsedLessThanEqualSeventeenTimesNumber) {
     leds[30] = CRGB::Black;
     leds[16] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1700 && millis()-waveDelayStart <= 1800) {
+  else if(timeElapsedGreaterThanSeventeenTimesNumber && timeElapsedLessThanEqualEighteenTimesNumber) {
     leds[16] = CRGB::Black;
     leds[28] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1800 && millis()-waveDelayStart <= 1900) {
+  else if(timeElapsedGreaterThanEighteenTimesNumber && timeElapsedLessThanEqualNineteenTimesNumber) {
     leds[28] = CRGB::Black;
     leds[18] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 1900 && millis()-waveDelayStart <= 2000) {
+  else if(timeElapsedGreaterThanNineteenTimesNumber && timeElapsedLessThanEqualTwentyTimesNumber) {
     leds[18] = CRGB::Black;
     leds[26] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 2000 && millis()-waveDelayStart <= 2100) {
+  else if(timeElapsedGreaterThanTwentyTimesNumber && timeElapsedLessThanEqualTwentyoneTimesNumber) {
     leds[26] = CRGB::Black;
     leds[20] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 2100 && millis()-waveDelayStart <= 2200) {
+  else if(timeElapsedGreaterThanTwentyoneTimesNumber && timeElapsedLessThanEqualTwentytwoTimesNumber) {
     leds[20] = CRGB::Black;
     leds[24] = color;
     delay(30);
     FastLED.show();
   }
-  else if(millis()-waveDelayStart > 2200 && millis()-waveDelayStart <= 2300) {
+  else if(timeElapsedGreaterThanTwentytwoTimesNumber && timeElapsedLessThanEqualTwentythreeTimesNumber) {
     leds[24] = CRGB::Black;
     leds[22] = color;
     delay(30);
