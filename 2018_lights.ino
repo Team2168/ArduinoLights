@@ -153,7 +153,7 @@ void blink_all(CRGB color, float speed) {
   bool timeElapsedGreaterThanSpeed = millis()-blinkAllDelayStart > speed;
   bool timeElapsedLessThanEqualTwiceSpeed = millis()-blinkAllDelayStart <= 2*speed;
   
-  if(timeElapsedGreaterZero && timeElapsedLessThanEqualSpeed) {
+  if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualSpeed) {
     fill_ns(color);
   }
   else if(timeElapsedGreaterThanSpeed && timeElapsedLessThanEqualTwiceSpeed) {
@@ -269,8 +269,9 @@ void loading(CRGB color, float speed) {
  * Only works with 3 rows of 69 LEDs
  */
 void arrows_right() {
-  
-  bool timeElapsedGreaterThanEqualNumber = millis()-arrowsRightDelayStart >= 150;
+
+  int number = 150;
+  bool timeElapsedGreaterThanEqualNumber = millis()-arrowsRightDelayStart >= number;
   
   a = 46 + i % 23;
   b = 45 - i % 23;
@@ -324,8 +325,9 @@ void arrows_right() {
  * Only works with 3 rows of 69 LEDs
  */
 void arrows_left() {
-  
-  bool timeElapsedGreaterThanEqualNumber = millis()-arrowsLeftDelayStart >= 150;
+
+  int number = 150;
+  bool timeElapsedGreaterThanEqualNumber = millis()-arrowsLeftDelayStart >= number;
   
   a = 68 - i % 23;
   b = 23 + i % 23;
@@ -460,11 +462,12 @@ void confetti() {
  * Hardcoded; only works as intended with 3 rows of 69 LEDs
  */
 void cross() {
-  
+
+  int number = 500;
   bool timeElapsedGreaterThanZero = millis()-crossDelayStart > 0;
-  bool timeElapsedLessThanEqualNumber = millis()-crossDelayStart <= 500;
-  bool timeElapsedGreaterThanNumber = millis()-crossDelayStart > 500;
-  bool timeElapsedLessThanEqualTwiceNumber = millis()-crossDelayStart <= 1000;
+  bool timeElapsedLessThanEqualNumber = millis()-crossDelayStart <= number;
+  bool timeElapsedGreaterThanNumber = millis()-crossDelayStart > number;
+  bool timeElapsedLessThanEqualTwiceNumber = millis()-crossDelayStart <= 2*number;
   
   if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualNumber) {
     fill_ns(CRGB::White);
@@ -545,11 +548,12 @@ void cross() {
  * Makes all LEDs blink from blue to red
  */
 void police() {
-  
+
+  int number = 500;
   bool timeElapsedGreaterThanZero = millis()-policeDelayStart > 0;
-  bool timeElapsedLessThanEqualNumber = millis()-policeDelayStart <= 500;
-  bool timeElapsedGreaterThanNumber = millis()-policeDelayStart > 500;
-  bool timeElapsedLessThanEqualTwiceNumber = millis()-policeDelayStart <= 1000;
+  bool timeElapsedLessThanEqualNumber = millis()-policeDelayStart <= number;
+  bool timeElapsedGreaterThanNumber = millis()-policeDelayStart > number;
+  bool timeElapsedLessThanEqualTwiceNumber = millis()-policeDelayStart <= 2*number;
   
   if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualNumber) {
     fill(CRGB::Blue);
@@ -568,11 +572,12 @@ void police() {
  * Makes the lights look like they're playing leapfrog
  */
 void leapfrog(CRGB color) {
-  
+
+  int number = 200;
   bool timeElapsedGreaterThanEqualZero = millis()-leapfrogDelayStart >= 0;
-  bool timeElapsedLessThanEqualNumber = millis()-leapfrogDelayStart <= 200;
-  bool timeElapsedGreaterThanNumber = millis()-leapfrogDelayStart > 200;
-  bool timeElapsedLessThanEqualTwiceNumber = millis()-leapfrogDelayStart <= 400;
+  bool timeElapsedLessThanEqualNumber = millis()-leapfrogDelayStart <= number;
+  bool timeElapsedGreaterThanNumber = millis()-leapfrogDelayStart > number;
+  bool timeElapsedLessThanEqualTwiceNumber = millis()-leapfrogDelayStart <= 2*number;
   
   if(leapfrogCounter < NUM_LEDS) {
     if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualNumber) {
@@ -754,25 +759,25 @@ void wave(CRGB color) {
  * Makes a moving candycane pattern out of two inputted colors
  */
 void candy_cane(CRGB color1, CRGB color2) {
-  
+
+  int number = 500;
   bool timeElapsedGreaterThanZero = millis()-candyCaneDelayStart > 0;
-  bool timeElapsedLessThanEqualNumber = millis()-candyCaneDelayStart <= 500;
+  bool timeElapsedLessThanEqualNumber = millis()-candyCaneDelayStart <= number;
+  bool timeElapsedGreaterThanNumber = millis()-candyCaneDelayStart > number;
+  bool timeElapsedLessThanEqualTwiceNumber = millis()-candyCaneDelayStart <= 2*number;
   
   if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualNumber) {
     fill_ns(color1);
-
-    // Causes diagnal lines to turn color2
+    
     for (i = 0; i < NUM_LEDS; i += 2) {
       leds[i] = color2;
     }
 
     FastLED.show();
   }
-  else if(millis()-candyCaneDelayStart > 500 && millis()-candyCaneDelayStart <= 1000) {
-    // If the amount of milliseconds that has passed is greater than 500 and less than or equal to 1000, the following code will execute
+  else if(timeElapsedGreaterThanNumber && timeElapsedLessThanEqualTwiceNumber) {
     fill_ns(color1);
 
-    // Causes diagnal lines to move over one LED
     for (i = 1; i < NUM_LEDS; i += 2) {
       leds[i] = color2;
     }
@@ -780,17 +785,20 @@ void candy_cane(CRGB color1, CRGB color2) {
     FastLED.show();
   }
   else {
-    // Otherwise, candyCaneDelayStart is set to the current amount of milliseconds passed
     candyCaneDelayStart = millis();
   }
 
 }
 
 
-
-// An animation of a robot picking up and shooting out a cube
+/**
+ * An animation of a robot picking up and shooting out a cube
+ */
 void intake_cube(CRGB robotColor) {
 
+  int number = 100;
+  bool timeElapsedGreaterThanEqualNumber = millis()-intakePatternDelayStart >= number;
+  
   leds[animation[intakePatternCounter][0]] = robotColor;
   leds[animation[intakePatternCounter][1]] = robotColor;
   leds[animation[intakePatternCounter][2]] = robotColor;
@@ -800,14 +808,11 @@ void intake_cube(CRGB robotColor) {
   leds[animation[intakePatternCounter][6]] = robotColor;
   leds[animation[intakePatternCounter][7]] = robotColor;
   leds[animation[intakePatternCounter][8]] = CRGB::Yellow;
-
   delay(30);
   FastLED.show();
-
-  if(millis()-intakePatternDelayStart >= 100) {
-    // If the amount of milliseconds that has passed is greater than or equal to 100, the following code will execute
+  
+  if(timeElapsedGreaterThanEqualNumber) {
     fill(CRGB::Black);
-
     intakePatternCounter++;
 
     if(intakePatternCounter > 18)
@@ -818,137 +823,82 @@ void intake_cube(CRGB robotColor) {
   
 }
 
+////////////////////////////////////////////////////////////////// LOOP /////////////////////////////////////////////////////////////////
 
-  ////////////////////////////////////////////////////////////////// LOOP /////////////////////////////////////////////////////////////////
-
-
-  void loop() {
-     
-    // Causes a pattern to be shown when you type in its assigned number
-    if(toggleRoboRio == 1)
-      fill(CRGB::Red);
-//    else if(toggleRoboRio == "b\n")
-//      fill(CRGB::Blue);
-//    else if(toggleRoboRio == "g\n")
-//      fill(CRGB::Green);
-    else if(toggleRoboRio == 99)
-        fill(CRGB::Purple);
-    else if(toggleRoboRio == 0)
-      off();
-    else if(toggleRoboRio == 2)
-      blink_all(CRGB::Red, 500);
-    else if(toggleRoboRio == 3)
-      chase(CRGB::Blue, 100);
-    else if(toggleRoboRio == 4)
-      loading(CRGB::Green, 100);
-    else if(toggleRoboRio == 5)
-      arrows_right();
-    else if(toggleRoboRio == 6)
-      arrows_left();
-    else if(toggleRoboRio == 7)
-      rainbow();
-    else if(toggleRoboRio == 8)
-      sparkle();
-    else if(toggleRoboRio == 9)
-      confetti();
-    else if(toggleRoboRio == 10)
-      cross();
-    else if(toggleRoboRio == 11)
-      police();
-    else if(toggleRoboRio == 12)
-      leapfrog(CRGB::Green);
-    else if(toggleRoboRio == 13)
-      wave(CRGB::Blue);
-    else if(toggleRoboRio == 14)
-      candy_cane(CRGB::White, CRGB::Red);
-    else if(toggleRoboRio == 15)
-      intake_cube(CRGB::Red);
-
-    // Causes text to be printed when you select a pattern to be shown
-    if(messageReceived) {
-      // If a string is enterred, the following code will execute
-      if(toggleRoboRio != inputRoboRio) {
-        // If toggleRoboRio does not match inputRoboRio, a new pattern is being selected, so newPattern is set to true
-        toggleRoboRio = inputRoboRio;
-        newPattern = true;
-      }
-//      if(toggleRoboRio == 1)
-//        Serial.println("Arduino: Okay, now I'm red!");
-//      else if(toggleRoboRio == "b\n")
-//        Serial.println("Arduino: Okay, now I'm blue!");
-//      else if(toggleRoboRio == "g\n")
-//        Serial.println("Arduino: Okay, now I'm green!");
-//      else if(toggleRoboRio == 0)
-//        Serial.println("Arduino: Okay, now I'm off!");
-//      else if(toggleRoboRio == 2)
-//        Serial.println("Arduino: Okay, I'm blinking now!");
-//      else if(toggleRoboRio == 3)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'chase' now!");
-//      else if(toggleRoboRio == 4)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'loading' now!");
-//      else if(toggleRoboRio == 5)
-//        Serial.println("Arduino: Okay, now I'll show arrows!");
-//      else if(toggleRoboRio == 6)
-//        Serial.println("Arduino: Okay, now I'll show arrows!");
-//      else if(toggleRoboRio == 7)
-//        Serial.println("Arduino: Okay, now I'm rainbow-colored!");
-//      else if(toggleRoboRio == 8)
-//        Serial.println("Arduino: Okay, now I'm sparkly!");
-//      else if(toggleRoboRio == 9)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'confetti' now!");
-//      else if(toggleRoboRio == 10)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'cross' now!");
-//      else if(toggleRoboRio == 11)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'police' now!");
-//      else if(toggleRoboRio == 12)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'leapfrog' now!");
-//      else if(toggleRoboRio == 13)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'wave' now!");
-//      else if(toggleRoboRio == 14)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'candy_cane' now!");
-//      else if(toggleRoboRio == 15)
-//        Serial.println("Arduino: Okay, I'll show the pattern 'intake_cube' now!");
-        
-
-      inputRoboRio = -1;
-      messageReceived = false;
+void loop() {
+  
+  if(toggleRoboRio == 1)
+    fill(CRGB::Red);
+  else if(toggleRoboRio == 99)
+      fill(CRGB::Purple);
+  else if(toggleRoboRio == 0)
+    off();
+  else if(toggleRoboRio == 2)
+    blink_all(CRGB::Red, 500);
+  else if(toggleRoboRio == 3)
+    chase(CRGB::Blue, 100);
+  else if(toggleRoboRio == 4)
+    loading(CRGB::Green, 100);
+  else if(toggleRoboRio == 5)
+    arrows_right();
+  else if(toggleRoboRio == 6)
+    arrows_left();
+  else if(toggleRoboRio == 7)
+    rainbow();
+  else if(toggleRoboRio == 8)
+    sparkle();
+  else if(toggleRoboRio == 9)
+    confetti();
+  else if(toggleRoboRio == 10)
+    cross();
+  else if(toggleRoboRio == 11)
+    police();
+  else if(toggleRoboRio == 12)
+    leapfrog(CRGB::Green);
+  else if(toggleRoboRio == 13)
+    wave(CRGB::Blue);
+  else if(toggleRoboRio == 14)
+    candy_cane(CRGB::White, CRGB::Red);
+  else if(toggleRoboRio == 15)
+    intake_cube(CRGB::Red);
+  
+  if(messageReceived) {
+    /**
+     * Makes the variable newPattern true when the pattern is being changed
+     */
+    if(toggleRoboRio != inputRoboRio) {
+      toggleRoboRio = inputRoboRio;
+      newPattern = true;
     }
-    
-    
-    if(newPattern) {
-      // If the pattern is being changed, all LEDs are briefly turned off and some variables are reset
-      off();
-      if(toggleRoboRio == 4) {
-        loadingCounter = -1;
-        loadingColor = true;
-      }
-      newPattern = false;
+
+    inputRoboRio = -1;
+    messageReceived = false;
+  }
+  
+  /**
+   * If the pattern is being changed, all LEDs are briefly turned off and some variables are reset
+   */
+  if(newPattern) {
+    off();
+    if(toggleRoboRio == 4) {
+      loadingCounter = -1;
+      loadingColor = true;
     }
-    
+    newPattern = false;
   }
-
-
-
-//  void serialEvent() {
-//    while(Serial.available()) {
-//      char inChar = (char)Serial.read();
-//      inputRoboRio += inChar;
-//
-//      if(inChar == '\n') {
-//        messageReceived = true;
-//      }
-//    }
-//  }
-
-
-void receiveEvent1(int howMany) {
-  while (1 < Wire.available()) { // loop through all but the last
-    char c = Wire.read(); // receive byte as a character
-    //Serial.print(c);         // print the character
-  }
-  int x = Wire.read();    // receive byte as an integer
-  inputRoboRio = x;
-  messageReceived = true;
-  Serial.println(x);         // print the integer
+  
 }
 
+
+/**
+ * Sets the variable inputRoboRio to the value the Arduino received from the RoboRio
+ */
+void receiveEvent1(int howMany) {
+  while (1 < Wire.available()) {
+    char c = Wire.read();
+  }
+  int x = Wire.read();
+  inputRoboRio = x;
+  messageReceived = true;
+  Serial.println(x);
+}
