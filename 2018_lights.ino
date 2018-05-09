@@ -20,6 +20,8 @@ int a = 0;
 int b = 0;
 int c = 0;
 int d = 0;
+unsigned long arrowsRightDelayStart = 0.0;
+unsigned long arrowsLeftDelayStart = 0.0;
 
 /**
  * Dependencies for the intake pattern
@@ -27,12 +29,6 @@ int d = 0;
 int intakePatternCounter = 0;
 unsigned long intakePatternDelayStart = 0.0;
 int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 25, 67, 66, 65, 31}, {20, 19, 18, 25, 26, 66, 65, 64, 31}, {19, 18, 17, 26, 27, 65, 64, 63, 31}, {18, 17, 16, 27, 28, 64, 63, 62, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 31}, {16, 15, 14, 29, 30, 62, 61, 60, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 30}, {18, 17, 16, 27, 28, 64, 63, 62, 29}, {19, 18, 17, 26, 27, 65, 64, 63, 28}, {20, 19, 18, 25, 26, 66, 65, 64, 27}, {21, 20, 19, 24, 25, 67, 66, 65, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 25}, {22, 21, 20, 23, 24, 68, 67, 66, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 27}, {22, 21, 20, 23, 24, 68, 67, 66, 28}, {22, 21, 20, 23, 24, 68, 67, 66, 29}, {22, 21, 20, 23, 24, 68, 67, 66, 30}, {22, 21, 20, 23, 24, 68, 67, 66, 31}};
-
-/**
- * Dependencies for the arrows patterns
- */
-unsigned long arrowsRightDelayStart = 0.0;
-unsigned long arrowsLeftDelayStart = 0.0;
 
 /**
  * Dependency for the blink pattern
