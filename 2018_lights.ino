@@ -140,7 +140,6 @@ void fill_ns(CRGB color) {
 
 /** 
  * Makes all LEDs blink from the inputted color to black
- * Speed sets the amount of miliseconds it takes the LEDs to switch from the color to off, and from off to the color
  */
 void blink_all(CRGB color, float speed) {
   
@@ -395,13 +394,9 @@ void sparkle() {
   int i = random(0, NUM_LEDS - 1);
 
   leds[i] = CRGB::Red;
-  delay(30);
   FastLED.show();
-  delay(30);
   leds[i] = CRGB::Black;
-  delay(30);
   FastLED.show();
-  delay(30);
 
 }
 
