@@ -1,12 +1,23 @@
 
 #include <FastLED.h>
+#include <Wire.h>
 
 #define NUM_LEDS 256
 #define DATA_PIN 3
 #define NUM_ROWS 8
 #define NUM_COLUMNS 32
+#define I2C_ID 8
 
 CRGB leds[NUM_LEDS];
+
+/**
+ * For serial communication testing
+ */
+String inputString = "";
+String toggleString = "";
+boolean stringComplete = false;
+boolean newPattern = false;
+
 
 /**
  * Dependency for the wave pattern
@@ -114,7 +125,11 @@ unsigned long candyCaneDelayStart = 0.0;
 
 void setup() {
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2812, 4, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(30);
+
+  Serial.begin(9600);
+  inputString.reserve(100);
 }
 
 //////////////////////////////////////// PATTERNS /////////////////////////////////////////////
@@ -360,135 +375,8 @@ void decreaseBrightnessColumn(int column, int percentage)
   }
 }
 
-///*
-// * DOESN'T WORK WORK WITH MILLIS
-// * A dimmer panel is filled by column with brighter color, starting with column 0
-// * @param CRGB color (by name, hex code, or individual numbers)
-// * @param speed is the delay for the column to move
-// */
-//void brightnessWave(CRGB color, int speed)
-//{
-//  
-////  fill(color);
-////  for (int i = 0; i<NUM_LEDS; i++)
-////  {
-////    leds[i] %= 64;
-////  }
-////  FastLED.show();
-////  //incrementing each column
-////  for (int i = 0; i<NUM_COLUMNS; i++)
-////  {
-////    //ups brightness
-////    increaseBrightnessColumn(i);
-////    FastLED.show();
-////    delay(speed);
-////  }
-//    bool timeElapsedGreaterThanEqualZero = millis()-brightnessWaveDelayStart >= 0;
-//    bool timeElapsedLessThanEqualSpeed = millis()-brightnessWaveDelayStart <= speed;
-//    if (brightnessWaveCounter = 0)
-//    {
-//      fill(color);
-//      for (int i = 0; i<NUM_LEDS; i++)
-//      {
-//        leds[i] %= 64;
-//      }
-//      FastLED.show();
-//    }
-//    //incrementing each column
-//    if(brightnessWaveForward)
-//    {
-//      //delay time
-//      if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
-//      {
-//        increaseBrightnessColumn(brightnessWaveCounter);
-//      }
-//      
-//      else
-//      {
-//        brightnessWaveDelayStart = millis();
-//        brightnessWaveCounter++;
-//
-//        if (brightnessWaveCounter >= NUM_LEDS-1)
-//        {
-//          brightnessWaveForward = false;
-//          brightnessWaveCounter = 0;
-//        }
-//      }
-//    }
-//    
-//}
 
-/*
- * A brighter colored column moves across the dimmer panel starting at column 0
- * Doesn't work with millis because 
- * it relies on percentage reductions of brightness
- */
-//void runningColumns(CRGB color, int speed)
-//{
-//  fill(color);
-//  for (int i = 0; i<NUM_LEDS; i++)
-//  {
-//    leds[i] %= 30;
-//  }
-//  FastLED.show();
-//  //incrementing each column
-//  increaseBrightnessColumn(0);
-//  FastLED.show();
-//  for (int i = 1; i<(NUM_COLUMNS); i++)
-//  {
-//    //ups brightness of current column
-//    increaseBrightnessColumn(i);
-//    //decreases brightness of previous column
-//    decreaseBrightnessColumn((i-1), 30);
-//    FastLED.show();
-//    delay(speed);
-//  }
-//  decreaseBrightnessColumn((NUM_COLUMNS-1), 30);
-//  FastLED.show();
-//  delay(speed);
-//    bool timeElapsedGreaterThanEqualZero = millis()-runningColumnsDelayStart >= 0;
-//    bool timeElapsedLessThanEqualSpeed = millis()-runningColumnsDelayStart <= speed;
-//    bool timeElapsedGreaterThanSpeed = millis()-runningColumnsDelayStart > speed;
-//    bool timeElapsedLessThanEqualTwiceSpeed = millis()-runningColumnsDelayStart <= 2*speed;
-//    //set-up
-//    if (runningColumnsCounter == 0)
-//    {
-//      fill(color);
-//      for (int i = 0; i<NUM_LEDS; i++)
-//      {
-//        leds[i] %= 64;
-//      }
-//      FastLED.show();
-//      increaseBrightnessColumn(runningColumnsCounter);
-//    }
-//    //incrementing each column
-//    if(runningColumnsForward)
-//    {
-//      //delay time
-//      if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
-//      {
-//        ;
-//      }
-//      else if(timeElapsedGreaterThanSpeed && timeElapsedLessThanEqualTwiceSpeed)
-//      {
-//        //starts on column 1, with loop having already gone 
-//        //through once and upped counter
-//        increaseBrightnessColumn(runningColumnsCounter); 
-//        decreaseBrightnessColumn(runningColumnsCounter-1);
-//      }
-//      else
-//      {
-//        runningColumnsDelayStart = millis();
-//        runningColumnsCounter++;
-//
-//        if (runningColumnsCounter >= NUM_LEDS-1)
-//        {
-//          runningColumnsForward = false;
-//          runningColumnsCounter++;
-//        }
-//      }
-//    }
-//}
+
 
 /////////////HSV Brightness patterns
 /*
@@ -770,7 +658,7 @@ void runningColumnsLeftHSV(int hue, int sat, int speed)
    FastLED.show();
 }
 
-runningColumnsHSV(int hue1, int sat1, int speed1, int hue2, int sat2, int speed2)
+void runningColumnsHSV(int hue1, int sat1, int speed1, int hue2, int sat2, int speed2)
 {
   if (runningColumnsForward)
   {
@@ -783,6 +671,26 @@ runningColumnsHSV(int hue1, int sat1, int speed1, int hue2, int sat2, int speed2
     
    
   
+}
+//////////////Animations /////////////////////////////////////////
+int coordinatesToLEDIndex(int column, int row)
+{
+  if (column < NUM_COLUMNS && row < NUM_ROWS)
+  {
+    if (column%2 == 0)
+    {
+      return NUM_ROWS*column + row;
+    }
+    else
+    {
+      return NUM_ROWS*column + (NUM_ROWS-1) - row;
+    }
+  }
+  else 
+  {
+    //can catch this later and not turn on
+    return NUM_LEDS;
+  }
 }
 
 
@@ -1095,25 +1003,85 @@ void confetti() {
 
 }
 
-  
+ /**
+ * Sets the variable inputString to the inputted text
+ */
+void serialEvent() {
+  while(Serial.available()) {
+    char inChar = (char)Serial.read();
+    inputString += inChar;
+
+    if(inChar == '\n') {
+      stringComplete = true;
+      Serial.println(inputString + "y");
+    }
+//    else
+//    {
+//      inputString += inChar;
+//    }
+  }
+}
 
 
 /////////////////////////////////////////// LOOP //////////////////////////////////////////////////////
 
 void loop() {
 
-//   HSV running columns in red and blue
-//   runningColumnsRightHSV(160, 255, 200, 50);
-//   runningColumnsLeftHSV(245, 255, 200, 50);
-
-//colliding columns
-//   runningColumnsRightHSV(160, 255, 50);
-//   runningColumnsLeftHSV(245, 255, 50);
-
-//alternating columns
+  /**
+   * Causes a pattern to be shown when you type in its assigned number
+   * hopefully....
+   */
+  if(toggleString == "1\n")
+  {
+    fill(CRGB::Red);
+  }
+  else if(toggleString == "99\n")
+    fill(CRGB::Purple);
+  else if(toggleString == "0\n")
+    off();
+  else if(toggleString == "2\n")
     runningColumnsHSV(160, 255, 50, 245, 255, 50);
+  else if(toggleString == "3\n")
+  {
+    //Coliding columns
+    runningColumnsRightHSV(160, 255, 50);
+    runningColumnsLeftHSV(0, 255, 50);
+  }
+ 
+  /**
+   * Causes text to be printed when you select a pattern to be shown
+   */
+  if(stringComplete) {
+    /**
+     * If a string is entered, the following code will execute
+     * Makes the variable newPattern true when the pattern is being changed
+     */
+    if(toggleString != inputString) {
+      toggleString = inputString;
+      newPattern = true;
+    }
 
+//    if(toggleString == "1\n")
+//        Serial.println("Arduino: Okay, now I'm red!");
 
-   
+    inputString = "";
+    stringComplete = false;
+    }
+
+    /**
+     * If the pattern is being changed, all LEDs are briefly turned off and some variables are reset
+     */
+    if(newPattern) {
+      
+      off();
+      if(toggleString == "2\n" or toggleString == "3\n") {
+        runningColumnsRightHSVDelayStart = 0.0;
+        runningColumnsRightHSVCounter = -2;
+        runningColumnsLeftHSVDelayStart = 0.0;
+        runningColumnsLeftHSVCounter = NUM_COLUMNS+1;
+        runningColumnsForward = true;
+      }
+      newPattern = false;
+    }
   
 }
