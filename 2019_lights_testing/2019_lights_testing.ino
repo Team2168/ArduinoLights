@@ -55,7 +55,46 @@ boolean newPattern = false;
   * Dependency for the runningColumnsLeftHSVpattern
   */
   boolean runningColumnsForward = true;
-  
+
+/**
+ * Dependencies for the rocket pattern
+ */
+ int rocketAscendsPatternCounter = 12; //change to zero to fly up through the bottom (NOT taking off from ground)
+ int rocketDescendsPatternCounter = NUM_COLUMNS+11;
+ double rocketDelayStart = 0.0;
+ int rocket[13][8] = {{-1, -1, -1, 3, 4, -1, -1, -1}, //column 0
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //1
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //2
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //3
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //4
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //5
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //6
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //7
+                        {-1, 1, 2, 3, 4, 5, 6, -1}, //8
+                        {0, 1, 2, 3, 4, 5, 6, 7}, //9
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //10
+                        {-1, -1, 2, 3, 4, 5, -1, -1}, //11
+                        {-1, 1, -1, 3, 4, -1, 6, -1}}; //12
+  CHSV fire1(9, 150, 200);
+  CHSV fire2(7, 175, 200);
+  CHSV fire3(7, 225, 200);  
+  //The rocket-if want to test different configs or colors  
+  //    fillRocketColumn(0, 12, blue);
+//    fillRocketColumn(1, 11, blue);
+//    fillRocketColumn(2, 10, blue);
+//    fillRocketColumn(3, 9, blue);
+//    fillRocketColumn(4, 8, blue);
+//    fillRocketColumn(5, 7, blue);
+//    fillRocketColumn(6, 6, blue);
+//    fillRocketColumn(7, 5, blue);
+//    fillRocketColumn(8, 4, blue);
+//    fillRocketColumn(9, 3, blue);
+//    fillRocketColumn(10, 2, fire1);
+//    fillRocketColumn(11, 1, fire2);
+//    fillRocketColumn(12, 0, fire3);
+//    FastLED.show();                  
+                
+                        
 /**
  * Dependency for the rainbow pattern
  */
@@ -388,33 +427,29 @@ void decreaseBrightnessColumn(int column, int percentage)
 void brightnessColumnsHSV(CHSV color, int brightnessIncrement, int column)
 {
   color.val += brightnessIncrement;
-  for (int i = NUM_ROWS*column; i<(NUM_ROWS*column+NUM_ROWS); i++)
+  if(column < NUM_COLUMNS && column >= 0)
+  {
+    for (int i = NUM_ROWS*column; i<(NUM_ROWS*column+NUM_ROWS); i++)
+    {
+      leds[i] = color;
+    }
+  }
+}
+
+void brightnessHSV(CHSV color, int brightnessIncrement)
+{
+  color.val += brightnessIncrement;
+  for (int i = 0; i<NUM_LEDS; i++)
   {
     leds[i] = color;
   }
 }
-
 /*
  * The dimmer panel is filled with brighter columns, starting at column 0, using HSV color value
  * @param speed is a delay between before the addition of a new column
  */
 void brightnessWaveHSV(int hue, int sat, int speed)
 {
-//  CHSV color(hue, sat, val);
-//  color.val = 100;
-//  fill(color);
-//  FastLED.show();
-//  //incrementing each column
-//  
-//  for (int i = 0; i<NUM_COLUMNS; i++)
-//  {
-//    //ups brightness
-//    brightnessColumnsHSV( color, 150, i);
-//    
-//    FastLED.show();
-//    delay(speed);
-//  }
-
    bool timeElapsedGreaterThanEqualZero = millis()-brightnessWaveHSVDelayStart >= 0;
    bool timeElapsedLessThanEqualSpeed = millis()-brightnessWaveHSVDelayStart <= speed;
    CHSV color(hue, sat, 100);
@@ -448,88 +483,64 @@ void brightnessWaveHSV(int hue, int sat, int speed)
  */
 void runningColumnsRightHSV(int hue, int sat, int speed)
 {
-//  int mediumBrightness = 75;
-//  int highBrightness = 150;
-//  CHSV color(hue, sat, val);
-//  color.val = 100;
-//  fill(color);
-//  //incrementing each column
-//  brightnessColumnsHSV(color, mediumBrightness, 0);
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, mediumBrightness, 1);
-//  brightnessColumnsHSV(color, highBrightness, 0);
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, mediumBrightness, 2);
-//  brightnessColumnsHSV(color, highBrightness, 1);
-//  brightnessColumnsHSV(color, mediumBrightness, 0);
-//  for (int i = 2; i<(NUM_COLUMNS-1); i++)
-//  {
-//    //ups brightness
-//    brightnessColumnsHSV(color, mediumBrightness, (i+1));
-//    brightnessColumnsHSV(color, highBrightness, i);
-//    brightnessColumnsHSV(color, mediumBrightness, (i-1));
-//    brightnessColumnsHSV(color, 0, (i-2));
-//    FastLED.show();
-//    delay(speed);
-//  }
-//  brightnessColumnsHSV(color, highBrightness, (NUM_COLUMNS-1));
-//  brightnessColumnsHSV(color, mediumBrightness, (NUM_COLUMNS-2));
-//  brightnessColumnsHSV(color, 0, (NUM_COLUMNS-3));
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, mediumBrightness, (NUM_COLUMNS-1));
-//  brightnessColumnsHSV(color, 0, (NUM_COLUMNS-2));
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, 0, (NUM_COLUMNS-1));
-//  FastLED.show();
-//  delay(speed);
    bool timeElapsedGreaterThanEqualZero = millis()-runningColumnsRightHSVDelayStart >= 0;
    bool timeElapsedLessThanEqualSpeed = millis()-runningColumnsRightHSVDelayStart <= speed;
    int mediumBrightness = 75;
    int highBrightness = 150;
    CHSV color(hue, sat, 100);
+   //starting and ending increments no longer needed because code catches columns that are longer than the panel or less than zero
+   //still need very first starting condition
    //starting increments
+//   if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == -2)
+//   {
+//    fill_ns(color);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == -1)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == 0)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
+//    brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == 1)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
+//    brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
+//   }
+//   //end conditions
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == NUM_COLUMNS-1)
+//   {
+//    brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
+//    brightnessColumnsHSV(color, 0, runningColumnsRightHSVCounter-2);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == NUM_COLUMNS)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
+//    brightnessColumnsHSV(color, 0, runningColumnsRightHSVCounter-2);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == NUM_COLUMNS+1)
+//   {
+//    brightnessColumnsHSV(color, 0, runningColumnsRightHSVCounter-2);
+//   }
+//   //main increment
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
+//    brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
+//    brightnessColumnsHSV(color, 0, runningColumnsRightHSVCounter-2);
+//   }
    if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == -2)
    {
     fill_ns(color);
    }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == -1)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == 0)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
-    brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == 1)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
-    brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
-   }
-   //end conditions
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == NUM_COLUMNS-1)
-   {
-    brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
-    brightnessColumnsHSV(color, 0, runningColumnsRightHSVCounter-2);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == NUM_COLUMNS)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
-    brightnessColumnsHSV(color, 0, runningColumnsRightHSVCounter-2);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsRightHSVCounter == NUM_COLUMNS+1)
-   {
-    brightnessColumnsHSV(color, 0, runningColumnsRightHSVCounter-2);
-   }
-   //main increment
    else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
    {
+    brightnessHSV(color, 0);
     brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter+1);
     brightnessColumnsHSV(color, highBrightness, runningColumnsRightHSVCounter);
     brightnessColumnsHSV(color, mediumBrightness, runningColumnsRightHSVCounter-1);
@@ -556,89 +567,57 @@ void runningColumnsRightHSV(int hue, int sat, int speed)
  */
 void runningColumnsLeftHSV(int hue, int sat, int speed)
 {
-//  int mediumBrightness = 75;
-//  int highBrightness = 150;
-//  CHSV color(hue, sat, val);
-//  color.val = 100;
-//  fill(color);
-//  FastLED.show();
-//  //incrementing each column
-//  brightnessColumnsHSV(color, mediumBrightness, (NUM_COLUMNS-1));
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, mediumBrightness, (NUM_COLUMNS-2));
-//  brightnessColumnsHSV(color, highBrightness, (NUM_COLUMNS-1));
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, mediumBrightness, (NUM_COLUMNS-3));
-//  brightnessColumnsHSV(color, highBrightness, (NUM_COLUMNS-2));
-//  brightnessColumnsHSV(color, mediumBrightness, (NUM_COLUMNS-1));
-//  for (int i = (NUM_COLUMNS-3); i>0; i--)
-//  {
-//    //ups brightness
-//    brightnessColumnsHSV(color, mediumBrightness, (i-1));
-//    brightnessColumnsHSV(color, highBrightness, i);
-//    brightnessColumnsHSV(color, mediumBrightness, (i+1));
-//    brightnessColumnsHSV(color, 0, (i+2));
-//    FastLED.show();
-//    delay(speed);
-//  }
-//  brightnessColumnsHSV(color, highBrightness, 0);
-//  brightnessColumnsHSV(color, mediumBrightness, 1);
-//  brightnessColumnsHSV(color, 0, 2);
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, mediumBrightness, 0);
-//  brightnessColumnsHSV(color, 0, 1);
-//  FastLED.show();
-//  delay(speed);
-//  brightnessColumnsHSV(color, 0, 0);
-//  FastLED.show();
-//  delay(speed);
- bool timeElapsedGreaterThanEqualZero = millis()-runningColumnsLeftHSVDelayStart >= 0;
+   bool timeElapsedGreaterThanEqualZero = millis()-runningColumnsLeftHSVDelayStart >= 0;
    bool timeElapsedLessThanEqualSpeed = millis()-runningColumnsLeftHSVDelayStart <= speed;
    int mediumBrightness = 75;
    int highBrightness = 150;
    CHSV color(hue, sat, 100);
+   //starting and ending increments no longer needed because code catches columns that are longer than the panel or less than zero
+   //still need very first starting condition
    //starting increments
+//   if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS+1)
+//   {
+//    fill_ns(color);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter-1);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS-1)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter-1);
+//    brightnessColumnsHSV(color, highBrightness, runningColumnsLeftHSVCounter);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS-2)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter-1);
+//    brightnessColumnsHSV(color, highBrightness, runningColumnsLeftHSVCounter);
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter+1);
+//   }
+//   //end conditions
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == 0)
+//   {
+//    brightnessColumnsHSV(color, highBrightness, runningColumnsLeftHSVCounter);
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter+1);
+//    brightnessColumnsHSV(color, 0, runningColumnsLeftHSVCounter+2);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == -1)
+//   {
+//    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter+1);
+//    brightnessColumnsHSV(color, 0, runningColumnsLeftHSVCounter+2);
+//   }
+//   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == -2)
+//   {
+//    brightnessColumnsHSV(color, 0, runningColumnsLeftHSVCounter+2);
+//   }
    if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS+1)
    {
     fill_ns(color);
    }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter-1);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS-1)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter-1);
-    brightnessColumnsHSV(color, highBrightness, runningColumnsLeftHSVCounter);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == NUM_COLUMNS-2)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter-1);
-    brightnessColumnsHSV(color, highBrightness, runningColumnsLeftHSVCounter);
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter+1);
-   }
-   //end conditions
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == 0)
-   {
-    brightnessColumnsHSV(color, highBrightness, runningColumnsLeftHSVCounter);
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter+1);
-    brightnessColumnsHSV(color, 0, runningColumnsLeftHSVCounter+2);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == -1)
-   {
-    brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter+1);
-    brightnessColumnsHSV(color, 0, runningColumnsLeftHSVCounter+2);
-   }
-   else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && runningColumnsLeftHSVCounter == -2)
-   {
-    brightnessColumnsHSV(color, 0, runningColumnsLeftHSVCounter+2);
-   }
    //main increment
    else if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
    {
+    brightnessHSV(color, 0);
     brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter-1);
     brightnessColumnsHSV(color, highBrightness, runningColumnsLeftHSVCounter);
     brightnessColumnsHSV(color, mediumBrightness, runningColumnsLeftHSVCounter+1);
@@ -673,6 +652,10 @@ void runningColumnsHSV(int hue1, int sat1, int speed1, int hue2, int sat2, int s
   
 }
 //////////////Animations /////////////////////////////////////////
+/**
+ * @return the index of the LED pixel as an int based on inputted coordinates
+ *          If the coordinates are outside the bounds of the panel, returns -1
+ */
 int coordinatesToLEDIndex(int column, int row)
 {
   if (column < NUM_COLUMNS && row < NUM_ROWS)
@@ -689,9 +672,374 @@ int coordinatesToLEDIndex(int column, int row)
   else 
   {
     //can catch this later and not turn on
-    return NUM_LEDS;
+    return -1;
   }
 }
+
+/**
+ * Lights a specific LED pixel based on the coordinates in the specified color
+ */
+void fillLEDCoordinates(int column, int row, CHSV color)
+{
+  
+  if (column < NUM_COLUMNS && column >= 0 && row < NUM_ROWS && row >= 0)
+  {
+    if (column%2 == 0)
+    {
+      leds[NUM_ROWS*column + row] = color;
+    }
+    else
+    {
+      leds[NUM_ROWS*column + (NUM_ROWS-1) - row] = color;
+    }
+  }
+}
+
+void fillRocketColumn(int rocketColumn, int destinationColumn, CHSV color)
+{
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][0], color);
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][1], color);
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][2], color);
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][3], color);
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][4], color);
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][5], color);
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][6], color);
+  fillLEDCoordinates(destinationColumn, rocket[rocketColumn][7], color);
+}
+
+void rocketAscendsPattern(int hue, int sat, int val, int speed)
+{
+  CHSV robotColor(hue, sat, val);
+  bool timeElapsedGreaterThanEqualZero = millis()-rocketDelayStart >= 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-rocketDelayStart <= speed;
+  //starting and ending conditions no longer needed because code catches columns or rows that are too high
+//  //starting increments
+//  if (timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 0)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter ==1)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 2)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 3)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 4)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 5)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 6)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 7)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 8)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 9)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 10)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == 11)
+//  {
+//    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//  }
+//  //end conditions
+//  if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+1)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+2)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+3)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+4)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+5)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+6)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+7)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+8)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+8)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+9)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+10)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+11)
+//  {
+//    fill_ns(CRGB::Black);
+//    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+//  }
+//  else if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed && rocketAscendsPatternCounter == NUM_COLUMNS+12)
+//  {
+//    fill_ns(CRGB::Black);
+//  }
+//  
+  //main increment
+   if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+  {
+    fill_ns(CRGB::Black);
+    fillRocketColumn(0, rocketAscendsPatternCounter, robotColor);
+    fillRocketColumn(1, rocketAscendsPatternCounter-1, robotColor);
+    fillRocketColumn(2, rocketAscendsPatternCounter-2, robotColor);
+    fillRocketColumn(3, rocketAscendsPatternCounter-3, robotColor);
+    fillRocketColumn(4, rocketAscendsPatternCounter-4, robotColor);
+    fillRocketColumn(5, rocketAscendsPatternCounter-5, robotColor);
+    fillRocketColumn(6, rocketAscendsPatternCounter-6, robotColor);
+    fillRocketColumn(7, rocketAscendsPatternCounter-7, robotColor);
+    fillRocketColumn(8, rocketAscendsPatternCounter-8, robotColor);
+    fillRocketColumn(9, rocketAscendsPatternCounter-9, robotColor);
+    fillRocketColumn(10, rocketAscendsPatternCounter-10, fire1);
+    fillRocketColumn(11, rocketAscendsPatternCounter-11, fire2);
+    fillRocketColumn(12, rocketAscendsPatternCounter-12, fire3);
+  }
+  else
+  {
+    rocketDelayStart = millis();
+    rocketAscendsPatternCounter++;
+
+    if (rocketAscendsPatternCounter >= NUM_COLUMNS+12)
+    {
+      rocketAscendsPatternCounter = 0;
+    }
+  }
+  FastLED.show();
+  
+  
+}
+
+void rocketDescendsPattern(int hue, int sat, int val, int speed)
+{
+  CHSV robotColor(hue, sat, val);
+  bool timeElapsedGreaterThanEqualZero = millis()-rocketDelayStart >= 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-rocketDelayStart <= speed;
+
+  //main increment
+   if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+  {
+    fill_ns(CRGB::Black);
+    fillRocketColumn(0, rocketDescendsPatternCounter, robotColor);
+    fillRocketColumn(1, rocketDescendsPatternCounter-1, robotColor);
+    fillRocketColumn(2, rocketDescendsPatternCounter-2, robotColor);
+    fillRocketColumn(3, rocketDescendsPatternCounter-3, robotColor);
+    fillRocketColumn(4, rocketDescendsPatternCounter-4, robotColor);
+    fillRocketColumn(5, rocketDescendsPatternCounter-5, robotColor);
+    fillRocketColumn(6, rocketDescendsPatternCounter-6, robotColor);
+    fillRocketColumn(7, rocketDescendsPatternCounter-7, robotColor);
+    fillRocketColumn(8, rocketDescendsPatternCounter-8, robotColor);
+    fillRocketColumn(9, rocketDescendsPatternCounter-9, robotColor);
+    fillRocketColumn(10, rocketDescendsPatternCounter-10, fire1);
+    fillRocketColumn(11, rocketDescendsPatternCounter-11, fire2);
+    fillRocketColumn(12, rocketDescendsPatternCounter-12, fire3);
+  }
+  else
+  {
+    rocketDelayStart = millis();
+    rocketDescendsPatternCounter--;
+
+    if (rocketDescendsPatternCounter < 0)//change to 12 to land on the ground
+    {
+      rocketDescendsPatternCounter = NUM_COLUMNS+11;
+    }
+  }
+  FastLED.show();
+  
+  
+}
+
 
 
 /** 
@@ -1026,7 +1374,12 @@ void serialEvent() {
 /////////////////////////////////////////// LOOP //////////////////////////////////////////////////////
 
 void loop() {
+  
+//  CHSV blue(160, 255, 200);
+//  rocketAscendsPattern(160, 255, 200, 50);
 
+
+ 
   /**
    * Causes a pattern to be shown when you type in its assigned number
    * hopefully....
@@ -1043,10 +1396,14 @@ void loop() {
     runningColumnsHSV(160, 255, 50, 245, 255, 50);
   else if(toggleString == "3\n")
   {
-    //Coliding columns
+    //Coliding columns--no longer works with shortened code
     runningColumnsRightHSV(160, 255, 50);
     runningColumnsLeftHSV(0, 255, 50);
   }
+    else if(toggleString == "4\n")
+      rocketAscendsPattern(160, 255, 200, 50);
+    else if(toggleString == "5\n")
+      rocketDescendsPattern(160, 255, 200, 50);
  
   /**
    * Causes text to be printed when you select a pattern to be shown
