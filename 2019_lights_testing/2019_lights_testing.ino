@@ -61,109 +61,55 @@ boolean newPattern = false;
  */
  int rocketAscendsPatternCounter = 12; //change to zero to fly up through the bottom (NOT taking off from ground)
  int rocketDescendsPatternCounter = NUM_COLUMNS+11;
- double rocketDelayStart = 0.0;
- byte rocket[13][8] = {{10, 10, 10, 3, 4, 10, 10, 10}, //column 0
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //1
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //2
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //3
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //4
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //5
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //6
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //7
-                        {10, 1, 2, 3, 4, 5, 6, 10}, //8
-                        {0, 1, 2, 3, 4, 5, 6, 7}, //9
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //10
-                        {10, 10, 2, 3, 4, 5, 10, 10}, //11
-                        {10, 1, 10, 3, 4, 10, 6, 10}}; //12
-  CHSV fire1(9, 150, 200);
-  CHSV fire2(7, 175, 200);
-  CHSV fire3(7, 225, 200);  
-  //The rocket-if want to test different configs or colors  
-  //    fillRocketColumn(0, 12, blue);
-//    fillRocketColumn(1, 11, blue);
-//    fillRocketColumn(2, 10, blue);
-//    fillRocketColumn(3, 9, blue);
-//    fillRocketColumn(4, 8, blue);
-//    fillRocketColumn(5, 7, blue);
-//    fillRocketColumn(6, 6, blue);
-//    fillRocketColumn(7, 5, blue);
-//    fillRocketColumn(8, 4, blue);
-//    fillRocketColumn(9, 3, blue);
-//    fillRocketColumn(10, 2, fire1);
-//    fillRocketColumn(11, 1, fire2);
-//    fillRocketColumn(12, 0, fire3);
-//    FastLED.show();                  
+ unsigned long rocketDelayStart = 0.0;
+
                 
 /** 
  *  Dependency for the 2168 pattern
  */
  int pattern2168Counter = 0;
- double pattern2168DelayStart = 0.0;
- byte pattern2168LED[17][8] = {{10, 1, 2, 10, 10, 5, 6, 10}, //column 0::8
-                    {0, 10, 10, 3, 4, 10, 10, 7}, //1
-                    {0, 10, 10, 3, 4, 10, 10, 7}, //2
-                    {0, 10, 10, 3, 4, 10, 10, 7}, //3
-                    {10, 1, 2, 10, 10, 5, 6, 10}, //4
-
-                    {10, 1, 2, 10, 4, 5, 6, 10}, //column 5::6
-                    {0, 1, 10, 10, 4, 5, 6, 7}, //6
-                    {0, 1, 10, 10, 4, 10, 10, 7}, //7
-                    {0, 1, 10, 10, 4, 5, 6, 7}, //8
-                    {10, 1, 2, 3, 4, 5, 6, 10}, //9
-
-                    {0, 1, 2, 3, 4, 5, 6, 7}, //column 10::1
-                    {0, 1, 2, 3, 4, 5, 6, 7}, //11
-                    {0, 1, 10, 10, 10, 10, 10, 10}, //12
-//                   
-                    {10, 1, 2, 3, 10, 10, 6, 7}, //column 13::2
-                    {0, 1, 10, 3, 4, 10, 6, 7}, //14
-                    {0, 1, 10, 10, 4, 5, 6, 7}, //15
-                    {0, 1, 10, 10, 10, 5, 6, 10}}; //16
-
-//         //test code to see the pattern stationary
-//         fill2168Column(0, 28, blue);
-//        fill2168Column(1, 27, blue);
-//        fill2168Column(2, 26, blue);
-//        fill2168Column(3, 25, blue);
-//        fill2168Column(4, 24, blue);
-//        fillColumn_ns(CRGB::Black, 23);
-//        fillColumn_ns(CRGB::Black, 22);
-//        fillColumn_ns(CRGB::Black, 21);
-//        fill2168Column(5, 20, blue);
-//        fill2168Column(6, 19, blue);
-//        fill2168Column(7, 18, blue);
-//        fill2168Column(8, 17, blue);
-//        fill2168Column(9, 16, blue);
-//        fillColumn_ns(CRGB::Black, 15);
-//        fillColumn_ns(CRGB::Black, 14);
-//        fillColumn_ns(CRGB::Black, 13);
-//        fill2168Column(10, 12, blue);
-//        fill2168Column(11, 11, blue);
-//        fill2168Column(12, 10, blue);
-//        fillColumn_ns(CRGB::Black, 9);
-//        fillColumn_ns(CRGB::Black, 8);
-//        fillColumn_ns(CRGB::Black, 7);
-//        fill2168Column(13, 6, blue);
-//        fill2168Column(14, 5, blue);
-//        fill2168Column(15, 4, blue);
-//        fill2168Column(16, 3, blue);
-//        FastLED.show();
+ unsigned long pattern2168DelayStart = 0.0;
+ 
                      
 /**
  * Dependency for the rainbow pattern
  */
 uint8_t hue = 0;
+unsigned long rainbowDelayStart = 0.0;
 
 /**
- * Dependencies for the arrows patterns
+ * Dependency for the blink pattern
  */
-int i = 0;
-int a = 0;
-int b = 0;
-int c = 0;
-int d = 0;
-unsigned long arrowsRightDelayStart = 0.0;
-unsigned long arrowsLeftDelayStart = 0.0;
+ unsigned long blinkAllDelayStart = 0.0;
+
+/**
+ * Dependency for the sparkle pattern
+ */
+unsigned long sparkleDelayStart = 0.0;
+
+/**
+ * Dependency for the confetti rainbow pattern
+ */
+ unsigned long confettiRainbowDelayStart = 0.0;
+
+/**
+ * Dependency for the animated wave counter
+ */
+unsigned long animatedWaveDelayStart = 0.0;
+int animatedColumnCounter = 0;
+int animatedRowCounter = 0;
+bool upDownBool = true;
+
+///**
+// * Dependencies for the arrows patterns
+// */
+//int i = 0;
+//int a = 0;
+//int b = 0;
+//int c = 0;
+//int d = 0;
+//unsigned long arrowsRightDelayStart = 0.0;
+//unsigned long arrowsLeftDelayStart = 0.0;
 
 
 ///**
@@ -173,11 +119,6 @@ unsigned long arrowsLeftDelayStart = 0.0;
 //unsigned long intakePatternDelayStart = 0.0;
 //int animation[19][9] = {{22, 21, 20, 23, 24, 68, 67, 66, 31}, {21, 20, 19, 24, 25, 67, 66, 65, 31}, {20, 19, 18, 25, 10, 66, 65, 64, 31}, {19, 18, 17, 26, 27, 65, 64, 63, 31}, {18, 17, 16, 27, 28, 64, 63, 62, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 31}, {16, 15, 14, 29, 30, 62, 61, 60, 31}, {17, 16, 15, 28, 29, 63, 62, 61, 30}, {18, 17, 16, 27, 28, 64, 63, 62, 29}, {19, 18, 17, 26, 27, 65, 64, 63, 28}, {20, 19, 18, 25, 26, 66, 65, 64, 27}, {21, 20, 19, 24, 25, 67, 66, 65, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 25}, {22, 21, 20, 23, 24, 68, 67, 66, 26}, {22, 21, 20, 23, 24, 68, 67, 66, 27}, {22, 21, 20, 23, 24, 68, 67, 66, 28}, {22, 21, 20, 23, 24, 68, 67, 66, 29}, {22, 21, 20, 23, 24, 68, 67, 66, 30}, {22, 21, 20, 23, 24, 68, 67, 66, 31}};
 // 
-///**
-// * Dependency for the blink pattern
-// */
-// unsigned long blinkAllDelayStart = 0.0;
-//
 // /**
 // * Dependencies for the chase pattern
 // */
@@ -251,6 +192,18 @@ void fill(CRGB color)
 }
 
 /**
+ * fills with a HSV color based on 3 input parameters
+ */
+ void fill(int hue, int sat, int val)
+ {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CHSV(hue, sat, val);
+  }
+  FastLED.show();
+  
+ }
+
+/**
  * Sets all LEDs to the inputted color without turning the LEDs on
  */
  void fill_ns(CRGB color)
@@ -258,6 +211,17 @@ void fill(CRGB color)
   for (int i = 0; i < NUM_LEDS; i++)
   {
     leds[i] = color;
+  }
+ }
+
+/**
+ * Sets all LEDs to the inputted HSV color params without turning the LEDs on
+ */
+ void fill_ns(int hue, int sat, int val)
+ {
+  for (int i = 0; i < NUM_LEDS; i++)
+  {
+    leds[i] = CHSV(hue, sat, val);
   }
  }
 
@@ -282,16 +246,6 @@ void fillColumn_ns(CRGB color, int column)
   }
 }
 
-/*
- * Blinks the indicated color on the whole panel at the designated speed
- */
-void blink(CRGB color, int speed)
-{
-  fill(color);
-  delay(speed);
-  fill(CRGB::Black);
-  delay(speed);
-}
 
 /*
  * A single column of indicated color moves from column 0 to the end, moving at the indicated speed
@@ -410,6 +364,7 @@ void wave(CRGB color, float speed)
       if (waveCounter < 1)
       {
         waveForward = true;
+        waveCounter = -1;
       }
     }
     FastLED.show();
@@ -623,6 +578,7 @@ void runningColumnsHSV(int hue1, int sat1, int speed1, int hue2, int sat2, int s
    
   
 }
+
 //////////////Animations /////////////////////////////////////////
 /**
  * @return the index of the LED pixel as an int based on inputted coordinates
@@ -669,6 +625,34 @@ void fillLEDCoordinates(int column, int row, CHSV color)
 
 void fillRocketColumn(int rocketColumn, int destinationColumn, CHSV color)
 {
+  byte rocket[13][8] = {{10, 10, 10, 3, 4, 10, 10, 10}, //column 0
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //1
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //2
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //3
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //4
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //5
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //6
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //7
+                        {10, 1, 2, 3, 4, 5, 6, 10}, //8
+                        {0, 1, 2, 3, 4, 5, 6, 7}, //9
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //10
+                        {10, 10, 2, 3, 4, 5, 10, 10}, //11
+                        {10, 1, 10, 3, 4, 10, 6, 10}}; //12
+  //The rocket-if want to test different configs or colors  
+  //    fillRocketColumn(0, 12, blue);
+  //    fillRocketColumn(1, 11, blue);
+  //    fillRocketColumn(2, 10, blue);
+  //    fillRocketColumn(3, 9, blue);
+  //    fillRocketColumn(4, 8, blue);
+  //    fillRocketColumn(5, 7, blue);
+  //    fillRocketColumn(6, 6, blue);
+  //    fillRocketColumn(7, 5, blue);
+  //    fillRocketColumn(8, 4, blue);
+  //    fillRocketColumn(9, 3, blue);
+  //    fillRocketColumn(10, 2, fire1);
+  //    fillRocketColumn(11, 1, fire2);
+  //    fillRocketColumn(12, 0, fire3);
+  //    FastLED.show();                  
   fillLEDCoordinates(destinationColumn, rocket[rocketColumn][0], color);
   fillLEDCoordinates(destinationColumn, rocket[rocketColumn][1], color);
   fillLEDCoordinates(destinationColumn, rocket[rocketColumn][2], color);
@@ -681,6 +665,9 @@ void fillRocketColumn(int rocketColumn, int destinationColumn, CHSV color)
 
 void rocketAscendsPattern(int hue, int sat, int val, int speed)
 {
+  CHSV fire1(9, 150, 200);
+  CHSV fire2(7, 175, 200);
+  CHSV fire3(7, 225, 200);  
   CHSV robotColor(hue, sat, val);
   bool timeElapsedGreaterThanEqualZero = millis()-rocketDelayStart >= 0;
   bool timeElapsedLessThanEqualSpeed = millis()-rocketDelayStart <= speed;
@@ -719,6 +706,9 @@ void rocketAscendsPattern(int hue, int sat, int val, int speed)
 
 void rocketDescendsPattern(int hue, int sat, int val, int speed)
 {
+  CHSV fire1(9, 150, 200);
+  CHSV fire2(7, 175, 200);
+  CHSV fire3(7, 225, 200);  
   CHSV robotColor(hue, sat, val);
   bool timeElapsedGreaterThanEqualZero = millis()-rocketDelayStart >= 0;
   bool timeElapsedLessThanEqualSpeed = millis()-rocketDelayStart <= speed;
@@ -761,6 +751,55 @@ void rocketDescendsPattern(int hue, int sat, int val, int speed)
  */
 void fill2168Column(int column2168, int destinationColumn, CHSV color)
 {
+  byte pattern2168LED[17][8] = {{10, 1, 2, 10, 10, 5, 6, 10}, //column 0::8
+                    {0, 10, 10, 3, 4, 10, 10, 7}, //1
+                    {0, 10, 10, 3, 4, 10, 10, 7}, //2
+                    {0, 10, 10, 3, 4, 10, 10, 7}, //3
+                    {10, 1, 2, 10, 10, 5, 6, 10}, //4
+
+                    {10, 1, 2, 10, 4, 5, 6, 10}, //column 5::6
+                    {0, 1, 10, 10, 4, 5, 6, 7}, //6
+                    {0, 1, 10, 10, 4, 10, 10, 7}, //7
+                    {0, 1, 10, 10, 4, 5, 6, 7}, //8
+                    {10, 1, 2, 3, 4, 5, 6, 10}, //9
+
+                    {0, 1, 2, 3, 4, 5, 6, 7}, //column 10::1
+                    {0, 1, 2, 3, 4, 5, 6, 7}, //11
+                    {0, 1, 10, 10, 10, 10, 10, 10}, //12
+//                   
+                    {10, 1, 2, 3, 10, 10, 6, 7}, //column 13::2
+                    {0, 1, 10, 3, 4, 10, 6, 7}, //14
+                    {0, 1, 10, 10, 4, 5, 6, 7}, //15
+                    {0, 1, 10, 10, 10, 5, 6, 10}}; //16
+
+//         //test code to see the pattern stationary
+//         fill2168Column(0, 28, blue);
+//        fill2168Column(1, 27, blue);
+//        fill2168Column(2, 26, blue);
+//        fill2168Column(3, 25, blue);
+//        fill2168Column(4, 24, blue);
+//        fillColumn_ns(CRGB::Black, 23);
+//        fillColumn_ns(CRGB::Black, 22);
+//        fillColumn_ns(CRGB::Black, 21);
+//        fill2168Column(5, 20, blue);
+//        fill2168Column(6, 19, blue);
+//        fill2168Column(7, 18, blue);
+//        fill2168Column(8, 17, blue);
+//        fill2168Column(9, 16, blue);
+//        fillColumn_ns(CRGB::Black, 15);
+//        fillColumn_ns(CRGB::Black, 14);
+//        fillColumn_ns(CRGB::Black, 13);
+//        fill2168Column(10, 12, blue);
+//        fill2168Column(11, 11, blue);
+//        fill2168Column(12, 10, blue);
+//        fillColumn_ns(CRGB::Black, 9);
+//        fillColumn_ns(CRGB::Black, 8);
+//        fillColumn_ns(CRGB::Black, 7);
+//        fill2168Column(13, 6, blue);
+//        fill2168Column(14, 5, blue);
+//        fill2168Column(15, 4, blue);
+//        fill2168Column(16, 3, blue);
+//        FastLED.show();
   fillLEDCoordinates(destinationColumn, pattern2168LED[column2168][0], color);
   fillLEDCoordinates(destinationColumn, pattern2168LED[column2168][1], color);
   fillLEDCoordinates(destinationColumn, pattern2168LED[column2168][2], color);
@@ -821,32 +860,89 @@ void pattern2168(int hue, int sat, int val, int speed)
   FastLED.show();
 }
 
+void animatedWave(int hue, int sat, int val, int speed)
+{
+  CHSV color(hue, sat, val);
+  bool timeElapsedGreaterThanEqualZero = millis()-animatedWaveDelayStart >= 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-animatedWaveDelayStart <= speed;
+  if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+  {
+    fill_ns(CRGB::Black);
+    fillLEDCoordinates(animatedColumnCounter,animatedRowCounter, color);
+    //fillLEDCoordinates(animatedColumnCounter+1, animatedRowCounter, color);
+    if(animatedRowCounter == NUM_ROWS-2 && !upDownBool)
+    {
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter, color);
+    }
+    else if(animatedRowCounter == 1 && upDownBool)
+    {
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter, color);
+    }
+    else if (upDownBool)
+    {
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter-2, color);
+    } 
+    else if (!upDownBool)
+    {
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter+2, color);
+    }
+  }
+  else 
+  {
+    animatedWaveDelayStart = millis();
+    if (animatedRowCounter == NUM_ROWS-1){
+      upDownBool = false;
+    }
+    else if (animatedRowCounter == 0){
+      upDownBool = true;
+    }
+      
+    if(upDownBool == true)
+      animatedRowCounter++;
+    else
+      animatedRowCounter--;
+      
+    animatedColumnCounter++;
+    if(animatedColumnCounter >= NUM_COLUMNS)
+    {
+      animatedColumnCounter = 0;
+    }
+    
+  }
+  FastLED.show();
+}
 
-//
-///** 
-// * Makes all LEDs blink from the inputted color to black
-// */
-//void blink_all(CRGB color, float speed) {
-//  
-//  bool timeElapsedGreaterThanZero = millis()-blinkAllDelayStart > 0;
-//  bool timeElapsedLessThanEqualSpeed = millis()-blinkAllDelayStart <= speed;
-//  bool timeElapsedGreaterThanSpeed = millis()-blinkAllDelayStart > speed;
-//  bool timeElapsedLessThanEqualTwiceSpeed = millis()-blinkAllDelayStart <= 2*speed;
-//  
-//  if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualSpeed) {
-//    fill_ns(color);
-//  }
-//  else if(timeElapsedGreaterThanSpeed && timeElapsedLessThanEqualTwiceSpeed) {
-//    off();
-//  }
-//  else {
-//    blinkAllDelayStart = millis();
-//  }
-//
-//  FastLED.show();
-//  
-//}
-//
+
+
+
+/** 
+ * Makes all LEDs blink from the inputted color to black
+ */
+void blink_all(CRGB color, float speed) {
+  
+  bool timeElapsedGreaterThanZero = millis()-blinkAllDelayStart > 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-blinkAllDelayStart <= speed;
+  bool timeElapsedGreaterThanSpeed = millis()-blinkAllDelayStart > speed;
+  bool timeElapsedLessThanEqualTwiceSpeed = millis()-blinkAllDelayStart <= 2*speed;
+  
+  if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualSpeed) {
+    fill_ns(color);
+  }
+  else if(timeElapsedGreaterThanSpeed && timeElapsedLessThanEqualTwiceSpeed) {
+    off();
+  }
+  else {
+    blinkAllDelayStart = millis();
+  }
+
+  FastLED.show();
+  
+}
+
 //
 ///**
 // * Makes an LED move, first going right to left and then going left to right
@@ -1071,17 +1167,37 @@ void rainbow() {
 /**
  * Turns on and then turns off one random LED at a time very quickly, imitating a sparkle
  */
-void sparkle() {
+void sparkle(int hue, int sat, int val, int density) {
 
+  int speed = 30;
+  int numberOfLights = density;
+  CHSV color(hue, sat, val);
   /**
    * Sets i to a random number between zero and the amount of LEDs, to randomize which LED turns on
    */
   int i = random(0, NUM_LEDS - 1);
+  bool timeElapsedGreaterThanEqualZero = millis()-sparkleDelayStart >= 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-sparkleDelayStart <= speed;
+  bool timeElapsedGreaterThanSpeed = millis()-sparkleDelayStart > speed;
+  bool timeElapsedLessThanEqualTwiceSpeed = millis()-sparkleDelayStart <= 2*speed;
 
-  leds[i] = CRGB::Red;
-  FastLED.show();
-  leds[i] = CRGB::Black;
-  FastLED.show();
+  if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+  {
+    for (int i = 0; i < numberOfLights; i++)
+    {
+      int j = random(0, NUM_LEDS - 1);
+      leds[j] = color;
+    }
+  }
+
+  else if(timeElapsedGreaterThanSpeed && timeElapsedLessThanEqualTwiceSpeed)
+  {
+    off();
+  }
+  else 
+  {
+    sparkleDelayStart = millis();
+  }
 
 }
 
@@ -1132,6 +1248,42 @@ void confetti() {
 
 }
 
+void confettiRainbow(int density)
+{
+  int numberOfLights = density;
+  int speed = 30;
+//  int i = random(0, NUM_LEDS - 1);
+//  int colorHue = random(0, 255);
+  
+  bool timeElapsedGreaterThanEqualZero = millis()-confettiRainbowDelayStart >= 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-confettiRainbowDelayStart <= speed;
+  bool timeElapsedGreaterThanSpeed = millis()-confettiRainbowDelayStart > speed;
+  bool timeElapsedLessThanEqualTwiceSpeed = millis()-confettiRainbowDelayStart <= 2*speed;
+  if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+  {
+    for (int i = 0; i < numberOfLights; i++)
+    {
+      int j = random(0, NUM_LEDS - 1);
+      int colorHue = random(0, 255);
+      leds[j] = CHSV(colorHue, 255, 255);
+    }
+      
+    
+  }
+
+  else if(timeElapsedGreaterThanSpeed && timeElapsedLessThanEqualTwiceSpeed)
+  {
+    off();
+  }
+  else
+  {
+    confettiRainbowDelayStart = millis();
+  }
+
+  FastLED.show();
+  
+}
+
  /**
  * Sets the variable inputString to the inputted text
  */
@@ -1155,7 +1307,6 @@ void serialEvent() {
 /////////////////////////////////////////// LOOP //////////////////////////////////////////////////////
 
 void loop() {
-  
   /**
    * Causes a pattern to be shown when you type in its assigned number
    * hopefully....
@@ -1177,11 +1328,19 @@ void loop() {
     runningColumnsLeftHSV(0, 255, 50);
   }
   else if(toggleString == "4\n")
+    runningColumnsRightHSV(160, 255, 50);
+  else if(toggleString == "5\n")
+    runningColumnsLeftHSV(0, 255, 50);
+  else if(toggleString == "4\n")
     rocketAscendsPattern(160, 255, 200, 50);
   else if(toggleString == "5\n")
     rocketDescendsPattern(160, 255, 200, 50);
   else if(toggleString == "6\n")
     pattern2168(160, 255, 200, 50);
+  else if(toggleString == "7\n")
+    confettiRainbow(5);
+  else if(toggleString == "8\n")
+    animatedWave(160, 255, 200, 50);
     
  
   /**
@@ -1210,13 +1369,30 @@ void loop() {
     if(newPattern) {
       
       off();
-      if(toggleString == "2\n" or toggleString == "3\n") {
+      if(toggleString == "2\n" || toggleString == "3\n") {
         runningColumnsRightHSVDelayStart = 0.0;
         runningColumnsRightHSVCounter = -2;
         runningColumnsLeftHSVDelayStart = 0.0;
         runningColumnsLeftHSVCounter = NUM_COLUMNS+1;
         runningColumnsForward = true;
       }
+      else if(toggleString == "4\n" || toggleString == "5/n")
+    {
+      rocketAscendsPatternCounter = 12; //change to zero to fly up through the bottom
+      rocketDescendsPatternCounter = NUM_COLUMNS+11;
+      rocketDelayStart = 0.0;
+    }
+    else if(toggleString == "6\n")
+    {
+      pattern2168Counter = 0;
+      pattern2168DelayStart = 0.0;
+    }
+    else if(toggleString == "8\n")
+    {
+      animatedColumnCounter = 0;
+      animatedRowCounter = 0;
+      animatedWaveDelayStart = 0.0;
+    }
       newPattern = false;
     }
   
