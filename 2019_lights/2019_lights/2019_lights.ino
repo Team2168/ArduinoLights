@@ -91,12 +91,22 @@ uint8_t hue = 0;
  unsigned long confettiRainbowDelayStart = 0.0;
 
 /**
+ * Dependency for the police pattern
+ */
+unsigned long policeDelayStart = 0.0;
+
+/**
  * Dependency for the animated wave counter
  */
 unsigned long animatedWaveDelayStart = 0.0;
 int animatedColumnCounter = 0;
 int animatedRowCounter = 0;
 bool upDownBool = true;
+
+/**
+ * Dependency for the animated wave reverse pattern
+ */
+ int animatedReverseColumnCounter = NUM_COLUMNS-1;
 
 ///**
 // * Dependencies for the arrows patterns
@@ -137,11 +147,7 @@ bool upDownBool = true;
 // */
 //unsigned long crossDelayStart = 0.0;
 //
-///**
-// * Dependency for the police pattern
-// */
-//unsigned long policeDelayStart = 0.0;
-//
+
 ///**
 // * Dependencies for the leapfrog pattern
 // */
@@ -907,12 +913,75 @@ void animatedWave(int hue, int sat, int val, int speed)
   FastLED.show();
 }
 
+void animatedWaveReverse(int hue, int sat, int val, int speed)
+{
+  CHSV color(hue, sat, val);
+  bool timeElapsedGreaterThanEqualZero = millis()-animatedWaveDelayStart >= 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-animatedWaveDelayStart <= speed;
+  if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+  {
+    fill_ns(CRGB::Black);
+    fillLEDCoordinates(animatedReverseColumnCounter,animatedRowCounter, color);
+    fillLEDCoordinates(animatedReverseColumnCounter-1, animatedRowCounter, color);
+    if(animatedRowCounter == 1 && !upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter, color);
+    }
+    else if(animatedRowCounter == NUM_ROWS-2 && upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter, color);
+    }
+    else if (!upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter-2, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter-2, color);
+    } 
+    else if (upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter+2, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter+2, color);
+    }
+  }
+  else 
+  {
+    animatedWaveDelayStart = millis();
+    if (animatedRowCounter == 0){
+      upDownBool = false;
+    }
+    else if (animatedRowCounter == NUM_ROWS-1){
+      upDownBool = true;
+    }
+      
+    if(upDownBool == true)
+      animatedRowCounter--;
+    else
+      animatedRowCounter++;
+      
+    animatedReverseColumnCounter--;
+    if(animatedReverseColumnCounter <= 0)
+    {
+      animatedReverseColumnCounter = NUM_COLUMNS-1;
+    }
+    
+  }
+  FastLED.show();
+}
 
 /** 
  * Makes all LEDs blink from the inputted color to black
  */
-void blink_all(CRGB color, float speed) {
-  
+void blink_all(int hue, int sat, int val, float speed) {
+  CHSV color(hue, sat, val);
   bool timeElapsedGreaterThanZero = millis()-blinkAllDelayStart > 0;
   bool timeElapsedLessThanEqualSpeed = millis()-blinkAllDelayStart <= speed;
   bool timeElapsedGreaterThanSpeed = millis()-blinkAllDelayStart > speed;
@@ -1036,7 +1105,7 @@ void blink_all(CRGB color, float speed) {
  */
 void rainbow() {
 
-  fill_rainbow(leds, NUM_LEDS, hue, 4);
+  fill_rainbow(leds, NUM_LEDS, hue, 1);
   delay(30);
   FastLED.show();
   hue++;
@@ -1141,6 +1210,29 @@ void confettiRainbow(int density)
   FastLED.show();
 }
 
+/**
+ * Makes all LEDs blink from blue to red
+ */
+void police() {
+
+  int number = 500;
+  bool timeElapsedGreaterThanZero = millis()-policeDelayStart > 0;
+  bool timeElapsedLessThanEqualNumber = millis()-policeDelayStart <= number;
+  bool timeElapsedGreaterThanNumber = millis()-policeDelayStart > number;
+  bool timeElapsedLessThanEqualTwiceNumber = millis()-policeDelayStart <= 2*number;
+  
+  if(timeElapsedGreaterThanZero && timeElapsedLessThanEqualNumber) {
+    fill(CRGB::Blue);
+  }
+  else if(timeElapsedGreaterThanNumber && timeElapsedLessThanEqualTwiceNumber) {
+    fill(CRGB::Red);
+  }
+  else {
+    policeDelayStart = millis();
+  }
+  
+}
+
  /**
  * Sets the variable inputRoboRio to the value the Arduino received from the RoboRio
  */
@@ -1225,6 +1317,15 @@ void loop() {
     confettiRainbow(5);
   else if(toggleRoboRio == 10)
     animatedWave(hue1, sat1, val1, 40);
+  else if(toggleRoboRio == 11)
+    blink_all(hue1, sat1, val1, 100);
+  else if(toggleRoboRio == 12)
+    rainbow();
+  else if(toggleRoboRio == 13)
+    animatedWaveReverse(hue1, sat1, val1, 40);
+  else if(toggleRoboRio == 14)
+    police();
+    
 
 
     if(messageReceived) {
@@ -1263,11 +1364,14 @@ void loop() {
       pattern2168Counter = 0;
       pattern2168DelayStart = 0.0;
     }
-    else if(toggleRoboRio == 10)
+    else if(toggleRoboRio == 10 || toggleRoboRio == 13)
     {
       animatedColumnCounter = 0;
+      animatedReverseColumnCounter = NUM_COLUMNS-1;
       animatedRowCounter = 0;
       animatedWaveDelayStart = 0.0;
+      upDownBool = false;
+
     }
     newPattern = false;
   }
