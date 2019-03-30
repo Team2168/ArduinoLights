@@ -75,7 +75,6 @@ boolean newPattern = false;
  * Dependency for the rainbow pattern
  */
 uint8_t hue = 0;
-unsigned long rainbowDelayStart = 0.0;
 
 /**
  * Dependency for the blink pattern
@@ -93,12 +92,17 @@ unsigned long sparkleDelayStart = 0.0;
  unsigned long confettiRainbowDelayStart = 0.0;
 
 /**
- * Dependency for the animated wave counter
+ * Dependency for the animated wave pattern
  */
 unsigned long animatedWaveDelayStart = 0.0;
 int animatedColumnCounter = 0;
 int animatedRowCounter = 0;
-bool upDownBool = true;
+bool upDownBool = false;
+
+/**
+ * Dependency for reverse animated wave pattern
+ */
+ int animatedReverseColumnCounter = NUM_COLUMNS-1;
 
 ///**
 // * Dependencies for the arrows patterns
@@ -869,42 +873,50 @@ void animatedWave(int hue, int sat, int val, int speed)
   {
     fill_ns(CRGB::Black);
     fillLEDCoordinates(animatedColumnCounter,animatedRowCounter, color);
-    //fillLEDCoordinates(animatedColumnCounter+1, animatedRowCounter, color);
-    if(animatedRowCounter == NUM_ROWS-2 && !upDownBool)
+    fillLEDCoordinates(animatedColumnCounter+1, animatedRowCounter, color);
+    if(animatedRowCounter == NUM_ROWS-2 && upDownBool)
     {
       fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter+1, color);
       fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter, color);
+      fillLEDCoordinates(animatedColumnCounter, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter, color);
     }
-    else if(animatedRowCounter == 1 && upDownBool)
+    else if(animatedRowCounter == 1 && !upDownBool)
     {
       fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter-1, color);
       fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter, color);
+      fillLEDCoordinates(animatedColumnCounter, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter, color);
     }
-    else if (upDownBool)
+    else if (!upDownBool)
     {
       fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter-1, color);
       fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter-2, color);
+      fillLEDCoordinates(animatedColumnCounter, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter-2, color);
     } 
-    else if (!upDownBool)
+    else if (upDownBool)
     {
       fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter+1, color);
       fillLEDCoordinates(animatedColumnCounter-2, animatedRowCounter+2, color);
+      fillLEDCoordinates(animatedColumnCounter, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedColumnCounter-1, animatedRowCounter+2, color);
     }
   }
   else 
   {
     animatedWaveDelayStart = millis();
     if (animatedRowCounter == NUM_ROWS-1){
-      upDownBool = false;
+      upDownBool = true;
     }
     else if (animatedRowCounter == 0){
-      upDownBool = true;
+      upDownBool = false;
     }
       
     if(upDownBool == true)
-      animatedRowCounter++;
-    else
       animatedRowCounter--;
+    else
+      animatedRowCounter++;
       
     animatedColumnCounter++;
     if(animatedColumnCounter >= NUM_COLUMNS)
@@ -916,6 +928,69 @@ void animatedWave(int hue, int sat, int val, int speed)
   FastLED.show();
 }
 
+void animatedWaveReverse(int hue, int sat, int val, int speed)
+{
+  CHSV color(hue, sat, val);
+  bool timeElapsedGreaterThanEqualZero = millis()-animatedWaveDelayStart >= 0;
+  bool timeElapsedLessThanEqualSpeed = millis()-animatedWaveDelayStart <= speed;
+  if(timeElapsedGreaterThanEqualZero && timeElapsedLessThanEqualSpeed)
+  {
+    fill_ns(CRGB::Black);
+    fillLEDCoordinates(animatedReverseColumnCounter,animatedRowCounter, color);
+    fillLEDCoordinates(animatedReverseColumnCounter-1, animatedRowCounter, color);
+    if(animatedRowCounter == 1 && !upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter, color);
+    }
+    else if(animatedRowCounter == NUM_ROWS-2 && upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter, color);
+    }
+    else if (!upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter-2, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter-1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter-2, color);
+    } 
+    else if (upDownBool)
+    {
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+2, animatedRowCounter+2, color);
+      fillLEDCoordinates(animatedReverseColumnCounter, animatedRowCounter+1, color);
+      fillLEDCoordinates(animatedReverseColumnCounter+1, animatedRowCounter+2, color);
+    }
+  }
+  else 
+  {
+    animatedWaveDelayStart = millis();
+    if (animatedRowCounter == 0){
+      upDownBool = false;
+    }
+    else if (animatedRowCounter == NUM_ROWS-1){
+      upDownBool = true;
+    }
+      
+    if(upDownBool == true)
+      animatedRowCounter--;
+    else
+      animatedRowCounter++;
+      
+    animatedReverseColumnCounter--;
+    if(animatedReverseColumnCounter <= 0)
+    {
+      animatedReverseColumnCounter = NUM_COLUMNS-1;
+    }
+    
+  }
+  FastLED.show();
+}
 
 
 
@@ -1038,125 +1113,13 @@ void blink_all(CRGB color, float speed) {
 //    FastLED.show();
 //  }
 //}
-//
-//
-///**
-// * Makes red, green, and blue arrows scrolling to the right
-// * Only works with 3 rows of 69 LEDs
-// */
-//void arrows_right() {
-//
-//  int number = 150;
-//  bool timeElapsedGreaterThanEqualNumber = millis()-arrowsRightDelayStart >= number;
-//  
-//  a = 46 + i % 23;
-//  b = 45 - i % 23;
-//  c = 0 + i % 23;
-//  d = 45 - (i + 1) % 23;
-//
-//  leds[a] = CRGB::Red;
-//  leds[b] = CRGB::Red;
-//  leds[c] = CRGB::Red;
-//  leds[d] = CRGB::Red;
-//
-//  leds[46 + (i + 3) % 23] = CRGB::Green;
-//  leds[45 - (i + 3) % 23] = CRGB::Green;
-//  leds[0 + (i + 3) % 23] = CRGB::Green;
-//  leds[45 - (i + 4) % 23] = CRGB::Green;
-//
-//  leds[46 + (i + 6) % 23] = CRGB::Blue;
-//  leds[45 - (i + 6) % 23] = CRGB::Blue;
-//  leds[0 + (i + 6) % 23] = CRGB::Blue;
-//  leds[45 - (i + 7) % 23] = CRGB::Blue;
-//
-//  delay(30);
-//  FastLED.show();
-//
-//  if(timeElapsedGreaterThanEqualNumber) {
-//    leds[a] = CRGB::Black;
-//    leds[b] = CRGB::Black;
-//    leds[c] = CRGB::Black;
-//    leds[d] = CRGB::Black;
-//
-//    leds[46 + (i + 3) % 23] = CRGB::Black;
-//    leds[45 - (i + 3) % 23] = CRGB::Black;
-//    leds[0 + (i + 3) % 23] = CRGB::Black;
-//    leds[45 - (i + 4) % 23] = CRGB::Black;
-//
-//    leds[46 + (i + 6) % 23] = CRGB::Black;
-//    leds[45 - (i + 6) % 23] = CRGB::Black;
-//    leds[0 + (i + 6) % 23] = CRGB::Black;
-//    leds[45 - (i + 7) % 23] = CRGB::Black;
-//
-//    i = (i + 1) % 23;
-//
-//    arrowsRightDelayStart = millis();
-//  }
-//  
-//}
-//
-//
-///**
-// * Makes red, green, and blue arrows scrolling to the left
-// * Only works with 3 rows of 69 LEDs
-// */
-//void arrows_left() {
-//
-//  int number = 150;
-//  bool timeElapsedGreaterThanEqualNumber = millis()-arrowsLeftDelayStart >= number;
-//  
-//  a = 68 - i % 23;
-//  b = 23 + i % 23;
-//  c = 22 - i % 23;
-//  d = 23 + (i + 1) % 23;
-//
-//  leds[a] = CRGB::Red;
-//  leds[b] = CRGB::Red;
-//  leds[c] = CRGB::Red;
-//  leds[d] = CRGB::Red;
-//
-//  leds[68 - (i + 3) % 23] = CRGB::Green;
-//  leds[23 + (i + 3) % 23] = CRGB::Green;
-//  leds[22 - (i + 3) % 23] = CRGB::Green;
-//  leds[23 + (i + 4) % 23] = CRGB::Green;
-//
-//  leds[68 - (i + 6) % 23] = CRGB::Blue;
-//  leds[23 + (i + 6) % 23] = CRGB::Blue;
-//  leds[22 - (i + 6) % 23] = CRGB::Blue;
-//  leds[23 + (i + 7) % 23] = CRGB::Blue;
-//
-//  delay(30);
-//  FastLED.show();
-//  if(timeElapsedGreaterThanEqualNumber) {
-//    leds[a] = CRGB::Black;
-//    leds[b] = CRGB::Black;
-//    leds[c] = CRGB::Black;
-//    leds[d] = CRGB::Black;
-//  
-//    leds[68 - (i + 3) % 23] = CRGB::Black;
-//    leds[23 + (i + 3) % 23] = CRGB::Black;
-//    leds[22 - (i + 3) % 23] = CRGB::Black;
-//    leds[23 + (i + 4) % 23] = CRGB::Black;
-//  
-//    leds[68 - (i + 6) % 23] = CRGB::Black;
-//    leds[23 + (i + 6) % 23] = CRGB::Black;
-//    leds[22 - (i + 6) % 23] = CRGB::Black;
-//    leds[23 + (i + 7) % 23] = CRGB::Black;
-//  
-//    i = (i + 1) % 23;
-//  
-//    arrowsLeftDelayStart = millis();
-//  }
-//  
-//}
-
 
 /**
  * Makes the lights change colors to different colors of the rainbow
  */
 void rainbow() {
 
-  fill_rainbow(leds, NUM_LEDS, hue, 4);
+  fill_rainbow(leds, NUM_LEDS, hue, 1);
   delay(30);
   FastLED.show();
   hue++;
@@ -1307,6 +1270,7 @@ void serialEvent() {
 /////////////////////////////////////////// LOOP //////////////////////////////////////////////////////
 
 void loop() {
+  //colors: 150 == light blue
   /**
    * Causes a pattern to be shown when you type in its assigned number
    * hopefully....
@@ -1328,12 +1292,12 @@ void loop() {
     runningColumnsLeftHSV(0, 255, 50);
   }
   else if(toggleString == "4\n")
-    runningColumnsRightHSV(160, 255, 50);
+    runningColumnsRightHSV(175, 255, 50);
   else if(toggleString == "5\n")
     runningColumnsLeftHSV(0, 255, 50);
-  else if(toggleString == "4\n")
+  else if(toggleString == "11\n")
     rocketAscendsPattern(160, 255, 200, 50);
-  else if(toggleString == "5\n")
+  else if(toggleString == "12\n")
     rocketDescendsPattern(160, 255, 200, 50);
   else if(toggleString == "6\n")
     pattern2168(160, 255, 200, 50);
@@ -1341,6 +1305,10 @@ void loop() {
     confettiRainbow(5);
   else if(toggleString == "8\n")
     animatedWave(160, 255, 200, 50);
+  else if(toggleString == "9\n")
+    rainbow();
+  else if(toggleString == "10\n")
+    animatedWaveReverse(192, 255, 200, 50);
     
  
   /**
@@ -1369,7 +1337,7 @@ void loop() {
     if(newPattern) {
       
       off();
-      if(toggleString == "2\n" || toggleString == "3\n") {
+      if(toggleString == "2\n" || toggleString == "3\n" || toggleString == "4\n" || toggleString == "5\n") {
         runningColumnsRightHSVDelayStart = 0.0;
         runningColumnsRightHSVCounter = -2;
         runningColumnsLeftHSVDelayStart = 0.0;
@@ -1387,11 +1355,13 @@ void loop() {
       pattern2168Counter = 0;
       pattern2168DelayStart = 0.0;
     }
-    else if(toggleString == "8\n")
+    else if(toggleString == "8\n" || toggleString == "10\n")
     {
       animatedColumnCounter = 0;
+      animatedReverseColumnCounter = NUM_COLUMNS-1;
       animatedRowCounter = 0;
       animatedWaveDelayStart = 0.0;
+      upDownBool = false;
     }
       newPattern = false;
     }
