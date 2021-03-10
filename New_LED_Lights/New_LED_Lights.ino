@@ -12,15 +12,16 @@
 #define FADE_PATTERN_ID 4
 #define CHASE_PATTERN_ID 5
 #define RAINBOW_PATTERN_ID 6
+#define CYLON_PATTERN_ID 7
 
 int counter = 0;
 boolean fadeIn = true;
 int gHue = 0;
 
 int intakeRange[2] = {0,50};
-int shooterRange[2] = {52, 60};
+int shooterRange[2] = {51, 60};
 
-byte lightStates[8] = {0, 255, 0, 6, 255, 255, 0, 3}; //range1(RGB pattern) range2(RGB pattern)
+byte lightStates[8] = {64, 0, 0, CYLON_PATTERN_ID, 21, 06, 80, SLOW_BLINK_PATTERN_ID}; //range1(RGB pattern) range2(RGB pattern)
 
 CRGB leds[NUM_LEDS];
 
@@ -28,11 +29,11 @@ void setup() {
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
   Serial.begin(9600);
 
-  for (int i = 0; i < NUM_LEDS; i++){
-      leds[i] = CRGB::White;
-    }
+  //light all LEDs in the strip a dim white on startup
+  Fill(0x080808, 0, NUM_LEDS-1);
   FastLED.show();
   delay(1000);
+  Off(0,NUM_LEDS-1);
   
   //begins the i2c connection.
   Wire.begin(I2C_ID);
@@ -75,6 +76,9 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
       break;
+    case CYLON_PATTERN_ID:
+      Cylon(CRGB(r1, g1, b1), intakeRange[0], intakeRange[1]);
+      break;
       
     default: //OFF_PATTERN_ID:
       Off(intakeRange[0], intakeRange[1]);
@@ -99,6 +103,9 @@ void makePatterns(int r1, int g1, int b1, int pattern1, int r2, int g2, int b2, 
     case RAINBOW_PATTERN_ID:
       Rainbow(gHue);
       break;
+    case CYLON_PATTERN_ID:
+      Cylon(CRGB(r2, g2, b2), shooterRange[0], shooterRange[1]);
+      break;
     default: //OFF_PATTERN_ID:
       Off(shooterRange[0], shooterRange[1]);
       break;
@@ -119,14 +126,24 @@ void ColorFadeInOut(CRGB color, int startLED, int endLED) {
     color.r = factor*color.r;
     color.g = factor*color.g;
     color.b = factor*color.b;
-  }
-  else {
+  } else {
     double factor = ((double)(100-counter))/((double)100);
     color.r = factor*color.r;
     color.g = factor*color.g;
     color.b = factor*color.b;
   }
   Fill(color, startLED, endLED);
+}
+
+void Cylon(CRGB color, int startLED, int endLED) {
+  int i = (int) ( ( (double)counter / (double)100) * int((endLED - startLED + 1) + 0.5));
+  if (fadeIn) {
+    leds[startLED + i] = color;
+  } else {
+    leds[endLED - i] = color;
+  }
+  //Fade unlit LEDs
+  for(int i = startLED; i <= endLED; i++) { leds[i].nscale8(245); } 
 }
 
 void Fill(CRGB color, int startLED, int endLED){
@@ -144,8 +161,7 @@ void ChaseIn(CRGB color, int startLED, int endLED) {
   leds[endLED - i] = color;
 }
 
-void Rainbow(int gHue) 
-{
+void Rainbow(int gHue) {
   fill_rainbow( leds, NUM_LEDS, gHue, 7);
 }
 
@@ -153,8 +169,7 @@ void Blink(CRGB color, int startLED, int endLED, int freq) {
   if ((counter % freq) == 0) {
     if ( leds[startLED] ) {                     //test one LED in range to see if it is not black
       Off(startLED, endLED);
-    }
-  else {
+    } else {
       Fill(color, startLED, endLED);
     }
   }
@@ -163,7 +178,7 @@ void Blink(CRGB color, int startLED, int endLED, int freq) {
 void Off(int startLED, int endLED){
   for (int i = startLED; i <= endLED; i++){
       leds[i] = 0;
-    }
+  }
 }
 
 void receiveEvent(int numBytes){
@@ -173,4 +188,3 @@ void receiveEvent(int numBytes){
     } 
   }
 }
-
